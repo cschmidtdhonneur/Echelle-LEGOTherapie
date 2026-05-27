@@ -1457,6 +1457,9 @@ body:before{
   background:var(--studio-ink);
   color:#fffdf8;
 }
+
+.homeHeroStudio{display:grid;grid-template-columns:minmax(320px,.86fr) minmax(420px,1.14fr);min-height:520px;overflow:hidden;border:1px solid var(--studio-line);border-radius:32px;background:#fffdf8;box-shadow:var(--studio-shadow);margin-bottom:34px}.homeHeroCopy{padding:54px 54px 38px;display:flex;flex-direction:column;justify-content:center}.eyebrow{display:flex;align-items:center;gap:12px;color:var(--studio-ink-2);font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;margin-bottom:22px}.eyebrow:before{content:"";width:38px;height:2px;border-radius:999px;background:var(--studio-ink-2)}.homeHeroCopy h2{font-size:58px!important;line-height:.98!important;margin:0 0 22px!important;color:var(--studio-ink)!important;letter-spacing:-.045em!important}.homeHeroCopy h2:after{display:none!important}.homeHeroCopy p{color:#52645d;font-size:17px;line-height:1.75;max-width:580px;margin:0 0 28px}.homeHeroActions{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:34px}.homeHeroFeatures{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:auto}.homeHeroFeatures span{display:flex;align-items:flex-start;gap:10px;color:#263d40;font-size:12px;font-weight:900}.homeHeroFeatures i{width:28px;height:28px;flex:0 0 28px;border-radius:999px;display:grid;place-items:center;background:#edf7f2;color:var(--studio-ink);font-style:normal}.homeHeroFeatures small{display:block;margin-top:3px;font-weight:700;color:#7a857f;line-height:1.3}.homeHeroMedia{position:relative;min-height:520px}.homeHeroMedia img,.homeImageBlock img,.homeDeviceImage img{width:100%;height:100%;display:block;object-fit:cover}.homeMetricStack{position:absolute;right:28px;top:50%;transform:translateY(-50%);display:grid;gap:12px}.homeMetric{width:150px;padding:16px 18px;border-radius:18px;background:rgba(255,253,248,.92);border:1px solid rgba(234,223,206,.9);box-shadow:0 16px 34px rgba(6,63,73,.12);backdrop-filter:blur(10px)}.homeMetric small{display:block;color:#6a7a73;font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}.homeMetric b{color:var(--studio-ink);font-size:26px;letter-spacing:-.03em}.homeSplitStudio{display:grid;grid-template-columns:.86fr 1.14fr;gap:56px;align-items:center;margin:46px 0}.homeImageBlock,.homeDeviceImage{overflow:hidden;border-radius:28px;min-height:360px;border:1px solid var(--studio-line);box-shadow:var(--studio-shadow)}.homeStudioText h3,.homeSectionTitle h3{color:var(--studio-ink);font-size:34px;line-height:1.12;letter-spacing:-.035em;margin:0 0 18px}.homeStudioText p,.homeSectionTitle p{color:#52645d;line-height:1.75;font-size:16px;margin:0 0 24px}.homeMiniGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.homeMiniGrid div{border-top:1px solid var(--studio-line);padding-top:16px;color:#52645d;font-size:13px;line-height:1.45}.homeMiniGrid b{display:block;color:var(--studio-ink);margin-bottom:5px}.homeSectionTitle{text-align:center;max-width:820px;margin:58px auto 24px}.homeToolCards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:44px}.homeToolCard{border:1px solid var(--studio-line);border-radius:24px;padding:28px;background:#fffdf8;box-shadow:0 16px 40px rgba(6,63,73,.06);cursor:pointer}.homeToolCard .quickIcon{width:54px!important;height:54px!important;margin-bottom:18px;border-radius:999px!important;background:var(--studio-ink)!important;color:#fffdf8!important}.homeToolCard h3{color:var(--studio-ink);margin:0 0 10px}.homeToolCard p{color:#52645d;line-height:1.65;margin:0 0 18px}.homeFollowStudio{display:grid;grid-template-columns:1fr 1fr;gap:42px;align-items:center;margin:54px 0 24px;border-top:1px solid var(--studio-line);padding-top:48px}.homeCheckList{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 24px}.homeCheckList span{color:#27494d;font-weight:800;font-size:14px}.homeCheckList span:before{content:"✓";display:inline-grid;place-items:center;width:20px;height:20px;border-radius:999px;margin-right:8px;background:var(--studio-ink);color:#fffdf8;font-size:12px}.homeBareme{margin-top:34px}@media(max-width:1100px){.homeHeroStudio,.homeSplitStudio,.homeFollowStudio{grid-template-columns:1fr}.homeHeroMedia{min-height:420px}.homeToolCards,.homeMiniGrid{grid-template-columns:1fr}}@media(max-width:720px){.homeHeroCopy{padding:34px 26px}.homeHeroCopy h2{font-size:40px!important}.homeHeroFeatures,.homeCheckList{grid-template-columns:1fr}.homeMetricStack{position:static;transform:none;padding:16px;grid-template-columns:repeat(3,1fr)}.homeMetric{width:auto}}
+
 #google_translate_element,.goog-te-banner-frame,.skiptranslate{display:none!important}
 body{top:0!important}
 @media(max-width:1100px){
@@ -1467,6 +1470,30 @@ body{top:0!important}
   .header{width:calc(100% - 24px)!important;margin-top:10px!important}
   .main h2{font-size:30px!important}
 }
+
+/* V50 ajustements header : langues a droite + logo blanc */
+.header{grid-template-columns:76px minmax(260px,1fr) auto!important;align-items:start!important}
+.logoBox{background:#fff!important;border:1px solid var(--studio-line)!important;box-shadow:0 14px 30px rgba(6,63,73,.08)!important;border-radius:24px!important;padding:8px!important}
+.logoBox img{border-radius:16px!important;object-fit:contain!important}
+.header .hero{align-self:center!important}
+.headerActionsWrap{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:8px!important;flex-wrap:wrap!important;align-self:center!important;justify-self:end!important}
+.headerActionsWrap .ptbLangSwitch{order:99!important;margin-left:6px!important}
+.ptbLangSwitch{height:44px!important;padding:5px!important;gap:5px!important}
+.ptbLangSwitch button{min-width:38px!important}
+@media(max-width:1200px){.header{grid-template-columns:70px 1fr!important}.headerActionsWrap{grid-column:1/-1!important;justify-self:start!important}.headerActionsWrap .ptbLangSwitch{order:0!important;margin-left:0!important}}
+
+
+/* V51 header non fige */
+.header{position:relative!important;top:auto!important}
+.side{top:24px!important}
+
+
+/* V52 visuels pages internes */
+.pageVisualHero{position:relative;overflow:hidden;border:1px solid var(--studio-line);border-radius:28px;min-height:190px;margin:0 0 24px;box-shadow:var(--studio-shadow);background:#fffdf8}.pageVisualHero img{width:100%;height:240px;display:block;object-fit:cover}.pageVisualHero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(6,63,73,.74),rgba(6,63,73,.22) 48%,rgba(6,63,73,.04))}.pageVisualText{position:absolute;left:34px;bottom:28px;right:34px;z-index:1;max-width:720px;color:#fffdf8}.pageVisualText .eyebrow{color:#fffdf8;margin-bottom:12px}.pageVisualText .eyebrow:before{background:#fffdf8}.pageVisualText h3{font-size:30px;line-height:1.1;margin:0 0 8px;color:#fffdf8}.pageVisualText p{margin:0;line-height:1.55;color:rgba(255,253,248,.86);font-weight:700}@media(max-width:720px){.pageVisualHero img{height:220px}.pageVisualText{left:22px;bottom:22px}.pageVisualText h3{font-size:24px}}
+
+/* V53 page fondatrice */
+.founderGrid{display:grid;grid-template-columns:.78fr 1.22fr;gap:24px;align-items:stretch}.founderIdentity{background:#fffdf8;border:1px solid var(--studio-line);border-radius:28px;padding:18px;box-shadow:var(--studio-shadow);display:flex;flex-direction:column;justify-content:space-between}.founderPhoto{width:100%;height:290px;border-radius:24px;object-fit:cover;object-position:center 35%;display:block;margin-bottom:20px;box-shadow:0 18px 45px rgba(16,24,40,.13)}.founderIdentity h3{font-size:27px;line-height:1.1;margin:0 10px 8px;color:#0b3f49}.founderIdentity p{margin:0 10px;color:#5f6f66;line-height:1.6;font-weight:700}.founderText{font-size:16px;line-height:1.75;color:#31463b}.founderText p{margin:0 0 15px}.founderQuote{margin:20px 10px 6px;padding:20px 22px;border-radius:22px;background:#eef8f1;border:1px solid #d9ecde;color:#173425;font-weight:850;line-height:1.6}.founderFacts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}.founderFact{background:#fff;border:1px solid var(--studio-line);border-radius:22px;padding:18px;box-shadow:0 12px 28px rgba(16,24,40,.05)}.founderFact b{display:block;color:#0b4a52;margin-bottom:8px;font-size:15px}.founderFact span{display:block;color:#5f6f66;line-height:1.55;font-weight:650}@media(max-width:980px){.founderGrid,.founderFacts{grid-template-columns:1fr}.founderIdentity{min-height:auto}.founderPhoto{height:360px}}@media(max-width:620px){.founderPhoto{height:280px}}
+
 </style>
 
 </head>
@@ -1506,6 +1533,7 @@ L’outil permet de comparer jusqu’à 6 évaluations successives, d’identifi
 <button class="navBtn" data-view="goals"><span class="navIcon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg></span> Objectifs</button>
 <button class="navBtn" data-view="summary"><span class="navIcon"><svg viewBox="0 0 24 24"><path d="M4 17 9 12l4 4 7-9"/><path d="M15 7h5v5"/></svg></span> Évolution</button>
 <button class="navBtn" data-view="saves"><span class="navIcon"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span> Mes dossiers</button>
+<button class="navBtn" data-view="founder"><span class="navIcon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/><path d="M18 3v4M20 5h-4"/></svg></span> La fondatrice</button>
 <button class="navBtn" data-view="export"><span class="navIcon"><svg viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M8 11l4 4 4-4"/><path d="M5 20h14"/></svg></span> Export PDF</button>
 
 <div class="sidebarPatientCard noPrint">
@@ -2033,6 +2061,18 @@ function smartGoalsV27(){
 }
 
 
+function pageVisualHero(kind){
+  const data = {
+    info:{img:"assets/page-dossier.jpg", eyebrow:"Dossier clinique", title:"Rassembler les informations utiles.", text:"Un espace clair pour préparer le suivi, identifier le contexte et garder une trace structurée."},
+    goals:{img:"assets/page-objectifs.jpg", eyebrow:"Objectifs de séance", title:"Transformer l’observation en pistes de travail.", text:"Des objectifs lisibles, priorisés et reliés aux compétences observées."},
+    summary:{img:"assets/page-evolution.jpg", eyebrow:"Évolution", title:"Visualiser les progrès dans le temps.", text:"Des courbes et comparaisons pour suivre les changements d’une évaluation à l’autre."},
+    founder:{img:"assets/fondatrice-chloe.jpg", eyebrow:"La fondatrice", title:"Une approche clinique, structurée et profondément humaine.", text:"Un outil pensé à partir d’un travail de terrain, de recherche et de transmission."},
+    export:{img:"assets/page-evolution.jpg", eyebrow:"Compte rendu", title:"Partager une synthèse professionnelle.", text:"Préparez les exports PDF et la transmission des données de manière simple et lisible."}
+  };
+  const item = data[kind];
+  if(!item) return "";
+  return '<div class="pageVisualHero noPrint"><img src="' + item.img + '" alt=""><div class="pageVisualText"><div class="eyebrow">' + item.eyebrow + '</div><h3>' + item.title + '</h3><p>' + item.text + '</p></div></div>';
+}
 function pageIntro(title, text, icon){
   return `<div class="objectiveHero"><div class="objectiveHeroIcon">${icon||"•"}</div><div><h3 style="margin:0 0 8px;color:#101828">${title}</h3><p style="margin:0;color:#4f6558;line-height:1.65">${text}</p></div></div>`;
 }
@@ -2060,15 +2100,49 @@ function updatePremiumIdentity(){
   if(topRole) topRole.textContent = p.professional ? "Professionnel référent" : "À compléter";
 }
 
-function viewHome(){return `<div class="cards"><div class="card"><h3>Nouvelle évaluation</h3><p>Créer un dossier individuel ou groupe.</p><div class="actions"><button class="primary" onclick="nav('info')">Commencer</button></div></div><div class="card"><h3>Mes dossiers</h3><p>Rouvrir un dossier local depuis ce navigateur.</p><div class="actions"><button class="secondary" onclick="nav('saves')">Ouvrir</button></div></div><div class="card"><h3>Suivi longitudinal</h3><p>Jusqu’à 6 évaluations par dossier, avec comparaison automatique.</p><div class="actions"><button class="secondary" onclick="nav('summary')">Voir l’évolution</button></div></div></div><div class="card"><h3>Barème des compétences</h3><table class="table"><tbody>${bareme.map(b=>`<tr><th>${b[0]}</th><td>${b[1]}</td></tr>`).join("")}</tbody></table></div>
-<div class="quickActions noPrint">
-  <div class="quickAction" onclick="nav('eval')" style="cursor:pointer"><span class="quickIcon">✓</span><div>Évaluer<br><small>Coter les compétences</small></div></div>
-  <div class="quickAction" onclick="nav('goals')" style="cursor:pointer"><span class="quickIcon">◎</span><div>Objectifs<br><small>Prioriser le travail</small></div></div>
-  <div class="quickAction" onclick="nav('summary')" style="cursor:pointer"><span class="quickIcon">↗</span><div>Évolution<br><small>Comparer les évaluations</small></div></div>
-  <div class="quickAction" onclick="nav('saves')" style="cursor:pointer"><span class="quickIcon">▣</span><div>Dossiers<br><small>Rouvrir un suivi</small></div></div>
-  <div class="quickAction" onclick="nav('export')" style="cursor:pointer"><span class="quickIcon">↓</span><div>Exporter<br><small>PDF famille/pro</small></div></div>
-</div>
+function viewHome(){return `<section class="homeHeroStudio">
+  <div class="homeHeroCopy">
+    <div class="eyebrow">Échelle clinique LEGO® Thérapie</div>
+    <h2>Observer.<br>Comparer.<br>Faire progresser.</h2>
+    <p>Une plateforme de suivi conçue pour structurer les évaluations, visualiser l’évolution et produire des comptes rendus clairs pour les professionnels et les familles.</p>
+    <div class="homeHeroActions"><button class="primary" onclick="nav('info')">Commencer une évaluation</button><button class="secondary" onclick="nav('saves')">Rouvrir un dossier</button></div>
+    <div class="homeHeroFeatures"><span><i>✓</i><b>Avant / après<small>Comparaison des évaluations</small></b></span><span><i>↗</i><b>Évolution<small>Suivi jusqu’à 6 temps</small></b></span><span><i>▣</i><b>Données locales<small>Exports et transmission</small></b></span></div>
+  </div>
+  <div class="homeHeroMedia"><img src="assets/legotherapie-seance.jpg" alt="Séance de LEGO Thérapie en cabinet"><div class="homeMetricStack"><div class="homeMetric"><small>Évaluations</small><b>6</b></div><div class="homeMetric"><small>Domaines</small><b>${domains().length}</b></div><div class="homeMetric"><small>Exports</small><b>PDF</b></div></div></div>
+</section>
+<section class="homeSplitStudio">
+  <div class="homeImageBlock"><img src="assets/legotherapie-cabinet.jpg" alt="Cabinet de thérapie structuré et chaleureux"></div>
+  <div class="homeStudioText"><div class="eyebrow">Approche métier</div><h3>Une interface pensée pour structurer chaque accompagnement.</h3><p>Centralisez les informations du dossier, cotez les compétences, repérez les appuis et préparez des objectifs de séance à partir d’observations cliniques organisées.</p><div class="homeMiniGrid"><div><b>Suivi longitudinal</b>Comparez les évaluations dans le temps.</div><div><b>Lecture clinique</b>Repérez les domaines d’appui et les priorités.</div><div><b>Comptes rendus</b>Générez des exports professionnels ou famille.</div></div></div>
+</section>
+<div class="homeSectionTitle"><div class="eyebrow" style="justify-content:center">Fonctionnalités disponibles</div><h3>Les outils essentiels du suivi LEGO® Thérapie.</h3><p>Une seule interface pour renseigner, comparer, transmettre et restituer les évaluations.</p></div>
+<div class="homeToolCards noPrint"><div class="homeToolCard" onclick="nav('info')"><span class="quickIcon">i</span><h3>Dossier patient</h3><p>Renseignez les informations utiles au suivi et au compte rendu.</p><button class="secondary">Compléter</button></div><div class="homeToolCard" onclick="nav('eval')"><span class="quickIcon">✓</span><h3>Évaluations complètes</h3><p>Cotez les compétences sociales, langagières, cognitives et de construction.</p><button class="secondary">Évaluer</button></div><div class="homeToolCard" onclick="nav('export')"><span class="quickIcon">↓</span><h3>Compte rendu</h3><p>Exportez un PDF ou transmettez les données de l’étude.</p><button class="secondary">Exporter</button></div></div>
+<section class="homeFollowStudio"><div class="homeStudioText"><div class="eyebrow">Suivi clinique</div><h3>Suivre l’évolution au-delà d’une séance.</h3><p>L’outil conserve une lecture claire des évaluations successives pour objectiver les progrès, préparer les séances suivantes et partager les résultats.</p><div class="homeCheckList"><span>Historique des évaluations</span><span>Comparaisons avant/après</span><span>Objectifs thérapeutiques</span><span>Exports PDF enrichis</span></div></div><div class="homeDeviceImage"><img src="assets/legotherapie-dashboard.jpg" alt="Tableau de bord d’évaluation sur ordinateur"></div></section>
+<div class="card homeBareme"><h3>Barème des compétences</h3><table class="table"><tbody>${bareme.map(b=>`<tr><th>${b[0]}</th><td>${b[1]}</td></tr>`).join("")}</tbody></table></div>
 <div class="legal"><p><b>Outil développé par Chloé Schmidt-Dhonneur, docteure en sciences de l’éducation.</b></p><p>Il est conçu dans le cadre des accompagnements en LEGO® Thérapie et des programmes structurés de développement des compétences sociales, langagières et cognitives. Cet outil est réservé aux professionnels formés et certifiés.</p></div>`}
+function viewFounder(){
+  return `<h2>La fondatrice</h2>${pageVisualHero("founder")}
+  <section class="founderGrid">
+    <aside class="founderIdentity">
+      <div>
+        <img class="founderPhoto" src="assets/fondatrice-chloe.jpg" alt="Chloé Schmidt-Dhonneur">
+        <h3>Chloé Schmidt-Dhonneur</h3>
+        <p>Docteure en sciences de l’éducation · Fondatrice de Pose ta brique®</p>
+      </div>
+      <div class="founderQuote">“Structurer l’observation pour rendre les progrès plus lisibles, sans jamais réduire la personne à un score.”</div>
+    </aside>
+    <article class="card founderText">
+      <p>Chloé Schmidt-Dhonneur a consacré sa thèse au développement de la LEGO® Thérapie en francophonie, avec une attention portée à son adaptation auprès de tous les publics présentant un trouble du neurodéveloppement, sans limite d’âge.</p>
+      <p>Son travail s’inscrit dans une approche élargie de la LEGO® Thérapie, ouverte à d’autres troubles et pathologies lorsque cette médiation peut soutenir les compétences sociales, langagières, cognitives, exécutives et relationnelles.</p>
+      <p>À travers Pose ta brique®, elle développe des outils, formations et supports d’évaluation destinés aux professionnels souhaitant structurer leurs séances, suivre l’évolution des personnes accompagnées et rendre les progrès plus lisibles.</p>
+      <p>Cette application a été conçue pour faciliter le recueil d’observations, la comparaison des évaluations successives et la production de comptes rendus clairs, tout en laissant au professionnel la responsabilité de l’analyse clinique.</p>
+    </article>
+  </section>
+  <section class="founderFacts noPrint">
+    <div class="founderFact"><b>Recherche</b><span>Un travail universitaire dédié au développement de la LEGO® Thérapie en francophonie.</span></div>
+    <div class="founderFact"><b>Transmission</b><span>Des supports conçus pour aider les professionnels à observer, comparer et ajuster leurs accompagnements.</span></div>
+    <div class="founderFact"><b>Ouverture clinique</b><span>Une approche pensée pour différents publics TND et adaptable à d’autres besoins d’accompagnement.</span></div>
+  </section>`;
+}
 function situationChecklist(){
   if(!state.patient.situationItems) state.patient.situationItems = [];
   const groups = [
@@ -2110,7 +2184,7 @@ function viewInfo(){
   if(!p.situationItems) p.situationItems=[];
   const groupFields=state.mode==="groupe"?`<div><label>Nom du groupe<span class="hint">Ex. : groupe du mardi à 18h, groupe 7–10 ans, groupe habiletés sociales.</span></label><input value="${p.groupName}" oninput="state.patient.groupName=this.value"></div><div><label>Objectif du groupe</label><input value="${p.groupGoal}" oninput="state.patient.groupGoal=this.value"></div>`:"";
   const countrySelect = `<select onchange="state.patient.evaluatorCountry=this.value">${EVALUATOR_COUNTRIES.map(c=>`<option value="${c}" ${(p.evaluatorCountry||'France')===c?'selected':''}>${c}</option>`).join("")}</select>`;
-  return `<h2>Dossier patient / groupe</h2>${pageIntro("Informations de suivi","Renseigne les informations utiles au suivi clinique, aux réévaluations et aux exports. Les données restent stockées localement dans le navigateur.","i")}
+  return `<h2>Dossier patient / groupe</h2>${pageVisualHero("info")}${pageIntro("Informations de suivi","Renseigne les informations utiles au suivi clinique, aux réévaluations et aux exports. Les données restent stockées localement dans le navigateur.","i")}
   <div style="border:1px solid var(--line);border-radius:16px;padding:16px 18px 18px;background:#fff;margin-bottom:16px;box-shadow:var(--shadow)">
     <div style="font-size:12px;font-weight:900;color:#0f8a47;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px">👤 Évaluateur</div>
     <div class="form" style="margin:0">
@@ -2147,8 +2221,8 @@ function viewEval(){const e=activeE(),sc=scoreEval(e),d=domains()[state.activeDo
   <div class="quickAction" onclick="nav('export')" style="cursor:pointer"><span class="quickIcon">↓</span><div>Exporter PDF<br><small>Famille / Pro / Synthétique</small></div></div>
 </div>
 ${domainTabs()}${evalCotationToolbar(ds,d)}<div class="card"><h3>${d.name}</h3><div class="scorebar"><span style="width:${ds.pct}%"></span></div><p><b>${ds.score}/${ds.max}</b> · ${ds.pct}% · ${level(ds.pct)} · NC : ${ds.nc}</p></div>${warning}`+evalVisibleItems(d).map(it=>{if(it.section)return`<div class="sectionTitle">${it.code}</div>`; const r=getRating(state.activeDomain,it.code); return `<div class="item" data-eval-item="${state.activeDomain}::${it.code}"><div class="itemTop"><div class="itemText"><span class="code">${it.code}</span>${it.text}</div><div class="rating">${[1,2,3,4,5,6].map(n=>`<button class="rate ${r===n?'active':''}" onclick="setRating(${state.activeDomain},'${it.code}',${n})">${n}</button>`).join("")}<button class="rate nc ${r==='NC'?'active':''}" onclick="setRating(${state.activeDomain},'${it.code}','NC')">NC</button></div></div><div class="metaRow"><select class="helpSelect" onchange="setHelp(${state.activeDomain},'${it.code}',this.value)">${helpOptions.map(h=>`<option ${e.helps[key(state.activeDomain,it.code)]===h?'selected':''}>${h}</option>`).join("")}</select><input class="commentInput" placeholder="Commentaire optionnel" value="${e.comments[key(state.activeDomain,it.code)]||''}" oninput="setComment(${state.activeDomain},'${it.code}',this.value)"></div></div>`}).join("")+headerActions()}
-function viewGoals(){const th=topAndLow(activeE()), sugg=suggestionsByDomain(activeE()); if(!th.low.length)return`<h2>Objectifs de séance</h2>${pageIntro("Aide à la priorisation", "L’outil propose une lecture clinique et des objectifs SMART à partir des domaines renseignés. L’évaluateur garde toujours la main sur le choix final des objectifs.", "◎")}${clinicalProfileV27()}${smartGoalsV27()}${smartClinicalProfile()}${smartObjectives()}${evalTabs()}<div class="notice ok">Aucune cotation numérique pour l’instant. Renseigne au moins un item pour générer une proposition.</div>${headerActions()}`; return `<h2>Objectifs de séance — Évaluation ${state.activeEval+1}</h2>${evalTabs()}<div class="notice">Sélectionner au maximum <b>3 objectifs de travail</b> au départ afin de garder une progression réaliste et observable.</div><div class="cards"><div class="card"><h3>Scores les plus faibles</h3><ul>${th.low.map(x=>`<li><b>${x.score}/6</b> — ${x.domain} : ${x.item}</li>`).join("")}</ul></div><div class="card"><h3>Compétences bien installées</h3><ul>${th.high.map(x=>`<li><b>${x.score}/6</b> — ${x.domain} : ${x.item}</li>`).join("")}</ul></div><div class="card"><h3>Conseil d’utilisation</h3><p>Choisir 1 objectif prioritaire, 1 objectif secondaire et 1 compétence d’appui pour soutenir l’engagement en séance.</p></div></div><div class="card"><h3>Propositions par domaine</h3><table class="table"><tbody>${sugg.map(s=>`<tr><th>${s.domain}</th><td>${s.text}</td></tr>`).join("")}</tbody></table></div>${headerActions()}`}
-function viewSummary(){const rows=domains().map((d,di)=>{let cells=state.evals.map(e=>scoreEval(e).domains[di].pct);let used=cells.filter(v=>v>0);let evo=used.length>=2?used[used.length-1]-used[0]:0;return`<tr><td>${d.name}</td>${cells.map(v=>`<td>${v||"—"}%</td>`).join("")}<td><b>${evo>0?"+":""}${evo}</b></td></tr>`}).join(""); return `<h2>Évolution du dossier</h2>${pageIntro("Progression longitudinale", "Compare les évaluations successives sans interpréter les évaluations non réalisées comme une régression. Les courbes s’arrêtent aux données réellement renseignées.", "↗")}${evalTabs()}${clinicalProfileV27()}${evolutionLineChart()}${heatmapView()}<table class="table"><thead><tr><th>Domaine</th>${state.evals.map((e,i)=>`<th>Éval. ${i+1}<br><small>${e.date||"—"}</small></th>`).join("")}<th>Évolution</th></tr></thead><tbody>${rows}</tbody></table>${headerActions()}`}
+function viewGoals(){const th=topAndLow(activeE()), sugg=suggestionsByDomain(activeE()); if(!th.low.length)return`<h2>Objectifs de séance</h2>${pageVisualHero("goals")}${pageIntro("Aide à la priorisation", "L’outil propose une lecture clinique et des objectifs SMART à partir des domaines renseignés. L’évaluateur garde toujours la main sur le choix final des objectifs.", "◎")}${clinicalProfileV27()}${smartGoalsV27()}${smartClinicalProfile()}${smartObjectives()}${evalTabs()}<div class="notice ok">Aucune cotation numérique pour l’instant. Renseigne au moins un item pour générer une proposition.</div>${headerActions()}`; return `<h2>Objectifs de séance — Évaluation ${state.activeEval+1}</h2>${pageVisualHero("goals")}${evalTabs()}<div class="notice">Sélectionner au maximum <b>3 objectifs de travail</b> au départ afin de garder une progression réaliste et observable.</div><div class="cards"><div class="card"><h3>Scores les plus faibles</h3><ul>${th.low.map(x=>`<li><b>${x.score}/6</b> — ${x.domain} : ${x.item}</li>`).join("")}</ul></div><div class="card"><h3>Compétences bien installées</h3><ul>${th.high.map(x=>`<li><b>${x.score}/6</b> — ${x.domain} : ${x.item}</li>`).join("")}</ul></div><div class="card"><h3>Conseil d’utilisation</h3><p>Choisir 1 objectif prioritaire, 1 objectif secondaire et 1 compétence d’appui pour soutenir l’engagement en séance.</p></div></div><div class="card"><h3>Propositions par domaine</h3><table class="table"><tbody>${sugg.map(s=>`<tr><th>${s.domain}</th><td>${s.text}</td></tr>`).join("")}</tbody></table></div>${headerActions()}`}
+function viewSummary(){const rows=domains().map((d,di)=>{let cells=state.evals.map(e=>scoreEval(e).domains[di].pct);let used=cells.filter(v=>v>0);let evo=used.length>=2?used[used.length-1]-used[0]:0;return`<tr><td>${d.name}</td>${cells.map(v=>`<td>${v||"—"}%</td>`).join("")}<td><b>${evo>0?"+":""}${evo}</b></td></tr>`}).join(""); return `<h2>Évolution du dossier</h2>${pageVisualHero("summary")}${pageIntro("Progression longitudinale", "Compare les évaluations successives sans interpréter les évaluations non réalisées comme une régression. Les courbes s’arrêtent aux données réellement renseignées.", "↗")}${evalTabs()}${clinicalProfileV27()}${evolutionLineChart()}${heatmapView()}<table class="table"><thead><tr><th>Domaine</th>${state.evals.map((e,i)=>`<th>Éval. ${i+1}<br><small>${e.date||"—"}</small></th>`).join("")}<th>Évolution</th></tr></thead><tbody>${rows}</tbody></table>${headerActions()}`}
 function viewSaves(){const saves=JSON.parse(localStorage.getItem("ptb_patient_files")||"[]"); if(!saves.length)return`<h2>Mes dossiers</h2>${pageIntro("Sauvegardes locales", "Retrouve les dossiers enregistrés sur cet appareil et ce navigateur. Pense à exporter les PDF pour conserver une trace externe si nécessaire.", "▣")}<div class="notice">Aucune sauvegarde locale pour l’instant.</div>`; return `<h2>Mes dossiers</h2><div class="saveCard"><table class="table"><thead><tr><th>Nom</th><th>Date de naissance</th><th>Âge</th><th>Mode</th><th>Dernière sauvegarde</th><th>Évaluations</th><th></th></tr></thead><tbody>`+saves.map(s=>`<tr><td>${s.state.patient.name||"Sans nom"}</td><td>${s.state.patient.birth||"—"}</td><td>${calculateAge(s.state.patient.birth)||s.state.patient.age||"—"}</td><td>${s.state.mode||"—"}</td><td>${new Date(s.savedAt).toLocaleString("fr-FR")}</td><td>${s.state.evals.filter(e=>e.date||Object.keys(e.ratings||{}).length).length}/6</td><td><button class="secondary" onclick="loadSave('${s.id}')">Rouvrir</button></td></tr>`).join("")+`</tbody></table></div>`}
 function detailRows(e){let rows=""; domains().forEach((d,di)=>{rows+=`<tr><th colspan="5">${d.name}</th></tr>`; cotableItems(d).forEach(it=>{const r=e.ratings[key(di,it.code)]; if(r===undefined&&state.exportOptions.type==="synthetique")return; const h=e.helps[key(di,it.code)]||"", c=e.comments[key(di,it.code)]||""; rows+=`<tr><td>${it.code}</td><td>${it.text}</td><td>${r===undefined?"—":r}</td>${state.exportOptions.showHelp?`<td>${h||"—"}</td>`:""}${state.exportOptions.showComments?`<td>${c||"—"}</td>`:""}</tr>`})}); return rows}
 
@@ -2394,7 +2468,7 @@ function viewExport(){
  return `
  <div class="noPrint">
    <h2>Export PDF</h2>
-   ${pageIntro("Export personnalisé","Configure ton export avant d\'imprimer : choisis le type de document, le niveau de détail, les évaluations à inclure. Le PDF est généré directement par le navigateur.","↓")}
+   ${pageVisualHero("export")}${pageIntro("Export personnalisé","Configure ton export avant d\'imprimer : choisis le type de document, le niveau de détail, les évaluations à inclure. Le PDF est généré directement par le navigateur.","↓")}
    <div style="background:#fff8ec;border:1.5px solid #f9c74f;border-radius:14px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:12px">
      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
      <span style="font-size:13px;color:#92400e;font-weight:700">Configure les options ci-dessous, puis clique sur <b>"Imprimer / Enregistrer en PDF"</b> en bas de page.</span>
@@ -2445,7 +2519,7 @@ function render(options){
     );
   const shouldPreserveScroll = opts.preserveScroll || keepPositionForControl;
   document.querySelectorAll(".navBtn").forEach(b=>b.classList.toggle("active",b.dataset.view===state.view));
-  mainEl.innerHTML={home:viewHome,info:viewInfo,eval:viewEval,goals:viewGoals,summary:viewSummary,saves:viewSaves,export:viewExport}[state.view]();
+  mainEl.innerHTML={home:viewHome,info:viewInfo,eval:viewEval,goals:viewGoals,summary:viewSummary,saves:viewSaves,founder:viewFounder,export:viewExport}[state.view]();
   if(typeof updatePremiumIdentity==="function") updatePremiumIdentity();
   if(shouldPreserveScroll){
     try{mainEl.scrollTop=previousMainScroll;}catch(e){}
@@ -3487,7 +3561,7 @@ function ptbPublicToast(message){
 
     // Créer le bloc d'actions inline
     const actions = document.createElement("div");
-    actions.className = "noPrint";
+    actions.className = "headerActionsWrap noPrint";
     actions.style.cssText = "display:flex;align-items:center;gap:8px;justify-content:flex-end;flex-wrap:wrap";
     actions.innerHTML = `
       <div class="saveChip" style="height:44px;padding:6px 12px">
@@ -3526,7 +3600,7 @@ function ptbPublicToast(message){
       if(!btn) return;
       if(typeof window.ptbSetLanguage === "function") window.ptbSetLanguage(btn.dataset.lang);
     });
-    header.appendChild(langSwitch);
+    actions.appendChild(langSwitch);
 
     // Sync status text
     const orig = document.getElementById("saveStatusText");
