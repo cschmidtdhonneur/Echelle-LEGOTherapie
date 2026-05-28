@@ -1515,6 +1515,89 @@ body{top:0!important}
 /* V54 ajustements confort */
 .chartGrid{grid-template-columns:minmax(520px,1.15fr) minmax(420px,.85fr)!important}.chartGrid .chartWrap:first-child{min-height:520px!important}.chartGrid .chartWrap:first-child .radarBox svg{width:100%!important;max-height:440px!important}.homeFounderTeaser{display:grid;grid-template-columns:.75fr 1.25fr;gap:28px;align-items:center;margin:42px 0;padding:24px;border:1px solid var(--studio-line);border-radius:28px;background:#fffdf8;box-shadow:var(--studio-shadow)}.homeFounderTeaser img{width:100%;height:280px;object-fit:cover;object-position:center 36%;border-radius:22px;display:block}.homeFounderTeaser h3{font-size:32px;line-height:1.12;margin:0 0 12px;color:var(--studio-ink);letter-spacing:-.03em}.homeFounderTeaser p{margin:0 0 18px;color:#52645d;line-height:1.7;font-size:16px}.ptbTranslateOverlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(255,253,248,.78);backdrop-filter:blur(5px);z-index:99999;color:#0b4a52;font-weight:950;font-size:18px}.ptb-translating .ptbTranslateOverlay{display:flex}.goog-te-gadget,.goog-te-combo{font-size:0!important}html,body{top:0!important}iframe.goog-te-banner-frame,.goog-te-banner-frame,.VIpgJd-ZVi9od-ORHb-OEVmcd,.VIpgJd-ZVi9od-aZ2wEe-wOHMyf,#goog-gt-tt,.goog-te-balloon-frame{display:none!important;visibility:hidden!important;height:0!important;width:0!important;overflow:hidden!important}@media(max-width:1100px){.chartGrid{grid-template-columns:1fr!important}.homeFounderTeaser{grid-template-columns:1fr}.homeFounderTeaser img{height:340px}}@media(max-width:620px){.homeFounderTeaser img{height:260px}}
 
+/* V55 tablette + mobile */
+.mobileMenuBtn,.mobileMenuBackdrop{display:none}
+@media(min-width:721px) and (max-width:1180px){
+  .header{padding:18px 22px!important;grid-template-columns:64px 1fr!important}
+  .headerActionsWrap{grid-column:1/-1!important;justify-self:stretch!important;justify-content:flex-start!important}
+  .app{padding:18px 20px 28px!important}
+  .grid{grid-template-columns:1fr!important;gap:18px!important;max-width:980px!important}
+  .side{position:static!important;min-height:0!important;border-radius:22px!important;padding:12px!important;display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important}
+  .side .navBtn{height:52px!important;margin:0!important;justify-content:flex-start!important;padding:10px 12px!important}
+  .side .navIcon{width:32px!important;height:32px!important;flex:0 0 32px!important}
+  .sidebarPatientCard,.changeFileBtn{grid-column:1/-1!important;margin-top:6px!important}
+  .summaryGrid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  .cards,.smartGrid,.exportOptions{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .form{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .diagGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .heatmap,.quickActions{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .homeHeroStudio,.homeSplitStudio,.homeFollowStudio,.founderGrid,.homeFounderTeaser{grid-template-columns:1fr!important}
+  .homeHeroMedia{min-height:390px!important}
+  .pageVisualHero img{height:220px!important}
+  .itemTop{align-items:flex-start!important;gap:18px!important}
+  .rating{min-width:330px!important}
+}
+@media(max-width:720px){
+  body{overflow-x:hidden}
+  .mobileMenuBtn{display:inline-flex!important;align-items:center;gap:9px;position:fixed;left:14px;bottom:14px;z-index:10000;border:1px solid #d9eadf;border-radius:999px;background:#0b4a52;color:#fffdf8;padding:12px 15px;font-weight:950;box-shadow:0 16px 38px rgba(16,24,40,.22)}
+  .mobileMenuBtn svg{width:22px;height:22px;stroke:currentColor;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .mobileMenuBackdrop{display:block;position:fixed;inset:0;background:rgba(11,26,31,.34);backdrop-filter:blur(2px);z-index:9990;opacity:0;visibility:hidden;transition:.18s ease}
+  body.mobile-menu-open .mobileMenuBackdrop{opacity:1;visibility:visible}
+  .header{padding:16px 14px 12px!important;display:grid!important;grid-template-columns:58px 1fr!important;gap:12px!important;border-radius:0!important}
+  .logoBox{width:58px!important;height:58px!important}
+  .hero h1{font-size:25px!important;line-height:1.05!important}
+  .hero .brand{font-size:12px!important}
+  .headerActionsWrap{grid-column:1/-1!important;justify-content:flex-start!important;gap:7px!important}
+  .headerActionsWrap .saveChip,.headerActionsWrap .manualSaveBtn,.headerActionsWrap .evaluatorChip{height:40px!important;padding:5px 9px!important;font-size:13px!important}
+  .headerActionsWrap .manualSaveBtn span,.headerActionsWrap .chipIcon,.headerActionsWrap .chipAvatar{width:30px!important;height:30px!important}
+  .headerActionsWrap .ptbLangSwitch{width:100%!important;margin-top:4px!important}
+  .ptbLangSwitch button{min-height:36px!important}
+  .app{padding:14px 12px 82px!important}
+  .grid{grid-template-columns:1fr!important;gap:0!important}
+  .side{position:fixed!important;left:12px!important;right:12px!important;bottom:76px!important;top:auto!important;max-height:min(74vh,620px)!important;overflow:auto!important;z-index:9999!important;display:flex!important;flex-direction:column!important;gap:7px!important;padding:14px!important;border-radius:24px!important;transform:translateY(calc(100% + 110px))!important;transition:transform .22s ease!important;box-shadow:0 28px 80px rgba(16,24,40,.28)!important}
+  body.mobile-menu-open .side{transform:translateY(0)!important}
+  .side .navBtn{height:52px!important;margin:0!important;font-size:16px!important}
+  .sidebarPatientCard{margin-top:8px!important}
+  .changeFileBtn{min-height:50px!important}
+  .main{min-height:0!important}
+  .main h2{font-size:28px!important;line-height:1.08!important}
+  .homeHeroStudio{grid-template-columns:1fr!important;border-radius:24px!important;min-height:0!important}
+  .homeHeroCopy{padding:30px 22px 24px!important}
+  .homeHeroCopy h2{font-size:39px!important}
+  .homeHeroMedia{min-height:300px!important}
+  .homeMetricStack{position:static!important;transform:none!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;padding:12px!important}
+  .homeMetric{width:auto!important;padding:12px!important}
+  .homeSplitStudio,.homeFollowStudio,.homeFounderTeaser,.founderGrid{grid-template-columns:1fr!important;gap:22px!important;margin:28px 0!important}
+  .homeImageBlock,.homeDeviceImage{min-height:250px!important}
+  .homeToolCards,.homeMiniGrid,.homeHeroFeatures,.homeCheckList,.founderFacts{grid-template-columns:1fr!important}
+  .pageVisualHero{border-radius:22px!important;min-height:170px!important}
+  .pageVisualHero img{height:190px!important}
+  .pageVisualText{left:20px!important;right:20px!important;bottom:20px!important}
+  .pageVisualText h3{font-size:23px!important}
+  .pageVisualText p{display:none!important}
+  .form,.cards,.summaryGrid,.exportOptions,.diagGrid,.chartGrid,.heatmap,.smartGrid,.quickActions{grid-template-columns:1fr!important}
+  .summaryTile{min-height:104px!important}
+  .chartGrid .chartWrap:first-child{min-height:360px!important}
+  .chartGrid .chartWrap:first-child .radarBox svg{max-height:300px!important}
+  .evalTabs,.domainTabs{overflow-x:auto!important;flex-wrap:nowrap!important;scroll-snap-type:x proximity!important;-webkit-overflow-scrolling:touch}
+  .evalTab,.domainTab{flex:0 0 auto!important;scroll-snap-align:start}
+  .domainTab{min-height:44px!important}
+  .evalCotationToolbar{position:static!important}
+  .item{padding:14px!important;border-radius:18px!important}
+  .itemTop{display:block!important}
+  .itemQuestionLine{align-items:flex-start!important}
+  .itemText{font-size:16px!important;line-height:1.45!important}
+  .itemGuidePanel{position:fixed!important;left:14px!important;right:14px!important;top:auto!important;bottom:86px!important;transform:none!important;width:auto!important;max-height:52vh!important;overflow:auto!important;z-index:10001!important}
+  .itemGuidePanel:before{display:none!important}
+  .rating{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important;margin-top:14px!important;min-width:0!important;width:100%!important}
+  .rate{width:100%!important;min-width:0!important;height:48px!important;border-radius:14px!important;font-size:17px!important}
+  .metaRow{grid-template-columns:1fr!important;gap:9px!important}
+  .helpSelect,.commentInput{min-height:46px!important;font-size:16px!important}
+  .table{display:block!important;overflow-x:auto!important;white-space:nowrap!important}
+  .actions{display:grid!important;grid-template-columns:1fr!important}
+  .actions .primary,.actions .secondary{width:100%!important}
+}
+
 </style>
 
 </head>
@@ -1547,6 +1630,7 @@ L’outil permet de comparer jusqu’à 6 évaluations successives, d’identifi
 </div>
 </div>
 </p></section></div>
+<button class="mobileMenuBtn noPrint" type="button" onclick="toggleMobileMenu()" aria-label="Ouvrir le menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg> Menu</button><div class="mobileMenuBackdrop noPrint" onclick="closeMobileMenu()"></div>
 <div class="app"><div class="grid"><aside class="side noPrint">
 <button class="navBtn active" data-view="home"><span class="navIcon"><svg viewBox="0 0 24 24"><path d="M4 11.5 12 5l8 6.5V20a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1z"/></svg></span> Accueil</button>
 <button class="navBtn" data-view="info"><span class="navIcon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7.5h.01"/></svg></span> Dossier patient</button>
@@ -1907,7 +1991,10 @@ function level(pct){ return levelObj(pct).label; }
 function saveLocal(){const patientKey=(state.patient.name||"sans_nom").toLowerCase().replace(/\W+/g,"_")+"_"+(state.patient.birth||"date"); const id="ptb_dossier_"+patientKey+"_"+Date.now(); const saves=JSON.parse(localStorage.getItem("ptb_patient_files")||"[]"); saves.unshift({id,patientKey,savedAt:new Date().toISOString(),state:JSON.parse(JSON.stringify(state))}); localStorage.setItem("ptb_patient_files",JSON.stringify(saves.slice(0,100))); alert("Dossier patient sauvegardé dans Mes dossiers.")}
 function loadSave(id){const saves=JSON.parse(localStorage.getItem("ptb_patient_files")||"[]"); const s=saves.find(x=>x.id===id); if(s){state=s.state;state.view="info";render()}}
 function newFromCurrent(){const next=state.evals.findIndex((e,i)=>i>0&&!e.date&&Object.keys(e.ratings).length===0); if(next<0)return alert("Les 6 évaluations sont déjà utilisées."); state.activeEval=next; state.evals[next]={date:new Date().toISOString().slice(0,10),ratings:{},helps:{},comments:{}}; state.view="eval"; render()}
-function nav(v){state.view=v;render()} document.querySelectorAll(".navBtn").forEach(b=>b.onclick=()=>nav(b.dataset.view));
+function toggleMobileMenu(){document.body.classList.toggle("mobile-menu-open")}
+function closeMobileMenu(){document.body.classList.remove("mobile-menu-open")}
+function nav(v){state.view=v;closeMobileMenu();render()} document.querySelectorAll(".navBtn").forEach(b=>b.onclick=()=>nav(b.dataset.view));
+document.addEventListener("keydown", e => { if(e.key === "Escape") closeMobileMenu(); });
 function headerActions(){return `<div class="actions noPrint"><button class="primary" onclick="saveLocal()">Enregistrer maintenant</button><button class="secondary" onclick="newFromCurrent()">Nouvelle évaluation vierge</button><button class="secondary" onclick="state.view='export'; render()">Préparer l’export</button></div>`}
 function evalTabs(){return `<div class="evalTabs noPrint">`+state.evals.map((e,i)=>`<button class="evalTab ${i===state.activeEval?'active':''}" onclick="state.activeEval=${i};if(!state.evals[${i}].date)state.evals[${i}].date=new Date().toISOString().slice(0,10);render()">Évaluation ${i+1}<small>${e.date||"–"}</small></button>`).join("")+`</div>`}
 function sessionsSincePreviousCard(){
