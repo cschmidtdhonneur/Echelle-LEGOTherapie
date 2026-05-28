@@ -2063,11 +2063,11 @@ function smartGoalsV27(){
 
 function pageVisualHero(kind){
   const data = {
-    info:{img:"assets/page-dossier.jpg", eyebrow:"Dossier clinique", title:"Rassembler les informations utiles.", text:"Un espace clair pour préparer le suivi, identifier le contexte et garder une trace structurée."},
-    goals:{img:"assets/page-objectifs.jpg", eyebrow:"Objectifs de séance", title:"Transformer l’observation en pistes de travail.", text:"Des objectifs lisibles, priorisés et reliés aux compétences observées."},
-    summary:{img:"assets/page-evolution.jpg", eyebrow:"Évolution", title:"Visualiser les progrès dans le temps.", text:"Des courbes et comparaisons pour suivre les changements d’une évaluation à l’autre."},
-    founder:{img:"assets/fondatrice-chloe.jpg", eyebrow:"La fondatrice", title:"Une approche clinique, structurée et profondément humaine.", text:"Un outil pensé à partir d’un travail de terrain, de recherche et de transmission."},
-    export:{img:"assets/page-evolution.jpg", eyebrow:"Compte rendu", title:"Partager une synthèse professionnelle.", text:"Préparez les exports PDF et la transmission des données de manière simple et lisible."}
+    info:{img:"page-dossier.jpg", eyebrow:"Dossier clinique", title:"Rassembler les informations utiles.", text:"Un espace clair pour préparer le suivi, identifier le contexte et garder une trace structurée."},
+    goals:{img:"page-objectifs.jpg", eyebrow:"Objectifs de séance", title:"Transformer l’observation en pistes de travail.", text:"Des objectifs lisibles, priorisés et reliés aux compétences observées."},
+    summary:{img:"page-evolution.jpg", eyebrow:"Évolution", title:"Visualiser les progrès dans le temps.", text:"Des courbes et comparaisons pour suivre les changements d’une évaluation à l’autre."},
+    founder:{img:"fondatrice-chloe.jpg", eyebrow:"La fondatrice", title:"Une approche clinique, structurée et profondément humaine.", text:"Un outil pensé à partir d’un travail de terrain, de recherche et de transmission."},
+    export:{img:"page-evolution.jpg", eyebrow:"Compte rendu", title:"Partager une synthèse professionnelle.", text:"Préparez les exports PDF et la transmission des données de manière simple et lisible."}
   };
   const item = data[kind];
   if(!item) return "";
@@ -2108,15 +2108,15 @@ function viewHome(){return `<section class="homeHeroStudio">
     <div class="homeHeroActions"><button class="primary" onclick="nav('info')">Commencer une évaluation</button><button class="secondary" onclick="nav('saves')">Rouvrir un dossier</button></div>
     <div class="homeHeroFeatures"><span><i>✓</i><b>Avant / après<small>Comparaison des évaluations</small></b></span><span><i>↗</i><b>Évolution<small>Suivi jusqu’à 6 temps</small></b></span><span><i>▣</i><b>Données locales<small>Exports et transmission</small></b></span></div>
   </div>
-  <div class="homeHeroMedia"><img src="assets/legotherapie-seance.jpg" alt="Séance de LEGO Thérapie en cabinet"><div class="homeMetricStack"><div class="homeMetric"><small>Évaluations</small><b>6</b></div><div class="homeMetric"><small>Domaines</small><b>${domains().length}</b></div><div class="homeMetric"><small>Exports</small><b>PDF</b></div></div></div>
+  <div class="homeHeroMedia"><img src="legotherapie-seance.jpg" alt="Séance de LEGO Thérapie en cabinet"><div class="homeMetricStack"><div class="homeMetric"><small>Évaluations</small><b>6</b></div><div class="homeMetric"><small>Domaines</small><b>${domains().length}</b></div><div class="homeMetric"><small>Exports</small><b>PDF</b></div></div></div>
 </section>
 <section class="homeSplitStudio">
-  <div class="homeImageBlock"><img src="assets/legotherapie-cabinet.jpg" alt="Cabinet de thérapie structuré et chaleureux"></div>
+  <div class="homeImageBlock"><img src="legotherapie-cabinet.jpg" alt="Cabinet de thérapie structuré et chaleureux"></div>
   <div class="homeStudioText"><div class="eyebrow">Approche métier</div><h3>Une interface pensée pour structurer chaque accompagnement.</h3><p>Centralisez les informations du dossier, cotez les compétences, repérez les appuis et préparez des objectifs de séance à partir d’observations cliniques organisées.</p><div class="homeMiniGrid"><div><b>Suivi longitudinal</b>Comparez les évaluations dans le temps.</div><div><b>Lecture clinique</b>Repérez les domaines d’appui et les priorités.</div><div><b>Comptes rendus</b>Générez des exports professionnels ou famille.</div></div></div>
 </section>
 <div class="homeSectionTitle"><div class="eyebrow" style="justify-content:center">Fonctionnalités disponibles</div><h3>Les outils essentiels du suivi LEGO® Thérapie.</h3><p>Une seule interface pour renseigner, comparer, transmettre et restituer les évaluations.</p></div>
 <div class="homeToolCards noPrint"><div class="homeToolCard" onclick="nav('info')"><span class="quickIcon">i</span><h3>Dossier patient</h3><p>Renseignez les informations utiles au suivi et au compte rendu.</p><button class="secondary">Compléter</button></div><div class="homeToolCard" onclick="nav('eval')"><span class="quickIcon">✓</span><h3>Évaluations complètes</h3><p>Cotez les compétences sociales, langagières, cognitives et de construction.</p><button class="secondary">Évaluer</button></div><div class="homeToolCard" onclick="nav('export')"><span class="quickIcon">↓</span><h3>Compte rendu</h3><p>Exportez un PDF ou transmettez les données de l’étude.</p><button class="secondary">Exporter</button></div></div>
-<section class="homeFollowStudio"><div class="homeStudioText"><div class="eyebrow">Suivi clinique</div><h3>Suivre l’évolution au-delà d’une séance.</h3><p>L’outil conserve une lecture claire des évaluations successives pour objectiver les progrès, préparer les séances suivantes et partager les résultats.</p><div class="homeCheckList"><span>Historique des évaluations</span><span>Comparaisons avant/après</span><span>Objectifs thérapeutiques</span><span>Exports PDF enrichis</span></div></div><div class="homeDeviceImage"><img src="assets/legotherapie-dashboard.jpg" alt="Tableau de bord d’évaluation sur ordinateur"></div></section>
+<section class="homeFollowStudio"><div class="homeStudioText"><div class="eyebrow">Suivi clinique</div><h3>Suivre l’évolution au-delà d’une séance.</h3><p>L’outil conserve une lecture claire des évaluations successives pour objectiver les progrès, préparer les séances suivantes et partager les résultats.</p><div class="homeCheckList"><span>Historique des évaluations</span><span>Comparaisons avant/après</span><span>Objectifs thérapeutiques</span><span>Exports PDF enrichis</span></div></div><div class="homeDeviceImage"><img src="legotherapie-dashboard.jpg" alt="Tableau de bord d’évaluation sur ordinateur"></div></section>
 <div class="card homeBareme"><h3>Barème des compétences</h3><table class="table"><tbody>${bareme.map(b=>`<tr><th>${b[0]}</th><td>${b[1]}</td></tr>`).join("")}</tbody></table></div>
 <div class="legal"><p><b>Outil développé par Chloé Schmidt-Dhonneur, docteure en sciences de l’éducation.</b></p><p>Il est conçu dans le cadre des accompagnements en LEGO® Thérapie et des programmes structurés de développement des compétences sociales, langagières et cognitives. Cet outil est réservé aux professionnels formés et certifiés.</p></div>`}
 function viewFounder(){
@@ -2124,7 +2124,7 @@ function viewFounder(){
   <section class="founderGrid">
     <aside class="founderIdentity">
       <div>
-        <img class="founderPhoto" src="assets/fondatrice-chloe.jpg" alt="Chloé Schmidt-Dhonneur">
+        <img class="founderPhoto" src="fondatrice-chloe.jpg" alt="Chloé Schmidt-Dhonneur">
         <h3>Chloé Schmidt-Dhonneur</h3>
         <p>Docteure en sciences de l’éducation · Fondatrice de Pose ta brique®</p>
       </div>
