@@ -1244,7 +1244,7 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 .v47PrintReport{display:none}
 
 @media print{
-  @page{size:A4 portrait;margin:11mm}
+  @page{size:A4 portrait;margin:8mm}
   body{background:#fff!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   body.v47-printing *{visibility:hidden!important}
   body.v47-printing .v47PrintReport,
@@ -1257,54 +1257,57 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
     color:#102033!important;
     font-family:Inter, Arial, sans-serif!important;
   }
-  .v47Page{page-break-after:auto;break-after:auto;margin-bottom:8mm}
-  .v47Page + .v47Page{border-top:1px solid #edf2ef;padding-top:7mm}
+  .v47Page{page-break-after:auto;break-after:auto;margin-bottom:5mm}
+  .v47Page + .v47Page{border-top:1px solid #edf2ef;padding-top:5mm}
   .v47Header{
     display:flex;align-items:center;justify-content:space-between;
-    border-bottom:3px solid #0b7a3b;padding-bottom:8mm;margin-bottom:7mm
+    border-bottom:2px solid #0b7a3b;padding-bottom:5mm;margin-bottom:5mm
   }
   .v47Brand{display:flex;align-items:center;gap:10px}
   .v47Logo{
     width:56px;height:auto;display:block
   }
   .v47Kicker{color:#0b7a3b;font-weight:900;font-size:9pt;margin-bottom:2mm}
-  .v47Title{font-size:22pt;font-weight:950;line-height:1.05;color:#0b1f4d;margin:0}
+  .v47Title{font-size:20pt;font-weight:950;line-height:1.05;color:#0b1f4d;margin:0}
   .v47Date{font-size:9pt;color:#596579;text-align:right;font-weight:700}
   .v47Intro{
     background:linear-gradient(135deg,#f1fbf5,#ffffff);border:1px solid #d7eadf;border-radius:14px;
-    padding:5mm;margin-bottom:6mm;font-size:10pt;line-height:1.45
+    padding:4mm;margin-bottom:4mm;font-size:9.2pt;line-height:1.35
   }
-  .v47Grid2{display:grid;grid-template-columns:1fr 1fr;gap:5mm;margin-bottom:6mm}
-  .v47Grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin-bottom:6mm}
+  .v47Grid2{display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-bottom:4mm}
+  .v47Grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:3mm;margin-bottom:4mm}
   .v47Box{
-    border:1px solid #dfe9e2;border-radius:12px;padding:4mm;background:#fff;break-inside:auto
+    border:1px solid #dfe9e2;border-radius:10px;padding:3.2mm;background:#fff;break-inside:auto
   }
   .v47Grid2,.v47Grid3,.v47GraphBox{break-inside:avoid}
   .v47Box h2,.v47Box h3{
-    margin:0 0 3mm 0;color:#0b7a3b;font-size:12pt;font-weight:950
+    margin:0 0 2mm 0;color:#0b7a3b;font-size:11pt;font-weight:950
   }
-  .v47InfoTable{width:100%;border-collapse:collapse;font-size:9.2pt}
-  .v47InfoTable th{text-align:left;color:#0b7a3b;font-size:8pt;text-transform:uppercase;padding:2mm 1mm;border-bottom:1px solid #edf2ef;width:38%}
-  .v47InfoTable td{padding:2mm 1mm;border-bottom:1px solid #edf2ef;font-weight:700}
-  .v47ScoreTable{width:100%;border-collapse:collapse;font-size:9pt}
-  .v47ScoreTable th{background:#eff8f2;color:#0b7a3b;text-align:left;padding:2.2mm;border-bottom:1px solid #dfe9e2}
-  .v47ScoreTable td{padding:2mm;border-bottom:1px solid #eef3ef;vertical-align:middle}
-  .v47Bar{height:6px;border-radius:999px;background:#eef3ef;overflow:hidden}
+  .v47InfoTable{width:100%;border-collapse:collapse;font-size:8.4pt}
+  .v47InfoTable th{text-align:left;color:#0b7a3b;font-size:7.2pt;text-transform:uppercase;padding:1.45mm .8mm;border-bottom:1px solid #edf2ef;width:34%}
+  .v47InfoTable td{padding:1.45mm .8mm;border-bottom:1px solid #edf2ef;font-weight:700}
+  .v47ScoreTable{width:100%;border-collapse:collapse;font-size:8pt}
+  .v47ScoreTable th{background:#eff8f2;color:#0b7a3b;text-align:left;padding:1.7mm;border-bottom:1px solid #dfe9e2}
+  .v47ScoreTable td{padding:1.45mm;border-bottom:1px solid #eef3ef;vertical-align:middle}
+  .v47Bar{height:5px;border-radius:999px;background:#eef3ef;overflow:hidden}
   .v47Fill{height:100%;border-radius:999px;background:#0b7a3b}
   .v47Badge{display:inline-block;border-radius:999px;padding:1.5mm 2.5mm;font-weight:900;font-size:8pt}
   .v47Badge.low{background:#fff2e8;color:#b94a00}
   .v47Badge.mid{background:#fff8dc;color:#8a6500}
   .v47Badge.good{background:#e9f8ef;color:#0b7a3b}
   .v47Badge.strong{background:#dff3e8;color:#065f35}
-  .v47List{margin:0;padding-left:5mm;font-size:9.2pt;line-height:1.45}
-  .v47Note{font-size:9.2pt;color:#465565;line-height:1.45;margin:0}
+  .v47List{margin:0;padding-left:4mm;font-size:8.2pt;line-height:1.35}
+  .v47Note{font-size:8.3pt;color:#465565;line-height:1.38;margin:0}
   .v47Footer{
-    position:static;border-top:1px solid #dfe9e2;margin-top:6mm;
-    padding-top:3mm;font-size:7.5pt;color:#687383;display:flex;justify-content:space-between
+    position:static;border-top:1px solid #dfe9e2;margin-top:4mm;
+    padding-top:2mm;font-size:7pt;color:#687383;display:flex;justify-content:space-between
   }
-  .v47Signature{height:22mm;border:1px dashed #cfdad2;border-radius:10px;margin-top:4mm;padding:3mm;font-size:8pt;color:#667085}
-  .v47RadarSvg{width:100%;height:auto;display:block;max-height:86mm}
-  .v47LineSvg{width:100%;height:auto;display:block;max-height:72mm}
+  .v47RadarSvg{width:100%;height:auto;display:block;max-height:96mm}
+  .v47LineSvg{width:100%;height:auto;display:block;max-height:58mm}
+  .v47MiniScore{font-size:21pt;font-weight:950;color:#0b7a3b;line-height:1}
+  .v47ClinicalGrid{display:grid;grid-template-columns:.9fr 1.1fr;gap:4mm;margin-bottom:4mm}
+  .v47DetailsTable{font-size:6.9pt}
+  .v47DetailsTable th,.v47DetailsTable td{padding:1mm!important}
 }
 </style>
 
@@ -2870,9 +2873,19 @@ if(typeof viewSaves === "function"){
   viewSaves = function(){
     const saves = JSON.parse(localStorage.getItem("ptb_patient_files") || "[]");
     if(!saves.length){
-      return `<h2>Mes dossiers</h2><div class="notice">Aucune sauvegarde locale pour l’instant. Dès que vous commencerez à remplir une évaluation, le dossier sera sauvegardé automatiquement ici.</div>`;
+      return `<h2>Mes dossiers</h2>${typeof pageIntro==="function" ? pageIntro("Sauvegardes locales", "Les dossiers sont enregistrés automatiquement sur cet appareil et ce navigateur. Vous pouvez aussi importer un dossier déjà téléchargé.", "▣") : ""}
+      <div class="exportTopActions noPrint" style="margin:0 0 18px">
+        <button class="primary" onclick="saveLocal()">Enregistrer maintenant</button>
+        <button class="secondary" onclick="ptbImportJSON()">Importer un dossier</button>
+      </div>
+      <div class="notice">Aucune sauvegarde locale pour l’instant. Dès que vous commencerez à remplir une évaluation, le dossier sera sauvegardé automatiquement ici.</div>`;
     }
-    return `<h2>Mes dossiers</h2>${typeof pageIntro==="function" ? pageIntro("Sauvegardes locales", "Les dossiers sont enregistrés automatiquement sur cet appareil et ce navigateur. Vous pouvez aussi cliquer sur “Enregistrer maintenant” pour forcer une sauvegarde.", "▣") : ""}
+    return `<h2>Mes dossiers</h2>${typeof pageIntro==="function" ? pageIntro("Sauvegardes locales", "Les dossiers sont enregistrés automatiquement sur cet appareil et ce navigateur. Pour sécuriser un suivi, vous pouvez aussi télécharger un dossier puis le réimporter sur un autre appareil.", "▣") : ""}
+    <div class="exportTopActions noPrint" style="margin:0 0 18px">
+      <button class="primary" onclick="saveLocal()">Enregistrer maintenant</button>
+      <button class="secondary" onclick="ptbExportJSON()">Télécharger le dossier ouvert</button>
+      <button class="secondary" onclick="ptbImportJSON()">Importer un dossier</button>
+    </div>
     <div class="saveCard"><table class="table">
       <thead><tr><th>Nom</th><th>Date de naissance</th><th>Âge</th><th>Mode</th><th>Dernière sauvegarde</th><th>Type</th><th></th></tr></thead>
       <tbody>
@@ -3684,8 +3697,8 @@ function ptbPublicToast(message){
   function printEvolutionLineChart(idxs){
     if(!idxs || idxs.length < 2) return "";
     const scores = idxs.map(i => scoreForEval(i).pct || 0);
-    const width = 760, height = 280;
-    const padL = 54, padR = 26, padT = 24, padB = 46;
+    const width = 760, height = 230;
+    const padL = 50, padR = 24, padT = 20, padB = 40;
     const innerW = width - padL - padR;
     const innerH = height - padT - padB;
     const xFor = pos => padL + (idxs.length === 1 ? innerW / 2 : (innerW * pos / (idxs.length - 1)));
@@ -3728,23 +3741,25 @@ function ptbPublicToast(message){
     const firstScore = idxs.length ? scoreForEval(idxs[0]).pct : 0;
     const lastScore = idxs.length ? scoreForEval(idxs[idxs.length-1]).pct : 0;
     const delta = idxs.length > 1 ? lastScore - firstScore : 0;
+    const lastIndex = idxs.length ? idxs[idxs.length-1] : (s.activeEval || 0);
+    const th = topLowForEval(lastIndex);
+    const low = (th.low || []).slice(0,3).map(x=>`${x.domain} : ${x.item} (${x.score}/6)`).join("<br>") || "Aucune priorité calculée.";
+    const high = (th.high || []).slice(0,3).map(x=>`${x.domain} : ${x.item} (${x.score}/6)`).join("<br>") || "Aucun appui calculé.";
     return `<div class="v47Page">
       <div class="v47Header">
-        <div class="v47Brand"><div><div class="v47Kicker">Pose ta brique® · LEGO® Thérapie</div><h1 class="v47Title">Compte rendu complet</h1></div></div>
+        <div class="v47Brand"><div><div class="v47Kicker">Pose ta brique® · LEGO® Thérapie</div><h1 class="v47Title">Synthèse clinique</h1></div></div>
         <div class="v47Date">Date d’export<br>${new Date().toLocaleDateString("fr-FR")}</div>
       </div>
-      <div class="v47Intro">Compte rendu généré à partir des évaluations sélectionnées. Il présente les informations de suivi, les scores, les graphiques de progression et les éléments détaillés utiles à l’analyse.</div>
-      <div class="v47Grid2">
+      <div class="v47Intro">Ce compte rendu synthétise les évaluations sélectionnées, les scores observés, les priorités de travail et l’évolution globale. Il constitue un support d’observation clinique et pédagogique, à interpréter avec le contexte de séance.</div>
+      <div class="v47ClinicalGrid">
         <div class="v47Box"><h2>Personne accompagnée</h2><table class="v47InfoTable">
           <tr><th>Nom et prénom</th><td>${safe(p.name)}</td></tr>
           <tr><th>Date de naissance</th><td>${safe(p.birth)}</td></tr>
           <tr><th>Âge</th><td>${safe((typeof calculateAge==="function" ? calculateAge(p.birth) : "") || p.age)}</td></tr>
           <tr><th>Sexe</th><td>${safe(p.sex)}</td></tr>
-          <tr><th>Situation</th><td>${Array.isArray(p.situationItems) && p.situationItems.length ? p.situationItems.join(", ") : safe(p.schoolStatus)}</td></tr>
-          <tr><th>Temps</th><td>${safe(p.timeStatus)}</td></tr>
           <tr><th>Diagnostic / profil</th><td>${diagnosisText(p)}</td></tr>
         </table></div>
-        <div class="v47Box"><h2>Évaluateur</h2><table class="v47InfoTable">
+        <div class="v47Box"><h2>Repères professionnels</h2><table class="v47InfoTable">
           <tr><th>Prénom</th><td>${safe(p.evaluatorFirstName)}</td></tr>
           <tr><th>Nom</th><td>${safe(p.evaluatorLastName || p.professional)}</td></tr>
           <tr><th>Profession</th><td>${safe(p.evaluatorProfession)}</td></tr>
@@ -3754,9 +3769,17 @@ function ptbPublicToast(message){
         </table></div>
       </div>
       <div class="v47Grid3">
-        <div class="v47Box"><h3>Score initial</h3><div style="font-size:28pt;font-weight:950;color:#0b7a3b">${firstScore || "–"}${firstScore ? "%" : ""}</div></div>
-        <div class="v47Box"><h3>Dernier score</h3><div style="font-size:28pt;font-weight:950;color:#0b7a3b">${lastScore || "–"}${lastScore ? "%" : ""}</div></div>
-        <div class="v47Box"><h3>Évolution globale</h3><div style="font-size:28pt;font-weight:950;color:${delta>=0?"#0b7a3b":"#b94a00"}">${idxs.length>1 ? (delta>0?"+":"") + delta + " pts" : "–"}</div></div>
+        <div class="v47Box"><h3>Score initial</h3><div class="v47MiniScore">${firstScore || "–"}${firstScore ? "%" : ""}</div></div>
+        <div class="v47Box"><h3>Dernier score</h3><div class="v47MiniScore">${lastScore || "–"}${lastScore ? "%" : ""}</div></div>
+        <div class="v47Box"><h3>Évolution globale</h3><div class="v47MiniScore" style="color:${delta>=0?"#0b7a3b":"#b94a00"}">${idxs.length>1 ? (delta>0?"+":"") + delta + " pts" : "–"}</div></div>
+      </div>
+      <div class="v47Grid2">
+        <div class="v47Box"><h2>Priorités de travail</h2><p class="v47Note">${low}</p></div>
+        <div class="v47Box"><h2>Compétences d’appui</h2><p class="v47Note">${high}</p></div>
+      </div>
+      <div class="v47Grid2">
+        ${idxs.length > 1 ? printEvolutionLineChart(idxs) : `<div class="v47Box"><h2>Évolution globale</h2><p class="v47Note">Sélectionnez au moins deux évaluations pour afficher la courbe d’évolution.</p></div>`}
+        ${printRadarForEval(lastIndex)}
       </div>
       <div class="v47Box"><h2>Notes cliniques</h2><p class="v47Note">${safe(p.notes || p.observations || "Aucune note renseignée.")}</p></div>
       <div class="v47Footer"><span>Créé par Chloé Schmidt-Dhonneur · Pose ta brique®</span><span>Tous droits réservés</span></div>
@@ -3776,7 +3799,6 @@ function ptbPublicToast(message){
     }).join("");
     return `<div class="v47Page">
       <div class="v47Header"><div class="v47Brand"><div><div class="v47Kicker">Suivi longitudinal</div><h1 class="v47Title">Évolution des évaluations</h1></div></div><div class="v47Date">${idxs.length} évaluations</div></div>
-      ${printEvolutionLineChart(idxs)}
       <div class="v47Grid2"><div class="v47Box"><h2>Progression globale</h2>${globalBars}</div><div class="v47Box"><h2>Lecture clinique</h2><p class="v47Note">Les scores doivent être interprétés avec le contexte, le niveau d’aide, le nombre de séances entre deux mesures et la familiarité de la situation. Une progression stable se lit sur plusieurs domaines et plusieurs temps d’observation.</p></div></div>
       <div class="v47Box"><h2>Évolution par domaine</h2><table class="v47ScoreTable"><thead><tr><th>Domaine</th>${idxs.map(i=>`<th>Éval. ${i+1}</th>`).join("")}<th>Évolution</th></tr></thead><tbody>${rows}</tbody></table></div>
       <div class="v47Footer"><span>Créé par Chloé Schmidt-Dhonneur · Pose ta brique®</span><span>Tous droits réservés</span></div>
@@ -3804,10 +3826,12 @@ function ptbPublicToast(message){
           <tr><th>Appuis</th><td>${th.high.slice(0,3).map(x=>x.domain+" : "+x.item+" ("+x.score+"/6)").join("<br>") || "–"}</td></tr>
         </table></div>
       </div>
-      ${printRadarForEval(index)}
-      <div class="v47Box"><h2>Scores par domaine</h2><table class="v47ScoreTable"><thead><tr><th>Domaine</th><th>Score</th><th>%</th><th>Profil visuel</th><th>Niveau</th><th>NC</th></tr></thead><tbody>${scoreRows(index)}</tbody></table></div>
+      <div class="v47Grid2">
+        ${printRadarForEval(index)}
+        <div class="v47Box"><h2>Scores par domaine</h2><table class="v47ScoreTable"><thead><tr><th>Domaine</th><th>Score</th><th>%</th><th>Profil</th><th>Niveau</th><th>NC</th></tr></thead><tbody>${scoreRows(index)}</tbody></table></div>
+      </div>
       <div class="v47Grid2"><div class="v47Box"><h2>Synthèse</h2><p class="v47Note">Cette fiche présente l’état observé pour l’évaluation ${index+1}. Les domaines les plus faibles peuvent guider les objectifs prioritaires ; les domaines les plus solides peuvent servir d’appui en séance.</p></div><div class="v47Box"><h2>Objectifs proposés</h2><ul class="v47List">${(th.low.slice(0,3).length ? th.low.slice(0,3) : []).map((x,i)=>`<li><strong>Objectif ${i+1} :</strong> travailler ${x.item.toLowerCase()} dans le domaine ${x.domain}.</li>`).join("") || "<li>Renseigner les cotations pour générer des objectifs.</li>"}</ul></div></div>
-      ${includeDetails ? `<div class="v47Box"><h2>Détail des items cotés</h2><table class="v47ScoreTable"><thead><tr><th>Domaine</th><th>Code</th><th>Item</th><th>Score</th><th>Aide</th><th>Commentaire</th></tr></thead><tbody>${detailRows}</tbody></table></div>` : ""}
+      ${includeDetails ? `<div class="v47Box"><h2>Annexe compacte · items cotés</h2><table class="v47ScoreTable v47DetailsTable"><thead><tr><th>Domaine</th><th>Code</th><th>Item</th><th>Score</th><th>Aide</th><th>Commentaire</th></tr></thead><tbody>${detailRows}</tbody></table></div>` : ""}
       <div class="v47Footer"><span>Créé par Chloé Schmidt-Dhonneur · Pose ta brique®</span><span>Tous droits réservés</span></div>
     </div>`;
   }
@@ -3853,11 +3877,11 @@ function ptbPublicToast(message){
         <span><svg viewBox="0 0 24 24"><path d="M5 4h12l2 2v14H5z"/><path d="M8 4v6h8V4"/><path d="M8 20v-6h8v6"/></svg></span>
         Enregistrer
       </button>
-      <button class="manualSaveBtn" style="height:44px;color:#1677b8" onclick="ptbExportJSON()" title="Télécharger le dossier en JSON">
+      <button class="manualSaveBtn" style="height:44px;color:#1677b8" onclick="ptbExportJSON()" title="Télécharger le dossier">
         <span style="background:#eef5ff;color:#1677b8"><svg viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M8 11l4 4 4-4"/><path d="M5 20h14"/></svg></span>
-        JSON
+        Dossier
       </button>
-      <button class="manualSaveBtn" style="height:44px;color:#b45309;border-color:#f0d9a8" onclick="ptbSendToSupervisor()" title="Envoyer l'évaluation à votre superviseur">
+      <button class="manualSaveBtn" style="height:44px;color:#b45309;border-color:#f0d9a8" onclick="state.view='export'; if(typeof render==='function')render();" title="Préparer la transmission des données">
         <span style="background:#fef8ec;color:#b45309"><svg viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9l20-7z"/></svg></span>
         Envoyer
       </button>
