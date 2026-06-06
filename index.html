@@ -1,4 +1,4 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Échelle d’évaluation LEGO® Thérapie – V17</title><style>
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Échelle d’évaluation LEGO® Thérapie – PDF condensé 2026-06-06</title><style>
 :root{--green:#16834a;--green2:#42c979;--soft:#eefaf2;--mint:#dff6e8;--dark:#173425;--text:#26352d;--muted:#6f7f75;--line:#d9e8df;--shadow:0 18px 45px rgba(14,83,48,.12);--radius:24px}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:linear-gradient(145deg,#f7fff9,#e3f6ea);color:var(--text)}button,input,select,textarea{font:inherit}
 .header{max-width:1180px;margin:22px auto 0;padding:22px;display:flex;gap:22px;align-items:center}.logoBox{width:128px;height:96px;background:white;border-radius:20px;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;padding:10px;overflow:hidden;flex:0 0 auto}.logoBox img{max-width:100%;max-height:100%;object-fit:contain;border-radius:14px}
@@ -1276,10 +1276,12 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
   }
   .v47Grid2{display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-bottom:4mm}
   .v47Grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:3mm;margin-bottom:4mm}
+  .v47Grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:3mm;margin-bottom:4mm}
   .v47Box{
     border:1px solid #dfe9e2;border-radius:10px;padding:3.2mm;background:#fff;break-inside:auto
   }
-  .v47Grid2,.v47Grid3,.v47GraphBox{break-inside:avoid}
+  .v47Grid2,.v47Grid3{break-inside:auto}
+  .v47GraphBox{break-inside:auto}
   .v47Box h2,.v47Box h3{
     margin:0 0 2mm 0;color:#0b7a3b;font-size:11pt;font-weight:950
   }
@@ -1302,12 +1304,15 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
     position:static;border-top:1px solid #dfe9e2;margin-top:4mm;
     padding-top:2mm;font-size:7pt;color:#687383;display:flex;justify-content:space-between
   }
-  .v47RadarSvg{width:100%;height:auto;display:block;max-height:96mm}
-  .v47LineSvg{width:100%;height:auto;display:block;max-height:58mm}
+  .v47RadarSvg{width:100%;height:auto;display:block;max-height:68mm}
+  .v47LineSvg{width:100%;height:auto;display:block;max-height:50mm}
   .v47MiniScore{font-size:21pt;font-weight:950;color:#0b7a3b;line-height:1}
   .v47ClinicalGrid{display:grid;grid-template-columns:.9fr 1.1fr;gap:4mm;margin-bottom:4mm}
   .v47DetailsTable{font-size:6.9pt}
   .v47DetailsTable th,.v47DetailsTable td{padding:1mm!important}
+  .v47CompactTable{font-size:7.35pt}
+  .v47CompactTable th,.v47CompactTable td{padding:1.1mm!important}
+  .v47NoBreak{break-inside:avoid;page-break-inside:avoid}
 }
 </style>
 
@@ -2488,6 +2493,7 @@ function exportEvalCards(){
 function exportOptionsUX(){
   ensureExportSelection();
   const opt = state.exportOptions;
+  if(opt.type === "complet") opt.type = "synthetique";
   const n = opt.selectedEvals.length;
   return `<div class="exportDashboard noPrint">
     <section class="exportPanel">
@@ -2499,11 +2505,8 @@ function exportOptionsUX(){
         <div class="exportChoice ${opt.audience==='famille'?'active':''}" onclick="state.exportOptions.audience='famille';render()">
           <b>Version famille</b><small>Lecture plus douce, synthétique et accessible.</small>
         </div>
-        <div class="exportChoice ${opt.type==='synthetique'?'active':''}" onclick="state.exportOptions.type='synthetique';render()">
-          <b>Synthétique</b><small>Scores, graphiques, évolution et objectifs principaux.</small>
-        </div>
-        <div class="exportChoice ${opt.type==='complet'?'active':''}" onclick="state.exportOptions.type='complet';render()">
-          <b>Complet</b><small>Inclut le détail des items cotés pour chaque évaluation.</small>
+        <div class="exportChoice active" onclick="state.exportOptions.type='synthetique';render()">
+          <b>Synthèse condensée</b><small>Résumé clinique, radar, évolution et tableau comparatif court.</small>
         </div>
       </div>
     </section>
@@ -2524,7 +2527,7 @@ function exportOptionsUX(){
       <h3>Résumé de l’export</h3>
       <span class="exportSummaryPill">${n} évaluation${n>1?'s':''}</span>
       <span class="exportSummaryPill">${opt.audience==='famille'?'Famille':'Professionnel'}</span>
-      <span class="exportSummaryPill">${opt.type==='complet'?'Complet':'Synthétique'}</span>
+      <span class="exportSummaryPill">Synthèse condensée</span>
       <div class="exportTopActions">
         <button class="primary" onclick="ptbPrintReport()">Imprimer / enregistrer en PDF</button>
         <button class="secondary" onclick="ptbTransmitToGoogleSheet()">Transmettre les données</button>
@@ -3654,7 +3657,7 @@ function ptbPublicToast(message){
   function printRadarForEval(index){
     const data = scoreForEval(index).domains || [];
     if(!data.length) return "";
-    const cx = 260, cy = 205, maxR = 132, n = data.length || 1;
+    const cx = 260, cy = 178, maxR = 112, n = data.length || 1;
     const colorFor = d => (typeof domainColor === "function" ? domainColor(d.name) : "#0b7a3b");
     function pt(i, val){
       const angle = -Math.PI / 2 + (2 * Math.PI * i / n);
@@ -3668,7 +3671,7 @@ function ptbPublicToast(message){
       const name = String(d.name || "").replace("Langage et vocabulaire ", "Langage ");
       return `<line x1="${cx}" y1="${cy}" x2="${p[0]}" y2="${p[1]}" stroke="#d9e8df"/><text x="${label[0]}" y="${label[1]}" font-size="10" text-anchor="middle" fill="#465565" font-weight="700">${name}</text>`;
     }).join("");
-    return `<div class="v47Box v47GraphBox"><h2>Radar des compétences</h2><svg class="v47RadarSvg" viewBox="0 0 520 430" role="img" aria-label="Radar des compétences">
+    return `<div class="v47Box v47GraphBox"><h2>Radar des compétences</h2><svg class="v47RadarSvg" viewBox="0 0 520 355" role="img" aria-label="Radar des compétences">
       <polygon points="${ring(25)}" fill="none" stroke="#edf5ef"/>
       <polygon points="${ring(50)}" fill="none" stroke="#e2eee6"/>
       <polygon points="${ring(75)}" fill="none" stroke="#d6e6dc"/>
@@ -3697,8 +3700,8 @@ function ptbPublicToast(message){
   function printEvolutionLineChart(idxs){
     if(!idxs || idxs.length < 2) return "";
     const scores = idxs.map(i => scoreForEval(i).pct || 0);
-    const width = 760, height = 230;
-    const padL = 50, padR = 24, padT = 20, padB = 40;
+    const width = 760, height = 205;
+    const padL = 50, padR = 24, padT = 18, padB = 38;
     const innerW = width - padL - padR;
     const innerH = height - padT - padB;
     const xFor = pos => padL + (idxs.length === 1 ? innerW / 2 : (innerW * pos / (idxs.length - 1)));
@@ -3733,6 +3736,51 @@ function ptbPublicToast(message){
       ${labels}
       ${sessionLabels}
     </svg></div>`;
+  }
+  function professionalNarrative(idxs, lastIndex, firstScore, lastScore, delta, th){
+    const s = st();
+    const ev = (s.evals && s.evals[lastIndex]) ? s.evals[lastIndex] : {};
+    const domainsData = scoreForEval(lastIndex).domains || [];
+    const sorted = domainsData.filter(d=>d.max).sort((a,b)=>(b.pct||0)-(a.pct||0));
+    const bestDomains = sorted.slice(0,2).map(d=>d.name).join(" et ") || "les compétences déjà observables";
+    const weakDomains = sorted.slice(-2).reverse().map(d=>d.name).join(" et ") || "les domaines nécessitant un accompagnement";
+    const lowItems = (th.low || []).slice(0,3).map(x=>x.item).join(", ");
+    const highItems = (th.high || []).slice(0,3).map(x=>x.item).join(", ");
+    let profile;
+    if(!lastScore){
+      profile = "Les cotations disponibles ne permettent pas encore d’établir un profil global suffisamment renseigné. Le compte rendu peut toutefois servir de support de recueil initial et être complété lors des prochaines observations.";
+    }else if(lastScore < 35){
+      profile = "Le profil actuel met en évidence des compétences encore fragiles, avec un besoin d’étayage important et régulier. Les activités proposées gagneront à être très structurées, répétées et soutenues par des repères visuels clairs.";
+    }else if(lastScore < 60){
+      profile = "Le profil actuel montre des compétences émergentes, avec des réussites possibles lorsque le contexte est suffisamment structuré. Les progrès semblent devoir être consolidés par des situations courtes, prévisibles et progressivement généralisées.";
+    }else if(lastScore < 80){
+      profile = "Le profil actuel témoigne de compétences en développement, déjà mobilisables dans plusieurs situations. L’accompagnement peut viser la stabilisation, l’autonomie progressive et le transfert vers des contextes moins guidés.";
+    }else{
+      profile = "Le profil actuel met en évidence des compétences globalement installées. L’accompagnement peut s’orienter vers la généralisation, la flexibilité, la coopération spontanée et le maintien des acquis dans des contextes variés.";
+    }
+    let evolution;
+    if(idxs.length < 2){
+      evolution = "Une seule évaluation est sélectionnée : cette synthèse constitue donc un point de départ. Une réévaluation permettra d’objectiver l’évolution dans le temps.";
+    }else if(delta > 8){
+      evolution = `Entre l’évaluation initiale et la dernière évaluation sélectionnée, l’évolution globale est favorable (+${delta} points). Cette progression est à mettre en lien avec le nombre de séances réalisées, la régularité des situations proposées et le niveau d’aide nécessaire.`;
+    }else if(delta >= -4){
+      evolution = `L’évolution globale reste relativement stable (${delta > 0 ? "+" : ""}${delta} points). Cette stabilité peut traduire une consolidation en cours ; elle invite à observer plus finement les domaines qui progressent et ceux qui demandent encore un accompagnement ciblé.`;
+    }else{
+      evolution = `L’évolution globale est en baisse (${delta} points). Cette donnée doit être interprétée avec prudence, en tenant compte de la fatigue, du contexte, de la disponibilité attentionnelle, du niveau d’aide et des conditions de passation.`;
+    }
+    const priorities = lowItems
+      ? `Les axes prioritaires repérés concernent notamment : ${lowItems}. Ces éléments peuvent être transformés en objectifs de séance courts, observables et mesurables.`
+      : `Les axes prioritaires restent à préciser à partir des cotations et des observations de séance.`;
+    const supports = highItems
+      ? `Les compétences d’appui repérées concernent notamment : ${highItems}. Elles peuvent être utilisées comme leviers pour soutenir les compétences plus fragiles, en particulier dans les domaines ${weakDomains}.`
+      : `Les compétences d’appui seront à identifier au fil des séances afin de soutenir les apprentissages et la coopération.`;
+    return `<div class="v47Box v47NoBreak"><h2>Compte rendu professionnel</h2>
+      <p class="v47Note">${profile}</p>
+      <p class="v47Note" style="margin-top:2mm">${evolution}</p>
+      <p class="v47Note" style="margin-top:2mm">${priorities}</p>
+      <p class="v47Note" style="margin-top:2mm">${supports}</p>
+      <p class="v47Note" style="margin-top:2mm">Lecture clinique : les résultats doivent rester articulés aux observations qualitatives, au contexte relationnel et au niveau d’aide apporté. Les domaines les plus solides, notamment ${bestDomains}, peuvent servir de points d’appui pour construire une progression réaliste.</p>
+    </div>`;
   }
   function coverPage(){
     const s = st();
@@ -3773,6 +3821,7 @@ function ptbPublicToast(message){
         <div class="v47Box"><h3>Dernier score</h3><div class="v47MiniScore">${lastScore || "–"}${lastScore ? "%" : ""}</div></div>
         <div class="v47Box"><h3>Évolution globale</h3><div class="v47MiniScore" style="color:${delta>=0?"#0b7a3b":"#b94a00"}">${idxs.length>1 ? (delta>0?"+":"") + delta + " pts" : "–"}</div></div>
       </div>
+      ${professionalNarrative(idxs, lastIndex, firstScore, lastScore, delta, th)}
       <div class="v47Grid2">
         <div class="v47Box"><h2>Priorités de travail</h2><p class="v47Note">${low}</p></div>
         <div class="v47Box"><h2>Compétences d’appui</h2><p class="v47Note">${high}</p></div>
@@ -3801,6 +3850,36 @@ function ptbPublicToast(message){
       <div class="v47Header"><div class="v47Brand"><div><div class="v47Kicker">Suivi longitudinal</div><h1 class="v47Title">Évolution des évaluations</h1></div></div><div class="v47Date">${idxs.length} évaluations</div></div>
       <div class="v47Grid2"><div class="v47Box"><h2>Progression globale</h2>${globalBars}</div><div class="v47Box"><h2>Lecture clinique</h2><p class="v47Note">Les scores doivent être interprétés avec le contexte, le niveau d’aide, le nombre de séances entre deux mesures et la familiarité de la situation. Une progression stable se lit sur plusieurs domaines et plusieurs temps d’observation.</p></div></div>
       <div class="v47Box"><h2>Évolution par domaine</h2><table class="v47ScoreTable"><thead><tr><th>Domaine</th>${idxs.map(i=>`<th>Éval. ${i+1}</th>`).join("")}<th>Évolution</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="v47Footer"><span>Créé par Chloé Schmidt-Dhonneur · Pose ta brique®</span><span>Tous droits réservés</span></div>
+    </div>`;
+  }
+  function compactEvalOverview(){
+    const idxs = selectedIndexes();
+    if(!idxs.length) return "";
+    const rows = idxs.map(i=>{
+      const ev = st().evals[i] || {};
+      const sc = scoreForEval(i);
+      const th = topLowForEval(i);
+      const low = (th.low || []).slice(0,2).map(x=>`${x.domain} : ${x.item} (${x.score}/6)`).join("<br>") || "–";
+      const high = (th.high || []).slice(0,2).map(x=>`${x.domain} : ${x.item} (${x.score}/6)`).join("<br>") || "–";
+      return `<tr>
+        <td><strong>Éval. ${i+1}</strong><br><small>${safe(ev.date)}</small></td>
+        <td>${i>0 ? safe(ev.sessionsSincePrevious) : "–"}</td>
+        <td><strong>${sc.pct || "–"}${sc.pct ? "%" : ""}</strong></td>
+        <td>${low}</td>
+        <td>${high}</td>
+      </tr>`;
+    }).join("");
+    const domainRows = typeof domains === "function" ? domains().map((d,di)=>{
+      return `<tr><td><strong>${d.name}</strong></td>${idxs.map(i=>{
+        const pct = scoreForEval(i).domains[di]?.pct || 0;
+        return `<td>${pct || "–"}${pct ? "%" : ""}</td>`;
+      }).join("")}</tr>`;
+    }).join("") : "";
+    return `<div class="v47Page">
+      <div class="v47Header"><div class="v47Brand"><div><div class="v47Kicker">Synthèse condensée</div><h1 class="v47Title">Comparatif des évaluations</h1></div></div><div class="v47Date">${idxs.length} évaluation(s)</div></div>
+      <div class="v47Box v47NoBreak"><h2>Vue d’ensemble</h2><table class="v47ScoreTable v47CompactTable"><thead><tr><th>Évaluation</th><th>Séances</th><th>Score</th><th>Priorités principales</th><th>Appuis principaux</th></tr></thead><tbody>${rows}</tbody></table></div>
+      ${domainRows ? `<div class="v47Box"><h2>Scores par domaine</h2><table class="v47ScoreTable v47CompactTable"><thead><tr><th>Domaine</th>${idxs.map(i=>`<th>Éval. ${i+1}</th>`).join("")}</tr></thead><tbody>${domainRows}</tbody></table></div>` : ""}
       <div class="v47Footer"><span>Créé par Chloé Schmidt-Dhonneur · Pose ta brique®</span><span>Tous droits réservés</span></div>
     </div>`;
   }
@@ -3841,7 +3920,7 @@ function ptbPublicToast(message){
     const report = document.createElement("div");
     report.className = "v47PrintReport";
     const idxs = selectedIndexes();
-    report.innerHTML = coverPage() + evolutionPage() + idxs.map(i => evalPage(i)).join("");
+    report.innerHTML = coverPage() + evolutionPage() + compactEvalOverview();
     document.body.appendChild(report);
     document.body.classList.add("v47-printing");
     setTimeout(()=>window.print(), 80);
