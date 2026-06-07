@@ -1242,6 +1242,25 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 @media(max-width:700px){.v46Grid{grid-template-columns:1fr}}
 
 .v47PrintReport{display:none}
+.ptbAccessNotice{
+  max-width:1480px;
+  width:calc(100% - 44px);
+  margin:12px auto 0;
+  border:1px solid #d8eadf;
+  border-radius:18px;
+  background:#f4fbf7;
+  color:#0b4a52;
+  padding:12px 18px;
+  font-weight:850;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  box-shadow:0 10px 28px rgba(6,63,73,.06);
+}
+.ptbAccessNotice small{
+  color:#52645d;
+  font-weight:700;
+}
 
 @media print{
   @page{size:A4 portrait;margin:8mm}
@@ -1313,6 +1332,27 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
   .v47CompactTable{font-size:7.35pt}
   .v47CompactTable th,.v47CompactTable td{padding:1.1mm!important}
   .v47NoBreak{break-inside:avoid;page-break-inside:avoid}
+  .v47Watermark{
+    position:fixed;
+    left:9mm;
+    right:9mm;
+    bottom:5mm;
+    text-align:center;
+    font-size:8pt;
+    font-weight:800;
+    color:rgba(16,32,51,.42);
+    letter-spacing:.02em;
+    z-index:9999;
+    pointer-events:none;
+  }
+  .v47Watermark:before{
+    content:"";
+    display:block;
+    width:34mm;
+    height:1px;
+    margin:0 auto 1.5mm;
+    background:rgba(11,122,59,.25);
+  }
 }
 </style>
 
@@ -1638,6 +1678,10 @@ L’outil permet de comparer jusqu’à 6 évaluations successives, d’identifi
 </div>
 </div>
 </p></section></div>
+<div class="ptbAccessNotice noPrint">
+  <span>Accès réservé aux professionnels autorisés.</span>
+  <small>Utilisation encadrée via l’espace membre Pose ta brique®.</small>
+</div>
 <button class="mobileMenuBtn noPrint" type="button" onclick="toggleMobileMenu()" aria-label="Ouvrir le menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg> Menu</button><div class="mobileMenuBackdrop noPrint" onclick="closeMobileMenu()"></div>
 <div class="app"><div class="grid"><aside class="side noPrint">
 <button class="navBtn active" data-view="home"><span class="navIcon"><svg viewBox="0 0 24 24"><path d="M4 11.5 12 5l8 6.5V20a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1z"/></svg></span> Accueil</button>
@@ -3619,6 +3663,11 @@ function ptbPublicToast(message){
       ? p.diagnoses.join(", ") + (p.otherDiagnosis ? " – " + p.otherDiagnosis : "")
       : safe(p.otherDiagnosis);
   }
+  function evaluatorDisplayName(){
+    const s = st();
+    const p = s.patient || {};
+    return [p.evaluatorFirstName, p.evaluatorLastName].filter(Boolean).join(" ") || p.professional || "évaluateur non renseigné";
+  }
   function scoreForEval(index){
     const s = st();
     if(typeof scoreEval !== "function" || !s.evals || !s.evals[index]) return {pct:0, domains:[]};
@@ -3920,7 +3969,7 @@ function ptbPublicToast(message){
     const report = document.createElement("div");
     report.className = "v47PrintReport";
     const idxs = selectedIndexes();
-    report.innerHTML = coverPage() + evolutionPage() + compactEvalOverview();
+    report.innerHTML = `<div class="v47Watermark">Compte rendu généré par ${safe(evaluatorDisplayName())}</div>` + coverPage() + evolutionPage() + compactEvalOverview();
     document.body.appendChild(report);
     document.body.classList.add("v47-printing");
     setTimeout(()=>window.print(), 80);
