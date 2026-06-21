@@ -1242,6 +1242,20 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 @media(max-width:700px){.v46Grid{grid-template-columns:1fr}}
 
 .v47PrintReport{display:none}
+.ptbPrintOnly{display:none}
+.domainSuggestion{
+  display:grid;
+  gap:6px;
+  line-height:1.55;
+  color:#344054;
+}
+.domainSuggestion b{
+  color:#0b4a52;
+}
+.domainSuggestion .muted{
+  color:#667085;
+  font-weight:800;
+}
 .ptbAccessNotice{
   max-width:1480px;
   width:calc(100% - 44px);
@@ -1265,6 +1279,30 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 @media print{
   @page{size:A4 portrait;margin:8mm}
   body{background:#fff!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  body.ptb-report-printing,
+  body.ptb-summary-printing,
+  body.ptb-certificate-printing{margin:0!important;padding:0!important;overflow:visible!important}
+  body.ptb-report-printing > *:not(#ptbPdfReport),
+  body.ptb-summary-printing > *:not(#ptbContributionSummaryReport),
+  body.ptb-certificate-printing > *:not(#ptbContributionCertificateReport){display:none!important}
+  body.ptb-report-printing #ptbPdfReport,
+  body.ptb-summary-printing #ptbContributionSummaryReport,
+  body.ptb-certificate-printing #ptbContributionCertificateReport{
+    display:block!important;
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    margin:0!important;
+    padding:0!important;
+    background:#fff!important;
+    color:#102033!important;
+    overflow:visible!important;
+  }
+  body.ptb-certificate-printing #ptbContributionCertificateReport{
+    width:210mm!important;
+    height:297mm!important;
+    overflow:hidden!important;
+  }
   body.v47-printing *{visibility:hidden!important}
   body.v47-printing .v47PrintReport,
   body.v47-printing .v47PrintReport *{visibility:visible!important}
@@ -1277,17 +1315,23 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
     font-family:Inter, Arial, sans-serif!important;
   }
   .v47Page{page-break-after:auto;break-after:auto;margin-bottom:5mm}
+  #ptbPdfReport .v47Page{
+    width:186mm!important;
+    margin:0 auto 6mm!important;
+    padding:3mm!important;
+    box-sizing:border-box!important;
+  }
   .v47Page + .v47Page{border-top:1px solid #edf2ef;padding-top:5mm}
   .v47Header{
     display:flex;align-items:center;justify-content:space-between;
-    border-bottom:2px solid #0b7a3b;padding-bottom:5mm;margin-bottom:5mm
+    border-bottom:2px solid #0b7a3b;padding-bottom:4mm;margin-bottom:5mm
   }
   .v47Brand{display:flex;align-items:center;gap:10px}
   .v47Logo{
     width:56px;height:auto;display:block
   }
-  .v47Kicker{color:#0b7a3b;font-weight:900;font-size:9pt;margin-bottom:2mm}
-  .v47Title{font-size:20pt;font-weight:950;line-height:1.05;color:#0b1f4d;margin:0}
+  .v47Kicker{color:#0b7a3b;font-weight:900;font-size:8.2pt;margin-bottom:1.2mm;letter-spacing:.04em;white-space:nowrap}
+  .v47Title{font-size:19pt;font-weight:950;line-height:1.08;color:#0b1f4d;margin:0}
   .v47Date{font-size:9pt;color:#596579;text-align:right;font-weight:700}
   .v47Intro{
     background:linear-gradient(135deg,#f1fbf5,#ffffff);border:1px solid #d7eadf;border-radius:14px;
@@ -1550,11 +1594,126 @@ body{top:0!important}
 
 /* V51 header non fige */
 .header{position:relative!important;top:auto!important}
+
+/* V56 : en-tête plus harmonieux */
+.header .hero{
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  gap:6px!important;
+}
+.header .hero .brand{
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  white-space:nowrap!important;
+  letter-spacing:.11em!important;
+  font-size:14px!important;
+  line-height:1.1!important;
+  margin:0!important;
+}
+.header .hero .brand:before{
+  flex:0 0 44px!important;
+}
+.header .hero h1{
+  max-width:680px!important;
+  font-size:34px!important;
+  line-height:1.03!important;
+  letter-spacing:-.025em!important;
+}
+@media(max-width:900px){
+  .header .hero .brand{white-space:normal!important;font-size:12px!important}
+  .header .hero h1{font-size:26px!important}
+}
 .side{top:24px!important}
 
 
 /* V52 visuels pages internes */
 .pageVisualHero{position:relative;overflow:hidden;border:1px solid var(--studio-line);border-radius:28px;min-height:190px;margin:0 0 24px;box-shadow:var(--studio-shadow);background:#fffdf8}.pageVisualHero img{width:100%;height:240px;display:block;object-fit:cover}.pageVisualHero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(6,63,73,.74),rgba(6,63,73,.22) 48%,rgba(6,63,73,.04))}.pageVisualText{position:absolute;left:34px;bottom:28px;right:34px;z-index:1;max-width:720px;color:#fffdf8}.pageVisualText .eyebrow{color:#fffdf8;margin-bottom:12px}.pageVisualText .eyebrow:before{background:#fffdf8}.pageVisualText h3{font-size:30px;line-height:1.1;margin:0 0 8px;color:#fffdf8}.pageVisualText p{margin:0;line-height:1.55;color:rgba(255,253,248,.86);font-weight:700}@media(max-width:720px){.pageVisualHero img{height:220px}.pageVisualText{left:22px;bottom:22px}.pageVisualText h3{font-size:24px}}
+.projectInfoGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:stretch}.projectInfoCard{display:flex;gap:16px;align-items:flex-start;background:#fffdf8}.projectInfoCard p{margin:0 0 12px;color:#667085;line-height:1.55}.projectInfoCard ul{margin:0;padding-left:18px;color:#52645d;line-height:1.55}.projectInfoCard li{margin:4px 0}@media(max-width:900px){.projectInfoGrid{grid-template-columns:1fr}.projectInfoCard{display:block}.projectInfoCard .quickIcon{margin-bottom:12px}}
+.contributionHero{display:grid;grid-template-columns:minmax(320px,1fr) minmax(300px,.72fr);gap:22px;align-items:stretch;margin-bottom:20px}.contributionHeroText,.contributionProgressCard{border:1px solid var(--studio-line);border-radius:28px;background:#fffdf8;box-shadow:var(--studio-shadow);padding:28px}.contributionHeroText h2{font-size:42px!important;line-height:1.05!important;margin:0 0 12px!important;color:var(--studio-ink)!important;letter-spacing:-.035em!important}.contributionHeroText h2:after{display:none!important}.contributionHeroText p{font-size:17px;line-height:1.65;color:#52645d;margin:0}.contributionMessage{display:flex;gap:12px;align-items:flex-start;margin-top:22px;padding:16px 18px;border:1px solid #cfeadb;border-radius:20px;background:#f1fbf5;color:#17633a;font-weight:850;line-height:1.45}.contributionMessage .quickIcon{flex:0 0 36px;width:36px!important;height:36px!important}.contributionProgressCard{background:linear-gradient(135deg,#fffdf8,#f2fbf5)}.contributionBadgeHead{display:flex;align-items:center;gap:16px}.contributionBadgeText small{display:block;color:#0f7a42;text-transform:uppercase;letter-spacing:.08em;font-weight:900;font-size:11px;margin-bottom:4px}.contributionBadgeText h3{font-size:24px;margin:0 0 6px;color:#0b3f49}.contributionBadgeText p{margin:0;color:#667085;line-height:1.45}.contributionLevelRow{display:flex;justify-content:space-between;gap:12px;margin:18px 0 8px;color:#52645d;font-weight:900;font-size:13px}.contributionProgressTrack{height:16px;border-radius:999px;background:#e9f0ec;overflow:hidden;border:1px solid #dbe8df}.contributionProgressFill{height:100%;border-radius:999px;background:linear-gradient(90deg,#4caf50,#0f7a42)}.contributionProgressNote{display:block;margin-top:9px;color:#667085;font-weight:750;line-height:1.4}.contributionStatsGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:18px 0}.contributionStatCard{border:1px solid var(--studio-line);border-radius:22px;background:#fffdf8;padding:18px;box-shadow:0 12px 28px rgba(16,24,40,.05)}.contributionStatCard span{display:block;color:#667085;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;line-height:1.25}.contributionStatCard b{display:block;font-size:30px;color:#0b3f49;margin:8px 0 2px;letter-spacing:-.03em}.contributionStatCard small{color:#7b8a82;font-weight:750;line-height:1.35}.contributionSectionGrid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;margin-top:18px}.contributionBadgeList{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-top:18px}.contributionMiniBadge{border:1px solid var(--studio-line);border-radius:20px;background:#fffdf8;padding:14px;text-align:center;box-shadow:0 10px 22px rgba(16,24,40,.04);opacity:.72}.contributionMiniBadge.active{opacity:1;border-color:#9fd6b1;background:#f5fbf7;box-shadow:0 16px 32px rgba(15,122,66,.12)}.contributionMiniBadge b{display:block;color:#0b3f49;margin:8px 0 4px;font-size:13px}.contributionMiniBadge small{color:#667085;font-weight:750}.legoBadgeVisual{width:94px;height:94px;border-radius:28px;display:grid;place-items:center;position:relative;isolation:isolate;background:linear-gradient(135deg,#f0fbf4,#ffffff);border:1px solid #d8ebdd;box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 16px 35px rgba(16,24,40,.10);font-size:34px;font-weight:900}.legoBadgeVisual.small{width:62px;height:62px;border-radius:20px;margin:0 auto;font-size:22px}.legoBadgeVisual:before{content:"";position:absolute;inset:12px;border-radius:50%;background:rgba(255,255,255,.55);z-index:-1}.legoBrick{position:relative;width:46px;height:32px;border-radius:7px;background:#4caf50;box-shadow:inset -6px -7px 0 rgba(0,0,0,.10),0 8px 16px rgba(0,0,0,.10)}.legoBrick:before{content:"";position:absolute;left:8px;top:-8px;width:10px;height:10px;border-radius:999px;background:inherit;box-shadow:20px 0 0 currentColor;color:inherit;filter:brightness(1.12)}.legoBadge-blue .legoBrick{background:#64b5f6;color:#64b5f6}.legoBuild{position:relative;width:62px;height:48px}.legoBuild span{position:absolute;width:28px;height:20px;border-radius:5px;box-shadow:inset -4px -5px 0 rgba(0,0,0,.12)}.legoBuild span:before{content:"";position:absolute;left:5px;top:-5px;width:7px;height:7px;border-radius:999px;background:inherit;box-shadow:11px 0 0 currentColor;color:inherit;filter:brightness(1.1)}.legoBuild span:nth-child(1){left:4px;bottom:0;background:#4caf50;color:#4caf50}.legoBuild span:nth-child(2){right:4px;bottom:0;background:#ef7d32;color:#ef7d32}.legoBuild span:nth-child(3){left:17px;bottom:19px;background:#64b5f6;color:#64b5f6}.legoBuild.advanced span:nth-child(3){background:#fbbf24;color:#fbbf24}.legoBuild.advanced span:nth-child(4){right:0;bottom:20px;background:#e75480;color:#e75480}.legoTrophy{position:relative;width:54px;height:58px}.legoTrophy:before{content:"";position:absolute;left:13px;top:0;width:28px;height:26px;border-radius:7px 7px 12px 12px;background:#fbbf24;box-shadow:inset -5px -6px 0 rgba(0,0,0,.12)}.legoTrophy:after{content:"";position:absolute;left:20px;top:24px;width:14px;height:28px;background:linear-gradient(#f59e0b 0 45%,#4caf50 45% 70%,#64b5f6 70%);border-radius:4px;box-shadow:-12px 22px 0 #ef7d32,12px 22px 0 #4caf50}.certificateBox{display:flex;gap:14px;align-items:flex-start;border:1px solid #f0d39a;background:#fff9eb;border-radius:20px;padding:16px;margin-top:14px}.certificateBox.ready{border-color:#cfeadb;background:#f1fbf5}.certificateBox p{margin:0;color:#667085;line-height:1.45}@media(max-width:1150px){.contributionStatsGrid,.contributionBadgeList{grid-template-columns:repeat(2,minmax(0,1fr))}.contributionHero,.contributionSectionGrid{grid-template-columns:1fr}}@media(max-width:700px){.contributionStatsGrid,.contributionBadgeList{grid-template-columns:1fr}.contributionHeroText h2{font-size:32px!important}.contributionBadgeHead{align-items:flex-start}.legoBadgeVisual{width:78px;height:78px}}
+.legoBrick{color:#4caf50}.legoBadge-blue .legoBrick{color:#64b5f6}
+/* === V41 BADGES CONTRIBUTION SOBRES === */
+.contributionBadgeList{
+  align-items:stretch;
+}
+.contributionMiniBadge{
+  min-height:190px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+.contributionMiniBadge b{
+  font-size:15px;
+  line-height:1.25;
+}
+.contributionMiniBadge small{
+  max-width:150px;
+  line-height:1.35;
+}
+.contributionMiniBadge.active{
+  border-width:2px;
+}
+.legoBadgeVisual{
+  width:104px;
+  height:104px;
+  border-radius:999px;
+  background:rgba(255,255,255,.78);
+  box-shadow:none;
+  color:#4caf50;
+}
+.legoBadgeVisual.small{
+  width:76px;
+  height:76px;
+  border-radius:999px;
+}
+.legoBadgeVisual:before{
+  display:none;
+}
+.legoBadgeVisual svg{
+  width:54px;
+  height:54px;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:2.2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.legoBadgeVisual.small svg{
+  width:42px;
+  height:42px;
+}
+.legoBadgeVisual.badge-sprout{
+  color:#4caf50;
+  border-color:#b8e6c3;
+  background:linear-gradient(135deg,#f4fff7,#ffffff);
+}
+.legoBadgeVisual.badge-star{
+  color:#2f7fbd;
+  border-color:#b9dcf5;
+  background:linear-gradient(135deg,#f4faff,#ffffff);
+}
+.legoBadgeVisual.badge-medal{
+  color:#1f8a8a;
+  border-color:#b6e0df;
+  background:linear-gradient(135deg,#f3fffe,#ffffff);
+}
+.legoBadgeVisual.badge-laurel{
+  color:#d98a1f;
+  border-color:#f1d3a3;
+  background:linear-gradient(135deg,#fff9ec,#ffffff);
+}
+.legoBadgeVisual.badge-crown{
+  color:#8d5bbd;
+  border-color:#dec7f2;
+  background:linear-gradient(135deg,#fbf5ff,#ffffff);
+}
+.contributionMiniBadge:has(.badge-star) b{color:#2f6f9f}
+.contributionMiniBadge:has(.badge-medal) b{color:#146b70}
+.contributionMiniBadge:has(.badge-laurel) b{color:#9a5b16}
+.contributionMiniBadge:has(.badge-crown) b{color:#62378d}
 
 /* V53 page fondatrice */
 .founderGrid{display:grid;grid-template-columns:.78fr 1.22fr;gap:24px;align-items:stretch}.founderIdentity{background:#fffdf8;border:1px solid var(--studio-line);border-radius:28px;padding:18px;box-shadow:var(--studio-shadow);display:flex;flex-direction:column;justify-content:space-between}.founderPhoto{width:100%;height:290px;border-radius:24px;object-fit:cover;object-position:center 35%;display:block;margin-bottom:20px;box-shadow:0 18px 45px rgba(16,24,40,.13)}.founderIdentity h3{font-size:27px;line-height:1.1;margin:0 10px 8px;color:#0b3f49}.founderIdentity p{margin:0 10px;color:#5f6f66;line-height:1.6;font-weight:700}.founderText{font-size:16px;line-height:1.75;color:#31463b;height:100%;display:flex;flex-direction:column;justify-content:center}.founderText p{margin:0 0 15px}.founderQuote{margin:20px 10px 6px;padding:20px 22px;border-radius:22px;background:#eef8f1;border:1px solid #d9ecde;color:#173425;font-weight:850;line-height:1.6}.founderFacts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}.founderFact{background:#fff;border:1px solid var(--studio-line);border-radius:22px;padding:18px;box-shadow:0 12px 28px rgba(16,24,40,.05)}.founderFact b{display:block;color:#0b4a52;margin-bottom:8px;font-size:15px}.founderFact span{display:block;color:#5f6f66;line-height:1.55;font-weight:650}@media(max-width:980px){.founderGrid,.founderFacts{grid-template-columns:1fr}.founderIdentity{min-height:auto}.founderText{height:auto;display:block}.founderPhoto{height:360px}}@media(max-width:620px){.founderPhoto{height:280px}}
@@ -1690,6 +1849,8 @@ L’outil permet de comparer jusqu’à 6 évaluations successives, d’identifi
 <button class="navBtn" data-view="goals"><span class="navIcon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg></span> Objectifs</button>
 <button class="navBtn" data-view="summary"><span class="navIcon"><svg viewBox="0 0 24 24"><path d="M4 17 9 12l4 4 7-9"/><path d="M15 7h5v5"/></svg></span> Évolution</button>
 <button class="navBtn" data-view="saves"><span class="navIcon"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span> Mes dossiers</button>
+<button class="navBtn" data-view="contributions"><span class="navIcon"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><rect x="7" y="11" width="3" height="5" rx="1"/><rect x="12" y="8" width="3" height="8" rx="1"/><rect x="17" y="6" width="3" height="10" rx="1"/></svg></span> Mes contributions</button>
+<button class="navBtn" data-view="project"><span class="navIcon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/><path d="M12 8v8"/></svg></span> Projet collaboratif</button>
 <button class="navBtn" data-view="export"><span class="navIcon"><svg viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M8 11l4 4 4-4"/><path d="M5 20h14"/></svg></span> Export PDF</button>
 
 <div class="sidebarPatientCard noPrint">
@@ -1818,6 +1979,84 @@ function stableHash(value){
     hash = Math.imul(hash, 16777619);
   }
   return (hash >>> 0).toString(36).toUpperCase().padStart(7, "0").slice(0, 7);
+}
+const PTB_CONTRIBUTOR_PROFILE_KEY = "ptb_professional_contributor_profile";
+function ptbAttr(value){
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+function ptbDefaultContributorProfile(){
+  return {
+    professionalName: "",
+    profession: "",
+    practiceMode: "",
+    countryRegion: "",
+    email: "",
+    collaborativeConsent: false,
+    professionalId: ""
+  };
+}
+function ptbLoadContributorProfile(){
+  try {
+    return {...ptbDefaultContributorProfile(), ...JSON.parse(localStorage.getItem(PTB_CONTRIBUTOR_PROFILE_KEY) || "{}")};
+  } catch(e) {
+    return ptbDefaultContributorProfile();
+  }
+}
+function ptbContributorIdentitySeed(profile){
+  return [
+    profile.email,
+    profile.professionalName,
+    profile.profession,
+    profile.practiceMode,
+    profile.countryRegion
+  ].map(v => normalizeForStudyCode(v)).filter(Boolean).join("|");
+}
+function ptbProfessionalContributorId(profile){
+  const seed = ptbContributorIdentitySeed(profile);
+  if(!seed) return "";
+  return "PRO-" + stableHash(seed);
+}
+function ptbSaveContributorProfile(profile){
+  const clean = {...ptbDefaultContributorProfile(), ...profile};
+  clean.professionalId = ptbProfessionalContributorId(clean);
+  localStorage.setItem(PTB_CONTRIBUTOR_PROFILE_KEY, JSON.stringify(clean));
+  return clean;
+}
+function ptbSetContributorField(field, value){
+  const profile = ptbLoadContributorProfile();
+  profile[field] = field === "collaborativeConsent" ? Boolean(value) : value;
+  const saved = ptbSaveContributorProfile(profile);
+  if(field === "professionalName"){
+    const parts = String(value || "").trim().split(/\s+/);
+    state.patient.evaluatorFirstName = parts.slice(0, -1).join(" ") || value || "";
+    state.patient.evaluatorLastName = parts.length > 1 ? parts.slice(-1).join("") : "";
+  }
+  if(field === "profession") state.patient.evaluatorProfession = value;
+  if(field === "practiceMode") state.patient.evaluatorPracticeMode = value;
+  if(field === "countryRegion") state.patient.evaluatorCountry = value;
+  const idEl = document.getElementById("professionalContributorId");
+  if(idEl) idEl.value = saved.professionalId || "";
+}
+function ptbContributorProfileCard(){
+  const profile = ptbLoadContributorProfile();
+  const countries = ["", ...EVALUATOR_COUNTRIES];
+  const practiceOptions = ["Libéral", "Structure", "Libéral et structure"];
+  return `<div style="border:1px solid var(--line);border-radius:16px;padding:16px 18px 18px;background:#fff;margin-bottom:16px;box-shadow:var(--shadow)">
+    <div style="font-size:12px;font-weight:900;color:#0f8a47;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px">Profil professionnel contributeur</div>
+    <div class="form" style="margin:0">
+      <div><label>Nom professionnel</label><input value="${ptbAttr(profile.professionalName)}" oninput="ptbSetContributorField('professionalName', this.value)" placeholder="Ex. : Chloé Schmidt-Dhonneur"></div>
+      <div><label>Profession</label><input value="${ptbAttr(profile.profession)}" oninput="ptbSetContributorField('profession', this.value)" placeholder="Ex. : orthophoniste, éducateur, psychologue…"></div>
+      <div><label>Pays / région</label><select onchange="ptbSetContributorField('countryRegion', this.value)">${countries.map(c=>`<option value="${ptbAttr(c)}" ${profile.countryRegion===c?'selected':''}>${c||"Sélectionner"}</option>`).join("")}</select></div>
+      <div><label>Mode d’exercice</label><select onchange="ptbSetContributorField('practiceMode', this.value)"><option value="">Sélectionner</option>${practiceOptions.map(opt=>`<option value="${ptbAttr(opt)}" ${profile.practiceMode===opt?'selected':''}>${opt}</option>`).join("")}</select></div>
+      <div><label>Email</label><input type="email" value="${ptbAttr(profile.email)}" oninput="ptbSetContributorField('email', this.value)" placeholder="utilisé seulement localement"></div>
+      <div><label>Identifiant professionnel transmis</label><input id="professionalContributorId" value="${ptbAttr(profile.professionalId)}" readonly></div>
+      <label class="checkline" style="align-items:center;margin:0"><input type="checkbox" ${profile.collaborativeConsent?'checked':''} onchange="ptbSetContributorField('collaborativeConsent', this.checked)"> Consentement à participer au programme collaboratif</label>
+    </div>
+  </div>`;
 }
 function deterministicStudyCode(){
   const name = normalizeForStudyCode(state.patient.name);
@@ -2106,7 +2345,29 @@ function summaryTiles(){const sc=scoreEval(activeE()); return `<div class="summa
     </div>`).join("")+`</div>`}
 function allRatedItems(e){let arr=[];domains().forEach((d,di)=>cotableItems(d).forEach(it=>{const r=e.ratings[key(di,it.code)];if(typeof r==="number")arr.push({domain:d.name,domainIndex:di,code:it.code,item:it.text,score:r,help:e.helps[key(di,it.code)]||"",comment:e.comments[key(di,it.code)]||""})}));return arr}
 function topAndLow(e){const arr=allRatedItems(e);return{low:[...arr].sort((a,b)=>a.score-b.score).slice(0,8), high:[...arr].sort((a,b)=>b.score-a.score).slice(0,8)}}
-function suggestionsByDomain(e){return domains().map((d,di)=>{const items=cotableItems(d).map(it=>({...it,score:e.ratings[key(di,it.code)]})).filter(x=>typeof x.score==="number"); if(!items.length)return{domain:d.name,text:"Aucune cotation numérique pour ce domaine."}; const low=[...items].sort((a,b)=>a.score-b.score)[0]; const high=[...items].sort((a,b)=>b.score-a.score)[0]; return{domain:d.name,text:`Priorité possible : ${low.text}. Compétence bien installée : ${high.text}.`}})}
+function domainHasNumericRating(e, di){
+  const d = domains()[di];
+  return !!(d && cotableItems(d).some(it => typeof e.ratings[key(di,it.code)] === "number"));
+}
+function domainPctOrNull(e, di){
+  return domainHasNumericRating(e, di) ? scoreEval(e).domains[di].pct : null;
+}
+function suggestionsByDomain(e){
+  return domains().map((d,di)=>{
+    const items=cotableItems(d).map(it=>({...it,score:e.ratings[key(di,it.code)]})).filter(x=>typeof x.score==="number");
+    if(!items.length)return{domain:d.name,text:"Domaine non coté pour cette évaluation. Aucune proposition spécifique n’est générée."};
+    const low=[...items].sort((a,b)=>a.score-b.score)[0];
+    const high=[...items].sort((a,b)=>b.score-a.score)[0];
+    const emerging=items.filter(x=>x.score>=2 && x.score<=4).sort((a,b)=>a.score-b.score).slice(0,2);
+    const guide=guideForItem(d.name, low) || {};
+    const nextStep = low.score <= 2
+      ? "reprendre en contexte très structuré avec guidance visuelle et aide graduée"
+      : low.score <= 4
+        ? "stabiliser la compétence dans une activité courte, répétée et valorisante"
+        : "généraliser la compétence dans un contexte plus spontané";
+    return{domain:d.name,text:`<div class="domainSuggestion"><b>Priorité de travail :</b> ${escHtml(low.text)} <span class="muted">(${low.score}/6)</span><br><b>Appui clinique :</b> ${escHtml(high.text)} <span class="muted">(${high.score}/6)</span><br><b>Piste de séance :</b> ${escHtml(nextStep)}.${emerging.length?`<br><b>Compétences à surveiller :</b> ${emerging.map(x=>escHtml(x.text)).join(" · ")}.`:""}<br><b>Support conseillé :</b> ${escHtml(guide.support || "support visuel adapté au niveau de la personne")} · ${escHtml(guide.astuce || "observer l’aide nécessaire pour interpréter le score")}.</div>`}
+  })
+}
 
 function domainGraphData(e){
   return scoreEval(e).domains.map(d=>({name:d.name, pct:d.pct, color:domainColor(d.name), score:d.score, max:d.max, nc:d.nc}));
@@ -2152,17 +2413,18 @@ function evolutionLineChart(){
   const y = v => H-pad - (v/100)*(H-2*pad);
   const grid = [0,25,50,75,100].map(v=>`<line x1="${pad}" y1="${y(v)}" x2="${W-pad}" y2="${y(v)}" stroke="#edf5ef"/><text x="8" y="${y(v)+4}" font-size="11" fill="#6f7f75">${v}%</text>`).join("");
   const labels = evals.map((e,i)=>`<text x="${x(i)}" y="${H-12}" font-size="11" text-anchor="middle" fill="#6f7f75">É${i+1}</text>`).join("");
-  const lines = activeDomains.map((d,di)=>{
-    const pts = evals
-      .map((e,i)=>({i,pct:scoreEval(e).domains[di].pct || 0,hasData:Object.keys(e.ratings||{}).length>0}))
-      .filter(p=>p.hasData)
-      .map(p=>[x(p.i), y(p.pct)]);
-    if(!pts.length) return ""; const path = pts.map((p,i)=>(i?"L":"M")+p[0]+","+p[1]).join(" ");
+  const visibleSeries = activeDomains.map((d,di)=>({
+    d, di,
+    pts: evals.map((e,i)=>({i,pct:domainPctOrNull(e,di)})).filter(p=>p.pct!==null)
+  })).filter(s=>s.pts.length);
+  const lines = visibleSeries.map(({d, pts})=>{
+    const chartPts = pts.map(p=>[x(p.i), y(p.pct)]);
+    if(!chartPts.length) return ""; const path = chartPts.map((p,i)=>(i?"L":"M")+p[0]+","+p[1]).join(" ");
     const color = domainColor(d.name);
     return `<path d="${path}" fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`+
-      pts.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="${color}"><title>${d.name} Éval ${i+1}</title></circle>`).join("");
+      chartPts.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="${color}"><title>${d.name} Éval ${pts[i].i+1}</title></circle>`).join("");
   }).join("");
-  const legend = activeDomains.map(d=>`<span><i style="background:${domainColor(d.name)}"></i>${d.name}</span>`).join("");
+  const legend = visibleSeries.map(({d})=>`<span><i style="background:${domainColor(d.name)}"></i>${d.name}</span>`).join("");
   return `<div class="chartWrap lineChart"><h3 class="chartTitle">Courbe d’évolution par domaine</h3><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Courbe d’évolution">${grid}${labels}${lines}</svg><div class="legendMini">${legend}</div></div>`;
 }
 
@@ -2363,7 +2625,9 @@ function updatePremiumIdentity(){
   if(topRole) topRole.textContent = p.professional ? "Professionnel référent" : "À compléter";
 }
 
-function viewHome(){return `<section class="homeHeroStudio">
+function viewHome(){
+const contributionStats = typeof ptbContributionStats === "function" ? ptbContributionStats() : {evaluationCount:0,sentCount:0,contributionRate:0};
+return `<section class="homeHeroStudio">
   <div class="homeHeroCopy">
     <div class="eyebrow">Échelle clinique LEGO® Thérapie</div>
     <h2>Observer.<br>Comparer.<br>Faire progresser.</h2>
@@ -2372,6 +2636,21 @@ function viewHome(){return `<section class="homeHeroStudio">
     <div class="homeHeroFeatures"><span><i>✓</i><b>Avant / après<small>Comparaison des évaluations</small></b></span><span><i>↗</i><b>Évolution<small>Suivi jusqu’à 6 temps</small></b></span><span><i>▣</i><b>Données locales<small>Exports et transmission</small></b></span></div>
   </div>
   <div class="homeHeroMedia"><img src="legotherapie-seance.jpg" alt="Séance de LEGO Thérapie en cabinet"><div class="homeMetricStack"><div class="homeMetric"><small>Évaluations</small><b>6</b></div><div class="homeMetric"><small>Domaines</small><b>${domains().length}</b></div><div class="homeMetric"><small>Exports</small><b>PDF</b></div></div></div>
+</section>
+<section class="card noPrint" style="margin:18px 0;background:linear-gradient(135deg,#ffffff,#f3fbf5);border-color:#d8ebdd">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap">
+    <div>
+      <div class="eyebrow">Contribution recherche</div>
+      <h3 style="margin:8px 0 6px">Merci de contribuer au projet collaboratif de recherche LEGO® Thérapie.</h3>
+      <p style="margin:0;color:#667085">Votre tableau de bord suit localement votre participation, sans afficher les données personnelles transmises.</p>
+    </div>
+    <button class="secondary" onclick="nav('contributions')">Voir mes contributions</button>
+  </div>
+  <div class="summaryGrid" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-top:16px">
+    <div class="summaryTile"><span>Évaluations réalisées</span><b>${contributionStats.evaluationCount}</b><small>Dossiers locaux</small></div>
+    <div class="summaryTile"><span>Évaluations partagées</span><b>${contributionStats.sentCount}</b><small>Projet de recherche</small></div>
+    <div class="summaryTile"><span>Taux de contribution</span><b>${contributionStats.contributionRate}%</b><small>Partagées / réalisées</small></div>
+  </div>
 </section>
 <section class="homeSplitStudio">
   <div class="homeImageBlock"><img src="legotherapie-cabinet.jpg" alt="Cabinet de thérapie structuré et chaleureux"></div>
@@ -2447,17 +2726,8 @@ function viewInfo(){
   ensureStudyCode();
   if(!p.situationItems) p.situationItems=[];
   const groupFields=state.mode==="groupe"?`<div><label>Nom du groupe<span class="hint">Ex. : groupe du mardi à 18h, groupe 7–10 ans, groupe habiletés sociales.</span></label><input value="${p.groupName}" oninput="state.patient.groupName=this.value"></div><div><label>Objectif du groupe</label><input value="${p.groupGoal}" oninput="state.patient.groupGoal=this.value"></div>`:"";
-  const countrySelect = `<select onchange="state.patient.evaluatorCountry=this.value">${EVALUATOR_COUNTRIES.map(c=>`<option value="${c}" ${(p.evaluatorCountry||'France')===c?'selected':''}>${c}</option>`).join("")}</select>`;
   return `<h2>Dossier patient / groupe</h2>${pageVisualHero("info")}${pageIntro("Informations de suivi","Renseigne les informations utiles au suivi clinique, aux réévaluations et aux exports. Les données restent stockées localement dans le navigateur.","i")}
-  <div style="border:1px solid var(--line);border-radius:16px;padding:16px 18px 18px;background:#fff;margin-bottom:16px;box-shadow:var(--shadow)">
-    <div style="font-size:12px;font-weight:900;color:#0f8a47;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px">👤 Évaluateur</div>
-    <div class="form" style="margin:0">
-      <div><label>Prénom de l'évaluateur</label><input value="${p.evaluatorFirstName||''}" oninput="state.patient.evaluatorFirstName=this.value"></div>
-      <div><label>Nom de l'évaluateur</label><input value="${p.evaluatorLastName||''}" oninput="state.patient.evaluatorLastName=this.value"></div>
-      <div><label>Profession</label><input value="${p.evaluatorProfession||''}" placeholder="Ex. : orthophoniste, éducateur…" oninput="state.patient.evaluatorProfession=this.value"></div>
-      <div><label>Pays</label>${countrySelect}</div>
-    </div>
-  </div>
+  ${ptbContributorProfileCard()}
   <div style="border:1px solid var(--line);border-radius:16px;padding:16px 18px 18px;background:#fff;margin-bottom:16px;box-shadow:var(--shadow)">
     <div style="font-size:12px;font-weight:900;color:#0f8a47;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px">🧒 Informations patient</div>
     <div class="form" style="margin:0">
@@ -2486,8 +2756,425 @@ function viewEval(){const e=activeE(),sc=scoreEval(e),d=domains()[state.activeDo
 </div>
 ${domainTabs()}${evalCotationToolbar(ds,d)}<div class="card"><h3>${d.name}</h3><div class="scorebar"><span style="width:${ds.pct}%"></span></div><p><b>${ds.score}/${ds.max}</b> · ${ds.pct}% · ${level(ds.pct)} · NC : ${ds.nc}</p></div>${warning}`+evalVisibleItems(d).map(it=>{if(it.section)return`<div class="sectionTitle">${it.code}</div>`; const r=getRating(state.activeDomain,it.code); return `<div class="item" data-eval-item="${state.activeDomain}::${it.code}"><div class="itemTop"><div class="itemText"><span class="itemQuestionLine"><span class="itemQuestionText"><span class="code">${it.code}</span>${it.text}</span>${guideCard(guideForItem(d.name,it))}</span></div><div class="rating">${[1,2,3,4,5,6].map(n=>`<button class="rate ${r===n?'active':''}" onclick="setRating(${state.activeDomain},'${it.code}',${n})">${n}</button>`).join("")}<button class="rate nc ${r==='NC'?'active':''}" onclick="setRating(${state.activeDomain},'${it.code}','NC')">NC</button></div></div><div class="metaRow"><select class="helpSelect" onchange="setHelp(${state.activeDomain},'${it.code}',this.value)">${helpOptions.map(h=>`<option ${e.helps[key(state.activeDomain,it.code)]===h?'selected':''}>${h}</option>`).join("")}</select><input class="commentInput" placeholder="Commentaire optionnel" value="${e.comments[key(state.activeDomain,it.code)]||''}" oninput="setComment(${state.activeDomain},'${it.code}',this.value)"></div></div>`}).join("")+headerActions()}
 function viewGoals(){const th=topAndLow(activeE()), sugg=suggestionsByDomain(activeE()); if(!th.low.length)return`<h2>Objectifs de séance</h2>${pageVisualHero("goals")}${pageIntro("Aide à la priorisation", "L’outil propose une lecture clinique et des objectifs SMART à partir des domaines renseignés. L’évaluateur garde toujours la main sur le choix final des objectifs.", "◎")}${clinicalProfileV27()}${smartGoalsV27()}${smartClinicalProfile()}${smartObjectives()}${evalTabs()}<div class="notice ok">Aucune cotation numérique pour l’instant. Renseigne au moins un item pour générer une proposition.</div>${headerActions()}`; return `<h2>Objectifs de séance – Évaluation ${state.activeEval+1}</h2>${pageVisualHero("goals")}${evalTabs()}<div class="notice">Sélectionner au maximum <b>3 objectifs de travail</b> au départ afin de garder une progression réaliste et observable.</div><div class="cards"><div class="card"><h3>Scores les plus faibles</h3><ul>${th.low.map(x=>`<li><b>${x.score}/6</b> – ${x.domain} : ${x.item}</li>`).join("")}</ul></div><div class="card"><h3>Compétences bien installées</h3><ul>${th.high.map(x=>`<li><b>${x.score}/6</b> – ${x.domain} : ${x.item}</li>`).join("")}</ul></div><div class="card"><h3>Conseil d’utilisation</h3><p>Choisir 1 objectif prioritaire, 1 objectif secondaire et 1 compétence d’appui pour soutenir l’engagement en séance.</p></div></div><div class="card"><h3>Propositions par domaine</h3><table class="table"><tbody>${sugg.map(s=>`<tr><th>${s.domain}</th><td>${s.text}</td></tr>`).join("")}</tbody></table></div>${headerActions()}`}
-function viewSummary(){const rows=domains().map((d,di)=>{let cells=state.evals.map(e=>scoreEval(e).domains[di].pct);let used=cells.filter(v=>v>0);let evo=used.length>=2?used[used.length-1]-used[0]:0;return`<tr><td>${d.name}</td>${cells.map(v=>`<td>${v||"–"}%</td>`).join("")}<td><b>${evo>0?"+":""}${evo}</b></td></tr>`}).join(""); return `<h2>Évolution du dossier</h2>${pageVisualHero("summary")}${pageIntro("Progression longitudinale", "Compare les évaluations successives sans interpréter les évaluations non réalisées comme une régression. Les courbes s’arrêtent aux données réellement renseignées.", "↗")}${evalTabs()}${clinicalProfileV27()}${evolutionLineChart()}${heatmapView()}<table class="table"><thead><tr><th>Domaine</th>${state.evals.map((e,i)=>`<th>Éval. ${i+1}<br><small>${e.date||"–"}</small></th>`).join("")}<th>Évolution</th></tr></thead><tbody>${rows}</tbody></table>${headerActions()}`}
+function viewSummary(){const rows=domains().map((d,di)=>{let cells=state.evals.map(e=>domainPctOrNull(e,di));let used=cells.filter(v=>v!==null);let evo=used.length>=2?used[used.length-1]-used[0]:null;return`<tr><td>${d.name}</td>${cells.map(v=>`<td>${v===null?"–":v+"%"}</td>`).join("")}<td><b>${evo===null?"–":(evo>0?"+":"")+evo}</b></td></tr>`}).join(""); return `<h2>Évolution du dossier</h2>${pageVisualHero("summary")}${pageIntro("Progression longitudinale", "Compare les évaluations successives sans interpréter les évaluations non réalisées comme une régression. Les courbes s’arrêtent aux données réellement renseignées.", "↗")}${evalTabs()}${clinicalProfileV27()}${evolutionLineChart()}${heatmapView()}<table class="table"><thead><tr><th>Domaine</th>${state.evals.map((e,i)=>`<th>Éval. ${i+1}<br><small>${e.date||"–"}</small></th>`).join("")}<th>Évolution</th></tr></thead><tbody>${rows}</tbody></table>${headerActions()}`}
 function viewSaves(){const saves=JSON.parse(localStorage.getItem("ptb_patient_files")||"[]"); if(!saves.length)return`<h2>Mes dossiers</h2>${pageIntro("Sauvegardes locales", "Retrouve les dossiers enregistrés sur cet appareil et ce navigateur. Pense à exporter les PDF pour conserver une trace externe si nécessaire.", "▣")}<div class="notice">Aucune sauvegarde locale pour l’instant.</div>`; return `<h2>Mes dossiers</h2><div class="saveCard"><table class="table"><thead><tr><th>Nom</th><th>Date de naissance</th><th>Âge</th><th>Mode</th><th>Dernière sauvegarde</th><th>Évaluations</th><th></th></tr></thead><tbody>`+saves.map(s=>`<tr><td>${s.state.patient.name||"Sans nom"}</td><td>${s.state.patient.birth||"–"}</td><td>${calculateAge(s.state.patient.birth)||s.state.patient.age||"–"}</td><td>${s.state.mode||"–"}</td><td>${new Date(s.savedAt).toLocaleString("fr-FR")}</td><td>${s.state.evals.filter(e=>e.date||Object.keys(e.ratings||{}).length).length}/6</td><td><button class="secondary" onclick="loadSave('${s.id}')">Rouvrir</button></td></tr>`).join("")+`</tbody></table></div>`}
+function ptbSavedContributionFiles(){
+  try{return JSON.parse(localStorage.getItem("ptb_patient_files")||"[]")}catch(e){return []}
+}
+function ptbSentContributionRecords(){
+  try{return JSON.parse(localStorage.getItem("ptb_contribution_transmissions")||"[]")}catch(e){return []}
+}
+function ptbScoreSavedEval(savedState, evaluation){
+  const current = state;
+  try{
+    state = savedState;
+    return scoreEval(evaluation);
+  }catch(e){
+    return {pct:0, max:0, domains:[]};
+  }finally{
+    state = current;
+  }
+}
+function ptbContributionStats(){
+  const saves = ptbSavedContributionFiles();
+  const sent = ptbSentContributionRecords();
+  const sentEvaluationCount = sent.reduce((sum, item) => sum + (Number(item.evaluations_envoyees) || 1), 0);
+  const beneficiaryKeys = new Set();
+  const domainCounts = {};
+  const workedDomains = new Set();
+  let evaluationCount = 0;
+  let evolutionTotal = 0;
+  let evolutionN = 0;
+
+  saves.forEach(entry => {
+    const st = entry.state || {};
+    const p = st.patient || {};
+    const key = p.studyCode || entry.patientKey || entry.id;
+    if(key) beneficiaryKeys.add(key);
+    const evalScores = [];
+    (st.evals || []).forEach(ev => {
+      const hasRatings = ev && ev.ratings && Object.keys(ev.ratings).length > 0;
+      if(!hasRatings) return;
+      evaluationCount++;
+      const sc = ptbScoreSavedEval(st, ev);
+      if(sc.max) evalScores.push(sc.pct);
+      (sc.domains || []).forEach(d => {
+        if(d.max > 0) {
+          domainCounts[d.name] = (domainCounts[d.name] || 0) + 1;
+          workedDomains.add(d.name);
+        }
+      });
+    });
+    if(evalScores.length >= 2){
+      evolutionTotal += evalScores[evalScores.length - 1] - evalScores[0];
+      evolutionN++;
+    }
+  });
+
+  const topDomains = Object.entries(domainCounts)
+    .sort((a,b)=>b[1]-a[1])
+    .slice(0, 5)
+    .map(([name,count]) => ({name,count}));
+
+  return {
+    savedCount:saves.length,
+    evaluationCount,
+    sentCount:sentEvaluationCount,
+    contributionRate:evaluationCount ? Math.min(100, Math.round(sentEvaluationCount / evaluationCount * 100)) : 0,
+    transmissionCount:sent.length,
+    beneficiaryCount:beneficiaryKeys.size,
+    domainWorkedCount:workedDomains.size,
+    averageEvaluationsPerBeneficiary:beneficiaryKeys.size ? Math.round((evaluationCount / beneficiaryKeys.size) * 10) / 10 : 0,
+    topDomains,
+    averageEvolution:evolutionN ? Math.round(evolutionTotal / evolutionN) : "",
+    comparedBeneficiaries:evolutionN,
+    lastSent:sent[0] ? sent[0].date_transmission : ""
+  };
+}
+function ptbContributionDomainList(stats){
+  if(!stats.topDomains.length) return `<div class="notice">Aucun domaine travaillé pour l’instant.</div>`;
+  const max = Math.max(...stats.topDomains.map(d=>d.count), 1);
+  return `<div class="chartWrap"><h3 class="chartTitle">Domaines les plus travaillés</h3>`+
+    stats.topDomains.map(d=>`<div class="barLine"><div class="barLabel">${d.name}</div><div class="barTrack"><div class="barFill" style="width:${Math.round(d.count/max*100)}%;background:${domainColor(d.name)}"></div></div><div class="barPct">${d.count}</div></div>`).join("")+
+    `</div>`;
+}
+function ptbContributionBadge(sentCount){
+  const levels = [
+    {min:50, max:null, label:"Ambassadeur de la recherche", description:"Votre engagement durable contribue fortement au développement du réseau de recherche.", visual:"trophy", color:"#0b3f49", range:"50 évaluations partagées et plus"},
+    {min:25, max:49, label:"Bâtisseur de connaissances", description:"Vos contributions structurées renforcent la base francophone et soutiennent l’analyse des pratiques.", visual:"advanced", color:"#0f7a42", range:"25 à 49 évaluations partagées"},
+    {min:10, max:24, label:"Contributeur actif", description:"Vos partages réguliers apportent une continuité précieuse au projet de recherche.", visual:"build", color:"#d97706", range:"10 à 24 évaluations partagées"},
+    {min:1, max:9, label:"Contributeur", description:"Vos premières contributions participent déjà à la construction de la base collaborative.", visual:"blue", color:"#2563eb", range:"1 à 9 évaluations partagées"},
+    {min:0, max:0, label:"Première contribution à venir", description:"Votre première évaluation partagée lancera votre parcours de contribution.", visual:"simple", color:"#667085", range:"0 évaluation partagée"}
+  ];
+  const current = levels.find(level => sentCount >= level.min && (level.max === null || sentCount <= level.max)) || levels[0];
+  const ascending = [...levels].reverse();
+  const currentIndex = ascending.findIndex(level => level.label === current.label);
+  const next = ascending[currentIndex + 1] || null;
+  const target = next ? (current.max === 0 ? 1 : current.max) : sentCount;
+  const progress = next ? Math.min(100, Math.round((target ? sentCount / target : 0) * 100)) : 100;
+  const progressText = next
+    ? `${sentCount} évaluation${sentCount>1?"s":""} partagée${sentCount>1?"s":""} sur ${target} pour atteindre le niveau suivant`
+    : "Niveau le plus avancé atteint. Merci pour cette contribution exceptionnelle.";
+  return {
+    ...current,
+    nextLabel: next ? next.label : "Badge maximal atteint",
+    nextMin: next ? next.min : current.min,
+    remaining: next ? Math.max(0, target - sentCount) : 0,
+    progress,
+    progressText
+  };
+}
+function ptbContributionBadgeVisual(badge, small){
+  const sizeClass = small ? " small" : "";
+  const icons = {
+    simple:`<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 51V33"/><path d="M32 34c-10 0-17-7-18-17 10 1 17 8 18 17Z"/><path d="M32 34c10 0 17-7 18-17-10 1-17 8-18 17Z"/><circle cx="32" cy="32" r="26"/></svg>`,
+    blue:`<svg viewBox="0 0 64 64" aria-hidden="true"><path d="m32 10 6.8 13.8L54 26l-11 10.7L45.6 52 32 44.8 18.4 52 21 36.7 10 26l15.2-2.2L32 10Z"/><circle cx="32" cy="32" r="26"/></svg>`,
+    build:`<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="25" r="12"/><path d="M25 36v17l7-5 7 5V36"/><circle cx="32" cy="32" r="26"/></svg>`,
+    advanced:`<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M22 47c-7-4-11-12-11-21"/><path d="M42 47c7-4 11-12 11-21"/><path d="M18 24c2 2 5 3 8 2"/><path d="M46 24c-2 2-5 3-8 2"/><path d="M20 34c3 1 6 1 9-1"/><path d="M44 34c-3 1-6 1-9-1"/><circle cx="32" cy="32" r="26"/></svg>`,
+    trophy:`<svg viewBox="0 0 64 64" aria-hidden="true"><path d="m17 45 5-25 10 13 10-13 5 25H17Z"/><path d="M22 45h20"/><path d="M25 52h14"/><path d="M32 33v12"/><circle cx="32" cy="32" r="26"/></svg>`
+  };
+  const classes = {
+    simple:"badge-sprout",
+    blue:"badge-star",
+    build:"badge-medal",
+    advanced:"badge-laurel",
+    trophy:"badge-crown"
+  };
+  const visual = icons[badge.visual] || icons.simple;
+  const visualClass = classes[badge.visual] || classes.simple;
+  return `<div class="legoBadgeVisual ${visualClass}${sizeClass}">${visual}</div>`;
+}
+function ptbContributionMessage(){
+  const messages = [
+    "Merci de contribuer au projet collaboratif de recherche LEGO® Thérapie.",
+    "Chaque évaluation partagée contribue à améliorer les connaissances.",
+    "Vos données permettent de mieux comprendre les effets de la LEGO® Thérapie.",
+    "Ensemble, construisons une base de données francophone unique.",
+    "Merci pour votre engagement dans l'amélioration des pratiques professionnelles."
+  ];
+  return messages[Math.floor(Math.random() * messages.length)];
+}
+function ptbContributionCertificateMilestone(sentCount){
+  if(sentCount >= 50) return {count:50, label:"Ambassadeur de la recherche · 50 évaluations partagées et plus"};
+  if(sentCount >= 25) return {count:25, label:"Bâtisseur de connaissances · 25 évaluations partagées"};
+  if(sentCount >= 10) return {count:10, label:"Contributeur actif · 10 évaluations partagées"};
+  return null;
+}
+function ptbContributionBadgeCard(stats){
+  const badge = ptbContributionBadge(stats.sentCount);
+  return `<div class="contributionProgressCard">
+    <div class="contributionBadgeHead">
+      ${ptbContributionBadgeVisual(badge)}
+      <div class="contributionBadgeText">
+        <small>Ma progression</small>
+        <h3>${badge.label}</h3>
+        <p>${badge.description}</p>
+      </div>
+    </div>
+    <div class="contributionLevelRow"><span>Niveau actuel</span><span>${badge.nextLabel}</span></div>
+    <div class="contributionProgressTrack"><div class="contributionProgressFill" style="width:${badge.progress}%;background:linear-gradient(90deg,#4caf50,${badge.color})"></div></div>
+    <small class="contributionProgressNote">${badge.progressText}</small>
+  </div>`;
+}
+function ptbContributionBadgesList(stats){
+  const current = ptbContributionBadge(stats.sentCount);
+  const badges = [
+    {min:0, max:0, label:"Première contribution à venir", visual:"simple", range:"0 évaluation partagée"},
+    {min:1, max:9, label:"Contributeur", visual:"blue", range:"1 à 9 évaluations partagées"},
+    {min:10, max:24, label:"Contributeur actif", visual:"build", range:"10 à 24 évaluations partagées"},
+    {min:25, max:49, label:"Bâtisseur de connaissances", visual:"advanced", range:"25 à 49 évaluations partagées"},
+    {min:50, max:null, label:"Ambassadeur de la recherche", visual:"trophy", range:"50 évaluations partagées et plus"}
+  ];
+  return `<div class="contributionBadgeList">` + badges.map(item => {
+    const active = item.label === current.label ? " active" : "";
+    return `<div class="contributionMiniBadge${active}">${ptbContributionBadgeVisual(item, true)}<b>${item.label}</b><small>${item.range}</small></div>`;
+  }).join("") + `</div>`;
+}
+function ptbContributionCertificateBox(stats){
+  const milestone = ptbContributionCertificateMilestone(stats.sentCount);
+  if(stats.sentCount > 0 && !milestone){
+    return `<div class="certificateBox ready"><span class="quickIcon">★</span><div><h3 style="margin:0 0 6px">Attestation disponible</h3><p>Une attestation nominative peut être générée avec le nombre d’évaluations partagées et la date du jour.</p><button class="secondary" style="margin-top:12px" onclick="ptbPrintContributionCertificate()">Télécharger mon attestation</button></div></div>`;
+  }
+  if(!milestone){
+    return `<div class="certificateBox"><span class="quickIcon">☆</span><div><h3 style="margin:0 0 6px">Attestation</h3><p>L’attestation nominative sera disponible dès la première évaluation partagée. Elle indiquera automatiquement votre nom, la date et le nombre de contributions.</p></div></div>`;
+  }
+  return `<div class="certificateBox ready"><span class="quickIcon">★</span><div><h3 style="margin:0 0 6px">Attestation disponible</h3><p>Vous avez atteint le palier ${milestone.label}. L’attestation indiquera automatiquement votre nom, la date et le nombre de contributions.</p><button class="secondary" style="margin-top:12px" onclick="ptbPrintContributionCertificate()">Télécharger mon attestation</button></div></div>`;
+}
+function ptbFormatContributionDate(iso){
+  if(!iso) return "–";
+  try{return new Date(iso).toLocaleDateString("fr-FR")}catch(e){return "–"}
+}
+function ptbContributionImpactText(stats){
+  if(!stats.sentCount) return "Votre première contribution permettra d’ajouter une donnée utile à la base francophone, sans transmettre l’identité de la personne accompagnée.";
+  return `${stats.sentCount} évaluation${stats.sentCount>1?"s":""} partagée${stats.sentCount>1?"s":""} : votre pratique contribue concrètement à documenter les progressions observées en LEGO® Thérapie.`;
+}
+function ptbAverageEvalLabel(value){
+  return String(value || 0).replace(".", ",");
+}
+function ptbContributionActions(stats){
+  return `<div class="exportTopActions noPrint" style="margin-top:16px">
+    <button class="primary" onclick="ptbDownloadContributionSummary()">Télécharger mon récapitulatif</button>
+    ${stats.sentCount > 0 ? `<button class="secondary" onclick="ptbPrintContributionCertificate()">Télécharger mon attestation</button>` : ``}
+  </div>`;
+}
+function viewContributions(){
+  const stats = ptbContributionStats();
+  const evo = stats.averageEvolution === "" ? "–" : (stats.averageEvolution > 0 ? "+" : "") + stats.averageEvolution + " pts";
+  return `<section class="contributionHero">
+    <div class="contributionHeroText">
+      <div class="eyebrow">Projet collaboratif</div>
+      <h2>Ma contribution à la recherche</h2>
+      <p>Chaque évaluation partagée contribue à faire progresser les connaissances sur la LEGO® Thérapie.</p>
+      <div class="contributionMessage"><span class="quickIcon">✓</span><span>${ptbContributionMessage()}</span></div>
+    </div>
+    ${ptbContributionBadgeCard(stats)}
+  </section>
+  <section class="card">
+    <div class="eyebrow">Ma progression</div>
+    ${ptbContributionBadgesList(stats)}
+  </section>
+  <section class="contributionStatsGrid">
+    <div class="contributionStatCard"><span>Évaluations réalisées</span><b>${stats.evaluationCount}</b><small>Enregistrées localement</small></div>
+    <div class="contributionStatCard"><span>Évaluations partagées</span><b>${stats.sentCount}</b><small>Transmises au projet</small></div>
+    <div class="contributionStatCard"><span>Taux de contribution</span><b>${stats.contributionRate}%</b><small>Partagées / réalisées</small></div>
+    <div class="contributionStatCard"><span>Bénéficiaires suivis</span><b>${stats.beneficiaryCount}</b><small>Identifiants locaux distincts</small></div>
+    <div class="contributionStatCard"><span>Dernière contribution</span><b style="font-size:24px">${ptbFormatContributionDate(stats.lastSent)}</b><small>Dernier envoi enregistré</small></div>
+    <div class="contributionStatCard"><span>Domaines travaillés</span><b>${stats.domainWorkedCount}</b><small>Domaines cotés au moins une fois</small></div>
+    <div class="contributionStatCard"><span>Moyenne par bénéficiaire</span><b>${ptbAverageEvalLabel(stats.averageEvaluationsPerBeneficiary)}</b><small>Évaluations / bénéficiaire</small></div>
+    <div class="contributionStatCard"><span>Évolution moyenne</span><b>${evo}</b><small>Entre initiale et finale</small></div>
+  </section>
+  <section class="contributionSectionGrid">
+    <div class="card"><div class="eyebrow">Mon activité</div>${ptbContributionDomainList(stats)}</div>
+    <div class="card">
+      <div class="eyebrow">Mon impact</div>
+      <h3>Votre rôle dans le projet collaboratif</h3>
+      <p style="color:#667085;line-height:1.65">${ptbContributionImpactText(stats)}</p>
+      <table class="table"><tbody>
+        <tr><th>Dossiers locaux</th><td>${stats.savedCount}</td></tr>
+        <tr><th>Évaluations réalisées</th><td>${stats.evaluationCount}</td></tr>
+        <tr><th>Évaluations partagées</th><td>${stats.sentCount}</td></tr>
+        <tr><th>Taux de contribution</th><td>${stats.contributionRate}%</td></tr>
+        <tr><th>Dernier envoi</th><td>${stats.lastSent ? new Date(stats.lastSent).toLocaleString("fr-FR") : "–"}</td></tr>
+        <tr><th>Évolution moyenne initiale → finale</th><td>${evo}</td></tr>
+      </tbody></table>
+      ${ptbContributionCertificateBox(stats)}
+      ${ptbContributionActions(stats)}
+    </div>
+  </section>`;
+}
+function viewCollaborativeProject(){
+  return `<h2>À propos du projet collaboratif</h2>
+  <section class="homeHeroStudio noPrint" style="min-height:380px;margin-bottom:22px">
+    <div class="homeHeroCopy" style="padding:42px">
+      <div class="eyebrow">Recherche collaborative</div>
+      <h2 style="font-size:44px!important">Construire une base francophone solide.</h2>
+      <p>Chaque contribution aide à documenter les évolutions observées en LEGO® Thérapie, tout en protégeant l’identité des personnes accompagnées.</p>
+      <div class="homeHeroFeatures" style="margin-top:12px">
+        <span><i>✓</i><b>Pseudonymisé<small>Pas de nom transmis</small></b></span>
+        <span><i>↗</i><b>Longitudinal<small>Suivi dans le temps</small></b></span>
+        <span><i>▣</i><b>Collaboratif<small>Données agrégées</small></b></span>
+      </div>
+    </div>
+    <div class="homeHeroMedia" style="min-height:380px"><img src="legotherapie-dashboard.jpg" alt="Tableau de bord de suivi LEGO Thérapie"></div>
+  </section>
+  <div class="notice ok" style="font-size:17px;font-weight:900;margin-bottom:18px">Merci de contribuer au projet collaboratif de recherche LEGO® Thérapie.</div>
+  <section class="projectInfoGrid">
+    <div class="card projectInfoCard">
+      <span class="quickIcon">1</span>
+      <div><h3>Objectifs scientifiques</h3>
+      <p>Constituer une base de données francophone pour mieux comprendre les profils, les domaines travaillés et les trajectoires de progression en LEGO® Thérapie.</p>
+      <ul><li>Repérer les évolutions entre évaluations.</li><li>Améliorer les outils d’observation.</li><li>Soutenir la diffusion de pratiques structurées.</li></ul></div>
+    </div>
+    <div class="card projectInfoCard">
+      <span class="quickIcon">2</span>
+      <div><h3>Données collectées</h3>
+      <p>Les contributions regroupent uniquement les informations utiles à l’analyse, sans identité nominative.</p>
+      <ul><li>Code participant pseudonymisé, âge, profil général.</li><li>Dates d’évaluation, scores par item et objectifs.</li><li>Nom professionnel, pays, profession, mode d’exercice, date d’envoi et version de l’application.</li></ul></div>
+    </div>
+    <div class="card projectInfoCard">
+      <span class="quickIcon">3</span>
+      <div><h3>Garanties de confidentialité</h3>
+      <p>Les noms, prénoms, dates de naissance complètes, coordonnées et commentaires libres identifiants ne sont pas envoyés dans la version recherche.</p>
+      <ul><li>Un code stable permet le suivi sans identité du bénéficiaire.</li><li>Le professionnel est identifié pour suivre l’usage de la plateforme.</li><li>Les données du bénéficiaire restent pseudonymisées et limitées au nécessaire.</li></ul></div>
+    </div>
+    <div class="card projectInfoCard">
+      <span class="quickIcon">4</span>
+      <div><h3>Résultats futurs attendus</h3>
+      <p>Les données agrégées pourront produire des repères cliniques, enrichir les supports de formation et guider les futures améliorations de l’outil.</p>
+      <ul><li>Synthèses sur les progressions observées.</li><li>Meilleure lecture des besoins d’accompagnement.</li><li>Valorisation du travail des professionnels contributeurs.</li></ul></div>
+    </div>
+  </section>
+  <div class="legal" style="margin-top:22px">
+    <p><b>Cadre d’utilisation.</b></p>
+    <p>La participation repose sur le consentement du professionnel contributeur. Les données transmises doivent rester nécessaires, pseudonymisées et compatibles avec une démarche de recherche et d’amélioration des pratiques.</p>
+  </div>`;
+}
+function ptbDownloadContributionSummary(){
+  const stats = ptbContributionStats();
+  const contributor = typeof ptbLoadContributorProfile === "function" ? ptbLoadContributorProfile() : {};
+  const evo = stats.averageEvolution === "" ? "–" : (stats.averageEvolution > 0 ? "+" : "") + stats.averageEvolution + " pts";
+  const domainRows = stats.topDomains.length
+    ? stats.topDomains.map(d=>`<tr><td>${d.name}</td><td>${d.count}</td></tr>`).join("")
+    : `<tr><td colspan="2">Aucun domaine renseigné</td></tr>`;
+  let report = document.getElementById("ptbContributionSummaryReport");
+  if(!report){
+    report = document.createElement("div");
+    report.id = "ptbContributionSummaryReport";
+    report.className = "ptbPrintOnly";
+    document.body.appendChild(report);
+  }
+  report.innerHTML = `<style>
+    @page{size:A4 portrait;margin:12mm}
+    #ptbContributionSummaryReport{font-family:Arial,sans-serif;color:#14343a;line-height:1.45}
+    .ptbSummarySheet{padding:2mm 4mm;background:#fff}
+    .ptbSummaryHeader{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #0f7042;padding-bottom:6mm;margin-bottom:6mm}
+    .ptbSummaryHeader h1{font-size:24pt;margin:0;color:#0b3f49}
+    .ptbSummaryMuted{color:#667085;font-weight:700}
+    .ptbSummaryGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:4mm;margin:5mm 0}
+    .ptbSummaryCard{border:1px solid #dbe8df;border-radius:12px;padding:4mm;background:#fbfffc}
+    .ptbSummaryCard b{display:block;font-size:22pt;margin-top:2mm;color:#0f7042}
+    .ptbSummaryTable{width:100%;border-collapse:collapse;margin-top:4mm;font-size:10pt}
+    .ptbSummaryTable th,.ptbSummaryTable td{border-bottom:1px solid #e6eee9;text-align:left;padding:2.6mm}
+    .ptbSummaryTable th{background:#eef8f1;color:#0b3f49}
+  </style>
+  <section class="ptbSummarySheet">
+    <div class="ptbSummaryHeader"><div><h1>Récapitulatif de contribution</h1><div class="ptbSummaryMuted">Programme collaboratif LEGO® Thérapie</div></div><div class="ptbSummaryMuted">${new Date().toLocaleString("fr-FR")}</div></div>
+    <p><strong>Professionnel :</strong> ${escHtml(contributor.professionalName || "non renseigné")}<br><strong>Identifiant :</strong> ${escHtml(contributor.professionalId || "non renseigné")}</p>
+    <div class="ptbSummaryGrid">
+      <div class="ptbSummaryCard">Évaluations réalisées<b>${stats.evaluationCount}</b></div>
+      <div class="ptbSummaryCard">Évaluations partagées<b>${stats.sentCount}</b></div>
+      <div class="ptbSummaryCard">Taux de contribution<b>${stats.contributionRate}%</b></div>
+      <div class="ptbSummaryCard">Bénéficiaires suivis<b>${stats.beneficiaryCount}</b></div>
+      <div class="ptbSummaryCard">Évolution moyenne<b>${evo}</b></div>
+      <div class="ptbSummaryCard">Dernier envoi<b style="font-size:13pt">${stats.lastSent ? new Date(stats.lastSent).toLocaleString("fr-FR") : "–"}</b></div>
+    </div>
+    <h2>Domaines les plus travaillés</h2>
+    <table class="ptbSummaryTable"><thead><tr><th>Domaine</th><th>Nombre d’évaluations concernées</th></tr></thead><tbody>${domainRows}</tbody></table>
+    <h2>Détails</h2>
+    <table class="ptbSummaryTable"><tbody>
+      <tr><th>Dossiers locaux</th><td>${stats.savedCount}</td></tr>
+      <tr><th>Suivis comparables initial/final</th><td>${stats.comparedBeneficiaries}</td></tr>
+    </tbody></table>
+  </section>`;
+  report.style.display = "block";
+  document.body.classList.add("ptb-summary-printing");
+  requestAnimationFrame(()=>setTimeout(()=>window.print(), 220));
+  setTimeout(()=>{
+    document.body.classList.remove("ptb-summary-printing");
+    report.style.display = "";
+  }, 1600);
+}
+function ptbContributionCertificateHtml(stats, contributor, badge){
+  const generated = new Date().toLocaleDateString("fr-FR");
+  const professionalName = contributor.professionalName || "Professionnel contributeur";
+  const milestone = ptbContributionCertificateMilestone(stats.sentCount);
+  const contributionLabel = stats.sentCount + " évaluation" + (stats.sentCount > 1 ? "s" : "") + " partagée" + (stats.sentCount > 1 ? "s" : "");
+  return `<style>
+    @page{size:A4 portrait;margin:0}
+    #ptbContributionCertificateReport{width:210mm;height:297mm;margin:0;padding:0;background:#fff}
+    .ptbCertificateSheet{width:210mm;height:297mm;margin:0 auto;background:#fff;color:#111827;font-family:Arial,sans-serif;position:relative;overflow:hidden;box-sizing:border-box;border:0;box-shadow:0 12px 40px rgba(16,24,40,.16);page-break-after:avoid;break-after:avoid}
+    .ptbCertificateSheet:before{content:"";position:absolute;inset:8mm;border:7px solid #bf5b18;box-shadow:inset 0 0 0 2px #e6b778}
+    .ptbCertificateSheet:after{content:"";position:absolute;left:17mm;right:17mm;top:17mm;height:1px;background:#e8d9c7}
+    .ptbCertificateFrame{position:absolute;left:17mm;right:17mm;bottom:17mm;height:1px;background:#e8d9c7}
+    .ptbCertificateInner{position:absolute;inset:20mm 18mm 18mm;z-index:1;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:flex-start}
+    .ptbCertificateTitle{font-size:24pt;font-weight:400;letter-spacing:.02em;margin:0 0 11mm;color:#111827}
+    .ptbCertificateLine{display:none}
+    .ptbCertificateName{font-size:23pt;font-weight:900;color:#0b3f49;margin:0 0 9mm;max-width:160mm;line-height:1.08}
+    .ptbCertificateText{font-size:16.2pt;line-height:1.34;margin:0 auto 8mm;max-width:166mm}
+    .ptbCertificateText.small{font-size:14.6pt;line-height:1.34;max-width:166mm;margin-bottom:6mm}
+    .ptbCertificateCount{display:inline-block;margin:0 0 7mm;padding:2.2mm 8mm;border-radius:999px;background:#f1fbf5;border:1px solid #bfe5cc;color:#0f7a42;font-size:13pt;font-weight:900}
+    .ptbCertificateBadge{font-size:11.5pt;font-weight:900;color:#0f7a42;margin:0}
+    .ptbCertificateMeta{width:170mm;display:grid;grid-template-columns:76mm 24mm 62mm;gap:4mm;align-items:start;margin-top:6mm}
+    .ptbCertificateSignature,.ptbCertificateDate{border-top:3px solid #8d9ddd;padding-top:2.1mm;font-size:13pt;color:#111827;min-height:34mm}
+    .ptbCertificateSignature small,.ptbCertificateDate small{display:block;margin-top:.7mm;font-size:8.6pt;color:#111827;font-weight:400}
+    .ptbSignatureImg{display:block;width:78mm;max-height:34mm;object-fit:contain;margin:1.5mm auto 0;mix-blend-mode:multiply}
+    .ptbCertificateLogo{display:grid;place-items:start center;transform:translateY(-3mm)}
+    .ptbCertificateLogo img{width:26mm;height:26mm;object-fit:contain;display:block}
+    .ptbCertificateThanks{max-width:154mm;margin:4mm auto 0;color:#344054;font-size:12.8pt;line-height:1.35;font-weight:600}
+    @media print{
+      html,body{width:210mm!important;height:297mm!important;margin:0!important;padding:0!important;background:#fff!important;overflow:hidden!important}
+      #ptbContributionCertificateReport{display:block!important;position:fixed!important;inset:0!important;width:210mm!important;height:297mm!important;margin:0!important;padding:0!important;overflow:hidden!important;background:#fff!important}
+      .ptbCertificateSheet{box-shadow:none!important;width:210mm!important;height:297mm!important;margin:0!important;overflow:hidden!important}
+    }
+  </style>
+  <section class="ptbCertificateSheet">
+    <div class="ptbCertificateFrame"></div>
+    <div class="ptbCertificateInner">
+      <h1 class="ptbCertificateTitle">Attestation de contribution</h1>
+      <div class="ptbCertificateLine"></div>
+      <p class="ptbCertificateName">${professionalName}</p>
+      <p class="ptbCertificateText">a contribué au <strong>Programme Collaboratif de Recherche LEGO® Thérapie</strong> par la transmission de données d’évaluation pseudonymisées destinées à améliorer les connaissances et les pratiques professionnelles dans le domaine des interventions basées sur les jeux de construction.</p>
+      <div class="ptbCertificateCount">${contributionLabel}</div>
+      <p class="ptbCertificateText small">Grâce à son engagement, il/elle participe au développement d’une base de données collaborative francophone visant à mieux comprendre les effets de la LEGO® Thérapie et à soutenir l’évolution des pratiques fondées sur les données.</p>
+      ${milestone ? `<p class="ptbCertificateBadge">Niveau de contribution : ${milestone.label}</p>` : `<p class="ptbCertificateBadge">Niveau de contribution : ${badge.label}</p>`}
+      <div class="ptbCertificateMeta">
+        <div class="ptbCertificateSignature">Chloé Schmidt-Dhonneur<small>Fondatrice de Pose ta brique®</small><img class="ptbSignatureImg" src="signature-chloe.jpg" alt="Signature Chloé Schmidt-Dhonneur"></div>
+        <div class="ptbCertificateLogo"><img src="pose-ta-brique-logo.png" alt="Pose ta brique®"></div>
+        <div class="ptbCertificateDate">${generated}<small>Date</small></div>
+      </div>
+      <p class="ptbCertificateThanks">Chaque évaluation partagée contribue à faire progresser les connaissances au bénéfice des professionnels, des familles et des personnes accompagnées. Merci.</p>
+    </div>
+  </section>`;
+}
+function ptbPrintContributionCertificate(){
+  const stats = ptbContributionStats();
+  const contributor = typeof ptbLoadContributorProfile === "function" ? ptbLoadContributorProfile() : {};
+  const badge = ptbContributionBadge(stats.sentCount);
+  const previous = document.getElementById("ptbContributionCertificateReport");
+  if(previous) previous.remove();
+  const report = document.createElement("div");
+  report.id = "ptbContributionCertificateReport";
+  report.className = "ptbPrintOnly";
+  document.body.appendChild(report);
+  report.innerHTML = ptbContributionCertificateHtml(stats, contributor, badge);
+  report.style.display = "block";
+  document.body.classList.add("ptb-certificate-printing");
+  requestAnimationFrame(()=>setTimeout(()=>window.print(), 220));
+  setTimeout(()=>{
+    document.body.classList.remove("ptb-certificate-printing");
+    report.remove();
+  }, 1600);
+}
 function detailRows(e){let rows=""; domains().forEach((d,di)=>{rows+=`<tr><th colspan="5">${d.name}</th></tr>`; cotableItems(d).forEach(it=>{const r=e.ratings[key(di,it.code)]; if(r===undefined&&state.exportOptions.type==="synthetique")return; const h=e.helps[key(di,it.code)]||"", c=e.comments[key(di,it.code)]||""; rows+=`<tr><td>${it.code}</td><td>${it.text}</td><td>${r===undefined?"–":r}</td>${state.exportOptions.showHelp?`<td>${h||"–"}</td>`:""}${state.exportOptions.showComments?`<td>${c||"–"}</td>`:""}</tr>`})}); return rows}
 
 function ensureExportSelection(){
@@ -2574,7 +3261,10 @@ function exportOptionsUX(){
       <span class="exportSummaryPill">Synthèse condensée</span>
       <div class="exportTopActions">
         <button class="primary" onclick="ptbPrintReport()">Imprimer / enregistrer en PDF</button>
-        <button class="secondary" onclick="ptbTransmitToGoogleSheet()">Transmettre les données</button>
+        <div>
+          <button class="secondary" onclick="ptbTransmitToGoogleSheet()">Contribuer au projet de recherche</button>
+          <small style="display:block;margin-top:8px;color:#667085;line-height:1.4">Les données transmises sont pseudonymisées et alimentent une base de recherche francophone sur la LEGO® Thérapie.</small>
+        </div>
       </div>
     </section>
   </div>`;
@@ -2755,8 +3445,9 @@ function viewExport(){
      Imprimer / Enregistrer en PDF
    </button>
    <button class="secondary" style="font-size:15px;padding:14px 22px" onclick="ptbTransmitToGoogleSheet()">
-     Transmettre les données
+     Contribuer au projet de recherche
    </button>
+   <span style="align-self:center;max-width:420px;color:#667085;font-size:13px;line-height:1.35">Transmission pseudonymisée pour soutenir la recherche francophone en LEGO® Thérapie.</span>
    <button class="secondary" onclick="nav(\'eval\')">← Retour aux évaluations</button>
  </div>`;
 }
@@ -2781,7 +3472,7 @@ function render(options){
     );
   const shouldPreserveScroll = opts.preserveScroll || keepPositionForControl;
   document.querySelectorAll(".navBtn").forEach(b=>b.classList.toggle("active",b.dataset.view===state.view));
-  mainEl.innerHTML={home:viewHome,info:viewInfo,eval:viewEval,goals:viewGoals,summary:viewSummary,saves:viewSaves,founder:viewFounder,export:viewExport}[state.view]();
+  mainEl.innerHTML={home:viewHome,info:viewInfo,eval:viewEval,goals:viewGoals,summary:viewSummary,saves:viewSaves,contributions:viewContributions,project:viewCollaborativeProject,founder:viewFounder,export:viewExport}[state.view]();
   if(typeof updatePremiumIdentity==="function") updatePremiumIdentity();
   if(shouldPreserveScroll){
     try{mainEl.scrollTop=previousMainScroll;}catch(e){}
@@ -3100,6 +3791,7 @@ render();
     state.patient.evaluatorLastName ??= "";
     state.patient.evaluatorProfession ??= "";
     state.patient.evaluatorCountry ??= "France";
+    state.patient.evaluatorPracticeMode ??= "";
     state.patient.schoolStatus ??= "";
     state.patient.timeStatus ??= "Temps plein";
     return true;
@@ -3139,6 +3831,7 @@ render();
           ${field("Nom de l’évaluateur", `<input id="v46EvLast" type="text" value="${state.patient.evaluatorLastName || ""}">`)}
           ${field("Profession", `<input id="v46EvProfession" type="text" value="${state.patient.evaluatorProfession || ""}">`)}
           ${field("Pays de l’évaluateur", buildSelect("v46EvCountry", COUNTRIES, state.patient.evaluatorCountry || "France"))}
+          ${field("Mode d’exercice", buildSelect("v46EvPracticeMode", ["","Libéral","Structure","Libéral et structure"], state.patient.evaluatorPracticeMode || ""))}
         </div>
       </div>
 
@@ -3165,6 +3858,7 @@ render();
     bind("v46EvLast","evaluatorLastName");
     bind("v46EvProfession","evaluatorProfession");
     bind("v46EvCountry","evaluatorCountry");
+    bind("v46EvPracticeMode","evaluatorPracticeMode");
     bind("v46SchoolStatus","schoolStatus");
     bind("v46TimeStatus","timeStatus");
   }
@@ -3456,6 +4150,9 @@ render();
    3. Coller le script fourni dans le fichier INSTRUCTIONS_MISE_EN_LIGNE.md.
    4. Deployer comme application web, puis coller l'URL ci-dessous. */
 const PTB_GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyFRbeAWWwMW6D_kyKV4A43KEIEGZKjH657GeJmUoMGQjIV0GvqPGGyqmPP2DO8Ty9fVw/exec";
+const PTB_APP_VERSION = "2026.06.20-research-supabase";
+const PTB_SUPABASE_URL = "";
+const PTB_SUPABASE_ANON_KEY = "";
 
 function ptbActiveTransmissionEvalIndexes(){
   const state = window.__ptbGetState ? window.__ptbGetState() : null;
@@ -3464,6 +4161,120 @@ function ptbActiveTransmissionEvalIndexes(){
     ? state.exportOptions.selectedEvals
     : [state.activeEval || 0];
   return selected.filter(i => state.evals && state.evals[i]);
+}
+
+function ptbResearchAge(birth){
+  const parsed = typeof parseFlexibleDate === "function" ? parseFlexibleDate(birth) : null;
+  if(!parsed || isNaN(parsed.getTime())) return {texte:"", annees:"", mois:""};
+  const today = new Date();
+  let months = (today.getFullYear() - parsed.getFullYear()) * 12 + (today.getMonth() - parsed.getMonth());
+  if(today.getDate() < parsed.getDate()) months--;
+  if(months < 0) return {texte:"", annees:"", mois:""};
+  const years = Math.floor(months / 12);
+  const remainingMonths = months % 12;
+  return {
+    texte: (typeof calculateAge === "function" ? calculateAge(birth) : "") || (years + " an(s) et " + remainingMonths + " mois"),
+    annees: years,
+    mois: remainingMonths
+  };
+}
+
+function ptbResearchProfile(p){
+  const diagnoses = Array.isArray(p.diagnoses) ? p.diagnoses : [];
+  if(diagnoses.includes("TSA")) return "TSA";
+  if(diagnoses.includes("TDAH")) return "TDAH";
+  if(diagnoses.some(d => String(d).toLowerCase().includes("dys"))) return "DYS";
+  if(diagnoses.includes("Pas de diagnostic")) return "non renseigné";
+  if(diagnoses.length || p.otherDiagnosis) return "autre";
+  return "non renseigné";
+}
+
+function ptbResearchFollowUpDuration(state, evalIndexes){
+  const selected = evalIndexes
+    .map(i => ({index:i, eval:state.evals[i]}))
+    .filter(x => x.eval && x.eval.date);
+  const sessionTotal = evalIndexes
+    .filter(i => i > 0)
+    .reduce((sum, i) => sum + (Number(state.evals[i].sessionsSincePrevious) || 0), 0);
+  if(selected.length < 2){
+    return {date_debut:"", date_fin:"", jours:"", seances_total:sessionTotal};
+  }
+  const first = selected[0].eval.date;
+  const last = selected[selected.length - 1].eval.date;
+  const start = typeof parseFlexibleDate === "function" ? parseFlexibleDate(first) : new Date(first);
+  const end = typeof parseFlexibleDate === "function" ? parseFlexibleDate(last) : new Date(last);
+  const days = start && end && !isNaN(start.getTime()) && !isNaN(end.getTime())
+    ? Math.max(0, Math.round((end - start) / 86400000))
+    : "";
+  return {date_debut:first, date_fin:last, jours:days, seances_total:sessionTotal};
+}
+
+function ptbResearchObjectivesForEval(state, evalIndex){
+  const evaluation = state.evals[evalIndex];
+  if(!evaluation || typeof topAndLow !== "function") return [];
+  const oldActive = state.activeEval;
+  try {
+    state.activeEval = evalIndex;
+    const th = topAndLow(evaluation);
+    return (th.low || []).slice(0, 3).map((item, idx) => ({
+      evaluation_numero: evalIndex + 1,
+      priorite: idx + 1,
+      domaine: item.domain || "",
+      code_item: item.code || "",
+      objectif: item.item ? "Travailler : " + item.item : ""
+    }));
+  } catch(e) {
+    return [];
+  } finally {
+    state.activeEval = oldActive;
+  }
+}
+
+function ptbBuildResearchPayload(state, evalIndexes, rows, allEvalScores){
+  const p = state.patient || {};
+  const contributor = ptbLoadContributorProfile();
+  const professionalId = contributor.professionalId || ptbProfessionalContributorId(contributor);
+  const age = ptbResearchAge(p.birth);
+  const duration = ptbResearchFollowUpDuration(state, evalIndexes);
+  const objectives = evalIndexes.flatMap(i => ptbResearchObjectivesForEval(state, i));
+
+  return {
+    schema: "researchPayload.v1",
+    app_version: PTB_APP_VERSION,
+    transmission_id: "ptb_" + Date.now(),
+    date_transmission: new Date().toISOString(),
+    identifiant_local_pseudonymise: ensureStudyCode(),
+    age: age,
+    sexe_ou_genre: p.sex || "non renseigné",
+    profil_general: ptbResearchProfile(p),
+    contexte: state.mode || "non renseigné",
+    evaluations_selectionnees: evalIndexes.map(i => i + 1),
+    dates_evaluation: evalIndexes.map(i => ({
+      evaluation_numero: i + 1,
+      date_evaluation: state.evals[i] ? (state.evals[i].date || "") : "",
+      nombre_seances_depuis_precedente: i > 0 && state.evals[i] ? (state.evals[i].sessionsSincePrevious || "") : ""
+    })),
+    scores_par_item: rows.map(row => ({
+      evaluation_numero: row.evaluation_numero,
+      date_evaluation: row.date_evaluation,
+      nombre_seances_depuis_precedente: row.nombre_seances_depuis_precedente,
+      domaine: row.domaine,
+      code_item: row.code_item,
+      item: row.item,
+      score: row.score,
+      aide: row.aide
+    })),
+    scores_evaluations: allEvalScores,
+    objectifs_travailles: objectives,
+    duree_de_suivi: duration,
+    professionnel_contributeur: {
+      identifiant_professionnel: professionalId || "non renseigné",
+      nom_professionnel: contributor.professionalName || "",
+      profession: contributor.profession || p.evaluatorProfession || "",
+      pays_exercice: contributor.countryRegion || p.evaluatorCountry || "",
+      mode_exercice: contributor.practiceMode || p.evaluatorPracticeMode || ""
+    }
+  };
 }
 
 function ptbBuildTransmissionPayload(){
@@ -3483,8 +4294,7 @@ function ptbBuildTransmissionPayload(){
           const itemKey = key(domainIndex, item.code);
           const rating = evaluation.ratings[itemKey];
           const help = evaluation.helps[itemKey] || "";
-          const comment = evaluation.comments[itemKey] || "";
-          if(rating === undefined && !help && !comment) return;
+          if(rating === undefined && !help) return;
           rows.push({
             evaluation_numero: evalIndex + 1,
             date_evaluation: evaluation.date || "",
@@ -3494,7 +4304,7 @@ function ptbBuildTransmissionPayload(){
             item: item.text,
             score: rating === undefined ? "" : rating,
             aide: help,
-            commentaire: comment
+            commentaire: ""
           });
         });
       });
@@ -3555,37 +4365,126 @@ function ptbBuildTransmissionPayload(){
     }
   });
 
+  const researchPayload = ptbBuildResearchPayload(state, evalIndexes, rows, allEvalScores);
+  const contributorInfo = researchPayload.professionnel_contributeur || {};
+  const contributorId = contributorInfo.identifiant_professionnel;
+  rows.forEach(row => {
+    row.identifiant_professionnel = contributorId || "";
+    row.nom_professionnel = contributorInfo.nom_professionnel || "";
+    row.professionnel_nom = contributorInfo.nom_professionnel || "";
+    row.professionnel_profession = contributorInfo.profession || "";
+    row.professionnel_pays_exercice = contributorInfo.pays_exercice || "";
+    row.professionnel_mode_exercice = contributorInfo.mode_exercice || "";
+    row.date_envoi = researchPayload.date_transmission;
+    row.version_application = PTB_APP_VERSION;
+  });
+
   return {
-    transmission_id: "ptb_" + Date.now(),
-    date_transmission: new Date().toISOString(),
+    transmission_id: researchPayload.transmission_id,
+    date_transmission: researchPayload.date_transmission,
+    date_envoi: researchPayload.date_transmission,
+    app_version: PTB_APP_VERSION,
+    version_application: PTB_APP_VERSION,
+    research_payload_schema: researchPayload.schema,
     mode: state.mode || "",
     export_type: state.exportOptions ? state.exportOptions.type : "",
     export_audience: state.exportOptions ? state.exportOptions.audience : "",
     evaluations_selectionnees: evalIndexes.map(i => i + 1).join(", "),
     nombre_seances_par_reevaluation: evalIndexes.filter(i => i > 0).map(i => "Evaluation " + (i + 1) + " : " + (state.evals[i].sessionsSincePrevious || "")).join(" ; "),
-    evaluateur_prenom: p.evaluatorFirstName || "",
-    evaluateur_nom: p.evaluatorLastName || "",
-    evaluateur_profession: p.evaluatorProfession || p.professional || "",
-    evaluateur_pays: p.evaluatorCountry || "",
+    identifiant_professionnel: contributorId || "",
+    nom_professionnel: contributorInfo.nom_professionnel || "",
+    professionnel_nom: contributorInfo.nom_professionnel || "",
+    professionnel_profession: contributorInfo.profession || "",
+    professionnel_pays_exercice: contributorInfo.pays_exercice || "",
+    professionnel_mode_exercice: contributorInfo.mode_exercice || "",
+    evaluateur_prenom: "",
+    evaluateur_nom: contributorInfo.nom_professionnel || contributorId || "",
+    evaluateur_profession: contributorInfo.profession || "",
+    evaluateur_pays: contributorInfo.pays_exercice || "",
+    evaluateur_mode_exercice: contributorInfo.mode_exercice || "",
     code_participant: studyCode,
     patient_nom: studyCode,
-    patient_naissance: p.birth || "",
-    patient_age: calculateAge(p.birth) || p.age || "",
+    patient_naissance: "",
+    patient_age: researchPayload.age.texte || "",
     patient_sexe: p.sex || "",
-    groupe_nom: p.groupName || "",
-    groupe_objectif: p.groupGoal || "",
-    diagnostics: Array.isArray(p.diagnoses) ? p.diagnoses.join(", ") : "",
-    diagnostic_autre: p.otherDiagnosis || "",
+    groupe_nom: "",
+    groupe_objectif: "",
+    diagnostics: researchPayload.profil_general,
+    diagnostic_autre: "",
     situation: Array.isArray(p.situationItems) ? p.situationItems.join(", ") : (p.schoolStatus || ""),
     temps_presence: p.timeStatus || "",
-    notes: p.notes || "",
+    notes: "",
     score_global: activeScore ? activeScore.pct : "",
     ...comparison,
     ...domainComparison,
     scores_evaluations_json: JSON.stringify(allEvalScores),
     lignes_items: rows,
-    dossier_complet_json: JSON.stringify(state)
+    researchPayload,
+    research_payload_json: JSON.stringify(researchPayload),
+    dossier_complet_json: JSON.stringify(researchPayload)
   };
+}
+
+function ptbSupabaseConfigured(){
+  return Boolean(
+    PTB_SUPABASE_URL &&
+    PTB_SUPABASE_ANON_KEY &&
+    !PTB_SUPABASE_URL.includes("COLLER") &&
+    !PTB_SUPABASE_ANON_KEY.includes("COLLER")
+  );
+}
+
+function ptbBuildSupabaseResearchRows(payload, contributorProfile){
+  const research = payload.researchPayload || {};
+  const age = research.age || {};
+  const ageMonths = Number.isFinite(Number(age.annees)) && Number.isFinite(Number(age.mois))
+    ? Number(age.annees) * 12 + Number(age.mois)
+    : null;
+  const profileTags = [research.profil_general, research.sexe_ou_genre]
+    .filter(value => value && value !== "non renseigné");
+  const evals = Array.isArray(research.dates_evaluation) ? research.dates_evaluation : [];
+  const scoresByEval = Array.isArray(research.scores_par_item) ? research.scores_par_item : [];
+  const evalSummaries = Array.isArray(research.scores_evaluations) ? research.scores_evaluations : [];
+  const goals = Array.isArray(research.objectifs_travailles) ? research.objectifs_travailles : [];
+
+  return evals.map(ev => {
+    const evaluationNumber = Number(ev.evaluation_numero);
+    return {
+      practitioner_id: payload.identifiant_professionnel || research.professionnel_contributeur?.identifiant_professionnel || "",
+      beneficiary_pseudonym: payload.code_participant || research.identifiant_local_pseudonymise || "",
+      age_months: ageMonths,
+      profile_tags: profileTags,
+      setting: research.contexte || payload.mode || "",
+      evaluation_number: evaluationNumber,
+      evaluation_date: ev.date_evaluation || null,
+      scores_json: {
+        global: evalSummaries.find(item => Number(item.evaluation) === evaluationNumber) || null,
+        items: scoresByEval.filter(item => Number(item.evaluation_numero) === evaluationNumber)
+      },
+      goals_json: goals.filter(item => Number(item.evaluation_numero) === evaluationNumber),
+      consent_confirmed: Boolean(contributorProfile && contributorProfile.collaborativeConsent),
+      app_version: PTB_APP_VERSION
+    };
+  });
+}
+
+function ptbSendToSupabase(payload, contributorProfile){
+  if(!ptbSupabaseConfigured()) return Promise.resolve({skipped:true});
+  const rows = ptbBuildSupabaseResearchRows(payload, contributorProfile);
+  if(!rows.length) return Promise.resolve({skipped:true});
+  return fetch(PTB_SUPABASE_URL.replace(/\/$/, "") + "/rest/v1/research_evaluations", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "apikey": PTB_SUPABASE_ANON_KEY,
+      "Authorization": "Bearer " + PTB_SUPABASE_ANON_KEY,
+      "Prefer": "return=minimal"
+    },
+    body: JSON.stringify(rows)
+  }).then(response => {
+    if(!response.ok) throw new Error("Supabase : " + response.status + " " + response.statusText);
+    return {ok:true, rows:rows.length};
+  });
 }
 
 window.ptbTransmitToGoogleSheet = function(){
@@ -3599,6 +4498,31 @@ window.ptbTransmitToGoogleSheet = function(){
     payload = ptbBuildTransmissionPayload();
   } catch(e) {
     alert(e.message || "Impossible de preparer les donnees.");
+    return;
+  }
+
+  const contributorProfile = ptbLoadContributorProfile();
+  if(!contributorProfile.professionalId){
+    alert("Merci de compléter le profil professionnel contributeur avant de transmettre les données.");
+    state.view = "info";
+    render();
+    return;
+  }
+  const missingContributorFields = [];
+  if(!String(contributorProfile.professionalName || "").trim()) missingContributorFields.push("nom professionnel");
+  if(!String(contributorProfile.profession || "").trim()) missingContributorFields.push("profession");
+  if(!String(contributorProfile.countryRegion || "").trim()) missingContributorFields.push("pays d’exercice");
+  if(!String(contributorProfile.practiceMode || "").trim()) missingContributorFields.push("mode d’exercice");
+  if(missingContributorFields.length){
+    alert("Merci de compléter le profil professionnel avant de transmettre les données : " + missingContributorFields.join(", ") + ".");
+    state.view = "info";
+    render();
+    return;
+  }
+  if(!contributorProfile.collaborativeConsent){
+    alert("Merci de cocher le consentement au programme collaboratif avant de transmettre les données.");
+    state.view = "info";
+    render();
     return;
   }
 
@@ -3617,22 +4541,49 @@ window.ptbTransmitToGoogleSheet = function(){
     return;
   }
 
-  const btns = Array.from(document.querySelectorAll("button")).filter(btn => (btn.textContent || "").includes("Transmettre les donnees") || (btn.textContent || "").includes("Transmettre les données"));
-  btns.forEach(btn => { btn.disabled = true; btn.dataset.oldText = btn.textContent; btn.textContent = "Transmission..."; });
+  const btns = Array.from(document.querySelectorAll("button")).filter(btn => {
+    const text = btn.textContent || "";
+    return text.includes("Contribuer au projet de recherche") || text.includes("Transmettre les donnees") || text.includes("Transmettre les données");
+  });
+  btns.forEach(btn => { btn.disabled = true; btn.dataset.oldText = btn.textContent; btn.textContent = "Contribution en cours..."; });
 
-  fetch(PTB_GOOGLE_SHEET_WEBHOOK_URL, {
+  const googleRequest = fetch(PTB_GOOGLE_SHEET_WEBHOOK_URL, {
     method: "POST",
     mode: "no-cors",
     headers: {"Content-Type": "text/plain;charset=utf-8"},
     body: JSON.stringify(payload)
-  }).then(() => {
-    ptbPublicToast("Envoyé.");
+  });
+  const supabaseRequest = ptbSendToSupabase(payload, contributorProfile);
+
+  Promise.all([googleRequest, supabaseRequest]).then(() => {
+    ptbRecordContributionTransmission(payload);
+    ptbPublicToast("Merci pour votre contribution. Vous participez à la construction d’une base de données francophone sur la LEGO® Thérapie.");
   }).catch(err => {
     alert("Transmission impossible : " + err.message);
   }).finally(() => {
-    btns.forEach(btn => { btn.disabled = false; btn.textContent = btn.dataset.oldText || "Transmettre les donnees"; });
+    btns.forEach(btn => { btn.disabled = false; btn.textContent = btn.dataset.oldText || "Contribuer au projet de recherche"; });
   });
 };
+
+function ptbRecordContributionTransmission(payload){
+  try{
+    const key = "ptb_contribution_transmissions";
+    const records = JSON.parse(localStorage.getItem(key) || "[]");
+    const selected = String(payload.evaluations_selectionnees || "")
+      .split(",")
+      .map(x=>x.trim())
+      .filter(Boolean);
+    records.unshift({
+      transmission_id: payload.transmission_id || "ptb_" + Date.now(),
+      date_transmission: payload.date_transmission || new Date().toISOString(),
+      code_participant: payload.code_participant || "",
+      identifiant_professionnel: payload.identifiant_professionnel || "",
+      evaluations_envoyees: selected.length,
+      evaluations_selectionnees: selected.join(", ")
+    });
+    localStorage.setItem(key, JSON.stringify(records.slice(0, 500)));
+  }catch(e){}
+}
 
 function ptbPublicToast(message){
   const old = document.querySelector(".ptbPublicToast");
@@ -3887,9 +4838,10 @@ function ptbPublicToast(message){
     const idxs = selectedIndexes();
     if(idxs.length < 2 || typeof domains !== "function") return "";
     const rows = domains().map((d,di)=>{
-      const values = idxs.map(i => scoreForEval(i).domains[di]?.pct || 0);
-      const delta = values[values.length-1] - values[0];
-      return `<tr><td><strong>${d.name}</strong></td>${values.map(v=>`<td>${v || "–"}${v ? "%" : ""}</td>`).join("")}<td>${delta>0?"+":""}${delta} pts</td></tr>`;
+      const values = idxs.map(i => (typeof domainPctOrNull === "function" ? domainPctOrNull(st().evals[i], di) : (scoreForEval(i).domains[di]?.max ? scoreForEval(i).domains[di].pct : null)));
+      const used = values.filter(v=>v!==null);
+      const delta = used.length >= 2 ? used[used.length-1] - used[0] : null;
+      return `<tr><td><strong>${d.name}</strong></td>${values.map(v=>`<td>${v===null ? "–" : v+"%"}</td>`).join("")}<td>${delta===null ? "–" : (delta>0?"+":"")+delta+" pts"}</td></tr>`;
     }).join("");
     const globalBars = idxs.map(i=>{
       const sc = scoreForEval(i);
@@ -3921,8 +4873,8 @@ function ptbPublicToast(message){
     }).join("");
     const domainRows = typeof domains === "function" ? domains().map((d,di)=>{
       return `<tr><td><strong>${d.name}</strong></td>${idxs.map(i=>{
-        const pct = scoreForEval(i).domains[di]?.pct || 0;
-        return `<td>${pct || "–"}${pct ? "%" : ""}</td>`;
+        const pct = typeof domainPctOrNull === "function" ? domainPctOrNull(st().evals[i], di) : (scoreForEval(i).domains[di]?.max ? scoreForEval(i).domains[di].pct : null);
+        return `<td>${pct===null ? "–" : pct+"%"}</td>`;
       }).join("")}</tr>`;
     }).join("") : "";
     return `<div class="v47Page">
@@ -3964,16 +4916,21 @@ function ptbPublicToast(message){
     </div>`;
   }
   window.ptbPrintReport = function(){
-    const old = document.querySelector(".v47PrintReport");
+    const old = document.getElementById("ptbPdfReport") || document.querySelector(".v47PrintReport");
     if(old) old.remove();
     const report = document.createElement("div");
-    report.className = "v47PrintReport";
+    report.id = "ptbPdfReport";
+    report.className = "ptbPrintOnly";
     const idxs = selectedIndexes();
     report.innerHTML = `<div class="v47Watermark">Compte rendu généré par ${safe(evaluatorDisplayName())}</div>` + coverPage() + evolutionPage() + compactEvalOverview();
+    report.style.display = "block";
     document.body.appendChild(report);
-    document.body.classList.add("v47-printing");
-    setTimeout(()=>window.print(), 80);
-    setTimeout(()=>document.body.classList.remove("v47-printing"), 1200);
+    document.body.classList.add("ptb-report-printing");
+    requestAnimationFrame(()=>setTimeout(()=>window.print(), 220));
+    setTimeout(()=>{
+      document.body.classList.remove("ptb-report-printing");
+      report.style.display = "";
+    }, 1600);
   };
 })();
 </script>
@@ -4009,9 +4966,9 @@ function ptbPublicToast(message){
         <span style="background:#eef5ff;color:#1677b8"><svg viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M8 11l4 4 4-4"/><path d="M5 20h14"/></svg></span>
         Dossier
       </button>
-      <button class="manualSaveBtn" style="height:44px;color:#b45309;border-color:#f0d9a8" onclick="state.view='export'; if(typeof render==='function')render();" title="Préparer la transmission des données">
+      <button class="manualSaveBtn" style="height:44px;color:#b45309;border-color:#f0d9a8" onclick="state.view='export'; if(typeof render==='function')render();" title="Contribuer au projet de recherche">
         <span style="background:#fef8ec;color:#b45309"><svg viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9l20-7z"/></svg></span>
-        Envoyer
+        Contribuer
       </button>
       <div class="evaluatorChip" style="height:44px;padding:6px 12px;cursor:pointer" onclick="ptbGoInfo()">
         <span class="chipAvatar"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
@@ -4086,104 +5043,12 @@ function ptbPublicToast(message){
   };
 
   /* --- 4. ENVOI AU SUPERVISEUR via Formspree --- */
-  /* CONFIGURATION : remplacer l'URL par votre endpoint Formspree personnel */
-  const FORMSPREE_URL = "https://formspree.io/f/VOTRE_ID_ICI";
-
   window.ptbSendToSupervisor = function(){
-    const state = window.__ptbGetState ? window.__ptbGetState() : null;
-    if(!state || !state.patient) return alert("Aucun dossier chargé. Veuillez d'abord créer ou ouvrir un dossier patient.");
-    const p = state.patient || {};
-
-    // Vérification minimale
-    if(!p.name && !p.evaluatorLastName){
-      if(!confirm("Le nom du patient et de l'évaluateur ne sont pas renseignés. Envoyer quand même ?")) return;
-    }
-
-    // Calcul du score global
-    let scoreGlobal = "–";
-    try { if(typeof scoreEval === "function" && Array.isArray(state.evals)){
-      const sc = scoreEval(state.evals[state.activeEval || 0]);
-      scoreGlobal = sc.pct ? sc.pct + "%" : "–";
-    }} catch(e){}
-
-    const evaluatorName = [p.evaluatorFirstName, p.evaluatorLastName].filter(Boolean).join(" ") || p.professional || "Non renseigné";
-    const situationStr = Array.isArray(p.situationItems) && p.situationItems.length ? p.situationItems.join(", ") : (p.schoolStatus || "Non renseigné");
-
-    // Résumé lisible
-    const summary = [
-      "=== DOSSIER PATIENT ===",
-      "Patient : " + (p.name || "–"),
-      "Naissance : " + (p.birth || "–") + (p.age ? " (" + p.age + ")" : ""),
-      "Sexe : " + (p.sex || "–"),
-      "Diagnostic : " + (Array.isArray(p.diagnoses) ? p.diagnoses.join(", ") : "–"),
-      "Situation : " + situationStr,
-      "Temps : " + (p.timeStatus || "–"),
-      "",
-      "=== ÉVALUATEUR ===",
-      "Évaluateur : " + evaluatorName,
-      "Profession : " + (p.evaluatorProfession || "–"),
-      "Pays : " + (p.evaluatorCountry || "–"),
-      "",
-      "=== RÉSULTATS ===",
-      "Score global : " + scoreGlobal,
-      "Évaluation active : n°" + ((state.activeEval || 0) + 1),
-      "Date : " + (state.evals[state.activeEval || 0]?.date || "–"),
-      "",
-      "=== NOTES ===",
-      p.notes || "(aucune)",
-    ].join("\n");
-
-    // Données JSON compactes
-    const jsonCompact = JSON.stringify(state);
-
-    // Vérifier si Formspree est configuré
-    if(FORMSPREE_URL.includes("VOTRE_ID_ICI")){
-      // Mode démonstration : copier dans le presse-papier + ouvrir email
-      const subject = encodeURIComponent("Évaluation LEGO® Thérapie – " + (p.name || "Dossier") + " – " + new Date().toLocaleDateString("fr-FR"));
-      const body = encodeURIComponent(summary + "\n\n[Données JSON attachées séparément via export JSON]");
-      window.open("mailto:?subject=" + subject + "&body=" + body);
-      // Copier JSON dans le presse-papier
-      navigator.clipboard.writeText(jsonCompact).then(()=>{
-        alert("Email prêt à envoyer !\n\nLe résumé a été inséré dans votre client mail.\nLe JSON complet a été copié dans le presse-papier.\n\n💡 Pour une réception automatique, configurez Formspree (voir instructions dans Mes dossiers).");
-      }).catch(()=>{
-        alert("Email prêt à envoyer !\n\nPour l'envoi automatique, configurez Formspree dans le code (variable FORMSPREE_URL).");
-      });
+    if(typeof window.ptbTransmitToGoogleSheet === "function"){
+      window.ptbTransmitToGoogleSheet();
       return;
     }
-
-    // Envoi via Formspree
-    const btn = document.querySelector("[onclick='ptbSendToSupervisor()']");
-    if(btn){ btn.textContent = "Envoi…"; btn.disabled = true; }
-
-    fetch(FORMSPREE_URL, {
-      method: "POST",
-      headers: {"Content-Type": "application/json", "Accept": "application/json"},
-      body: JSON.stringify({
-        _subject: "Évaluation LEGO® Thérapie – " + (p.name || "Dossier") + " – " + new Date().toLocaleDateString("fr-FR"),
-        evaluateur: evaluatorName,
-        pays: p.evaluatorCountry || "–",
-        profession: p.evaluatorProfession || "–",
-        patient: p.name || "–",
-        naissance: p.birth || "–",
-        diagnostic: Array.isArray(p.diagnoses) ? p.diagnoses.join(", ") : "–",
-        situation: situationStr,
-        score_global: scoreGlobal,
-        date_evaluation: state.evals[state.activeEval || 0]?.date || "–",
-        notes: p.notes || "",
-        resume: summary,
-        json_complet: jsonCompact
-      })
-    }).then(r => r.json()).then(data => {
-      if(data.ok){
-        alert("✅ Évaluation envoyée avec succès !");
-      } else {
-        alert("❌ Erreur d'envoi : " + (data.error || "Vérifiez votre connexion."));
-      }
-    }).catch(err => {
-      alert("❌ Envoi impossible : " + err.message);
-    }).finally(()=>{
-      if(btn){ btn.textContent = "Envoyer"; btn.disabled = false; }
-    });
+    alert("Transmission indisponible pour le moment.");
   };
 
   /* --- 5. BOUTON IMPORT dans Mes dossiers --- */
