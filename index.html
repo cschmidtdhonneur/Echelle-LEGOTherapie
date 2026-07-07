@@ -9,6 +9,13 @@
 .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.card{padding:20px;border:1px solid #edf4ef;box-shadow:0 8px 24px rgba(14,83,48,.08);margin-bottom:16px}.card h3{margin:0 0 8px;color:var(--dark)}.card p,.card li{color:var(--muted);line-height:1.45}
 .form{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}label{display:block;font-size:12px;font-weight:900;color:#6b7d72;text-transform:uppercase;letter-spacing:.05em;margin:0 0 6px}.hint{display:block;font-size:12px;color:#7b8b82;text-transform:none;letter-spacing:0;font-weight:600;margin-top:4px}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:14px;padding:11px 12px;background:#fbfffc;color:var(--dark)}textarea{min-height:90px}
 .evalTabs{display:flex;gap:8px;overflow:auto;padding:10px;background:#f7fbf8;border:1px solid var(--line);border-radius:18px;margin:15px 0 18px}.evalTab{min-width:135px;border:1px solid var(--line);background:white;border-radius:14px;padding:10px;cursor:pointer;font-weight:900;color:#52665a}.evalTab.active{border-color:var(--green);background:linear-gradient(135deg,#eaf9ef,#fff);color:var(--green);box-shadow:0 8px 18px rgba(22,131,74,.12)}.evalTab small{display:block;font-weight:700;color:#829087;margin-top:2px}
+.evalTab input[type="date"]{margin-top:7px;padding:7px 8px;border-radius:10px;font-size:12px;background:#fff;color:#344054}
+.freeGoalsGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.freeGoalCard{border:1px solid var(--line);border-radius:16px;background:#fbfffc;padding:14px}
+.freeGoalCard h4{margin:0 0 8px;color:#173425}
+.freeGoalCard textarea{min-height:92px;resize:vertical}
+.evalDatesGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media(max-width:900px){.freeGoalsGrid,.evalDatesGrid{grid-template-columns:1fr}}
 .domainTabs{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}.domainTab{border:0;border-radius:999px;padding:10px 14px;font-weight:900;color:white;cursor:pointer;opacity:.82}.domainTab.active{opacity:1;transform:translateY(-1px);box-shadow:0 8px 18px rgba(0,0,0,.12)}
 .item{border:1px solid #e5eee8;border-radius:18px;background:#fff;margin-bottom:10px;padding:14px}.sectionTitle{background:linear-gradient(90deg,#eefaf2,#fff);border-left:5px solid var(--green);font-weight:900;color:var(--green);padding:14px;border-radius:16px;margin:16px 0 10px}.itemTop{display:flex;gap:12px;align-items:flex-start;justify-content:space-between}.itemText{font-weight:750;color:#26392d;line-height:1.35}.code{color:var(--green);font-weight:900;margin-right:8px}.rating{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.rate{min-width:36px;height:34px;border:1px solid var(--line);background:#fbfffc;border-radius:999px;cursor:pointer;font-weight:900;color:#54685c}.rate.active{background:var(--green);color:white;border-color:var(--green)}.nc.active{background:#3d8bff;border-color:#3d8bff}.metaRow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.helpSelect,.commentInput{font-size:13px;padding:9px 10px}
 .scorebar{height:10px;background:#edf5ef;border-radius:999px;overflow:hidden;margin:12px 0}.scorebar span{display:block;height:100%;background:linear-gradient(90deg,var(--green2),var(--green));width:0%}.notice{border:1px solid #f5dca9;background:#fff9eb;color:#745216;padding:12px 14px;border-radius:16px;margin:12px 0;line-height:1.4}.ok{border-color:#c7ead2;background:#f0fbf4;color:#1e6d3f}
@@ -1901,8 +1908,28 @@ const bareme = [
 [6, "Compétence présente et cohérente dans la plupart des situations. La personne est capable de le faire dans n’importe quel contexte."],
 ["NC", "Non coté / non évalué pour l’instant. L’item reste visible mais n’entre pas dans le score."]
 ];
-let state = {view:"home", mode:"individuel", patient:{name:"",birth:"",age:"",sex:"",professional:"",groupName:"",groupGoal:"",notes:"",diagnoses:[],otherDiagnosis:""}, activeEval:0, activeDomain:0, exportOptions:{type:"synthetique", audience:"pro", showHelp:false, showComments:false, selectedEvals:[0]}, evals:Array.from({length:MAX_EVALS}, (_,i)=>({date:i===0?new Date().toISOString().slice(0,10):"", ratings:{}, helps:{}, comments:{} }))};
+let state = {view:"home", mode:"individuel", patient:{name:"",birth:"",age:"",sex:"",professional:"",groupName:"",groupGoal:"",sessionFrequency:"",sessionDuration:"",accompanimentReason:"",notes:"",diagnoses:[],otherDiagnosis:""}, activeEval:0, activeDomain:0, exportOptions:{type:"synthetique", audience:"pro", showHelp:false, showComments:false, selectedEvals:[0]}, evals:Array.from({length:MAX_EVALS}, (_,i)=>({date:i===0?new Date().toISOString().slice(0,10):"", ratings:{}, helps:{}, comments:{}, manualGoals:{} }))};
 window.__ptbGetState = function(){ return state; };
+function ensureStateShape(){
+  state.patient = state.patient || {};
+  if(!Array.isArray(state.patient.diagnoses)) state.patient.diagnoses = [];
+  ["sessionFrequency","sessionDuration","accompanimentReason","groupName","groupGoal","notes","otherDiagnosis"].forEach(k=>{
+    if(state.patient[k] === undefined || state.patient[k] === null) state.patient[k] = "";
+  });
+  if(!Array.isArray(state.evals)) state.evals = [];
+  while(state.evals.length < MAX_EVALS){
+    state.evals.push({date:"", ratings:{}, helps:{}, comments:{}, manualGoals:{}});
+  }
+  state.evals = state.evals.slice(0, MAX_EVALS).map((e,i)=>({
+    date:e?.date || (i===0 ? new Date().toISOString().slice(0,10) : ""),
+    ratings:e?.ratings || {},
+    helps:e?.helps || {},
+    comments:e?.comments || {},
+    manualGoals:e?.manualGoals || {},
+    sessionsSincePrevious:e?.sessionsSincePrevious || ""
+  }));
+  if(!state.exportOptions) state.exportOptions={type:"synthetique", audience:"pro", showHelp:false, showComments:false, selectedEvals:[state.activeEval||0]};
+}
 function domains(){return DATA[state.mode]||DATA.individuel} function key(d,i){return state.mode+"::"+d+"::"+i} function el(id){return document.getElementById(id)} function activeE(){return state.evals[state.activeEval]}
 function parseFlexibleDate(value){
   if(!value) return null;
@@ -2280,24 +2307,28 @@ function guideForItem(domainName, item){
 }
 function level(pct){ return levelObj(pct).label; }
 function saveLocal(){const patientKey=(state.patient.name||"sans_nom").toLowerCase().replace(/\W+/g,"_")+"_"+(state.patient.birth||"date"); const id="ptb_dossier_"+patientKey+"_"+Date.now(); const saves=JSON.parse(localStorage.getItem("ptb_patient_files")||"[]"); saves.unshift({id,patientKey,savedAt:new Date().toISOString(),state:JSON.parse(JSON.stringify(state))}); localStorage.setItem("ptb_patient_files",JSON.stringify(saves.slice(0,100))); alert("Dossier patient sauvegardé dans Mes dossiers.")}
-function loadSave(id){const saves=JSON.parse(localStorage.getItem("ptb_patient_files")||"[]"); const s=saves.find(x=>x.id===id); if(s){state=s.state;state.view="info";render()}}
-function newFromCurrent(){const next=state.evals.findIndex((e,i)=>i>0&&!e.date&&Object.keys(e.ratings).length===0); if(next<0)return alert("Les 6 évaluations sont déjà utilisées."); state.activeEval=next; state.evals[next]={date:new Date().toISOString().slice(0,10),ratings:{},helps:{},comments:{}}; state.view="eval"; render()}
+function loadSave(id){const saves=JSON.parse(localStorage.getItem("ptb_patient_files")||"[]"); const s=saves.find(x=>x.id===id); if(s){state=s.state;ensureStateShape();state.view="info";render()}}
+function newFromCurrent(){const next=state.evals.findIndex((e,i)=>i>0&&!e.date&&Object.keys(e.ratings).length===0); if(next<0)return alert("Les 6 évaluations sont déjà utilisées."); state.activeEval=next; state.evals[next]={date:new Date().toISOString().slice(0,10),ratings:{},helps:{},comments:{},manualGoals:{}}; state.view="eval"; render()}
 function toggleMobileMenu(){document.body.classList.toggle("mobile-menu-open")}
 function closeMobileMenu(){document.body.classList.remove("mobile-menu-open")}
 function nav(v){state.view=v;closeMobileMenu();render()} document.querySelectorAll(".navBtn").forEach(b=>b.onclick=()=>nav(b.dataset.view));
 document.addEventListener("keydown", e => { if(e.key === "Escape") closeMobileMenu(); });
 function headerActions(){return `<div class="actions noPrint"><button class="primary" onclick="saveLocal()">Enregistrer maintenant</button><button class="secondary" onclick="newFromCurrent()">Nouvelle évaluation vierge</button><button class="secondary" onclick="state.view='export'; render()">Préparer l’export</button></div>`}
-function evalTabs(){return `<div class="evalTabs noPrint">`+state.evals.map((e,i)=>`<button class="evalTab ${i===state.activeEval?'active':''}" onclick="state.activeEval=${i};if(!state.evals[${i}].date)state.evals[${i}].date=new Date().toISOString().slice(0,10);render()">Évaluation ${i+1}<small>${e.date||"–"}</small></button>`).join("")+`</div>`}
+function evalTabs(){return `<div class="evalTabs noPrint">`+state.evals.map((e,i)=>`<div class="evalTab ${i===state.activeEval?'active':''}" onclick="state.activeEval=${i};render()"><b>Évaluation ${i+1}</b><input type="date" value="${e.date||""}" onclick="event.stopPropagation()" oninput="state.evals[${i}].date=this.value;render({preserveScroll:true})"><small>${i>0 && e.sessionsSincePrevious ? e.sessionsSincePrevious+" séance(s)" : e.date ? "Date modifiable" : "Non renseignée"}</small></div>`).join("")+`</div>`}
 function sessionsSincePreviousCard(){
   const e = activeE();
-  if(state.activeEval === 0) return "";
   return `<div class="card noPrint" style="margin:0 0 16px">
-    <h3>Réévaluation ${state.activeEval+1}</h3>
-    <div class="form" style="grid-template-columns:1fr;margin:0">
+    <h3>${state.activeEval === 0 ? "Évaluation initiale" : "Réévaluation " + (state.activeEval+1)}</h3>
+    <div class="form" style="grid-template-columns:repeat(2,minmax(0,1fr));margin:0">
+      <div>
+        <label>Date de cette évaluation</label>
+        <input type="date" value="${e.date||""}" oninput="activeE().date=this.value;render({preserveScroll:true})">
+      </div>
+      ${state.activeEval === 0 ? `<div><label>Type</label><input value="Évaluation initiale" readonly></div>` : `
       <div>
         <label>Nombre de séances depuis l’évaluation précédente</label>
         <input type="number" min="0" step="1" value="${e.sessionsSincePrevious||""}" placeholder="Ex. : 8" oninput="activeE().sessionsSincePrevious=this.value">
-      </div>
+      </div>`}
     </div>
   </div>`;
 }
@@ -2715,6 +2746,38 @@ function situationChecklist(){
   </div>`;
 }
 const EVALUATOR_COUNTRIES = ["France","Belgique","Suisse","Luxembourg","Canada","Monaco","Andorre","Maroc","Algérie","Tunisie","Liban","Sénégal","Côte d'Ivoire","Bénin","Burkina Faso","Cameroun","République du Congo","République démocratique du Congo","Gabon","Guinée","Mali","Niger","Togo","Madagascar","Maurice","Seychelles","Haïti","Autre"];
+const SESSION_FREQUENCY_OPTIONS = ["", "Hebdomadaire", "Bimensuel", "Mensuel", "Stage", "Ponctuel", "Autre"];
+const SESSION_DURATION_OPTIONS = ["", "15 minutes", "30 minutes", "45 minutes", "1 heure", "1 heure 15", "1 heure 30", "1 heure 45", "2 heures", "Autre"];
+function selectOptions(options, current, placeholder){
+  return options.map(opt=>`<option value="${escHtml(opt)}" ${current===opt?'selected':''}>${opt || placeholder || "Sélectionner"}</option>`).join("");
+}
+function evaluationDatesPanel(){
+  return `<div class="card noPrint" style="grid-column:1/-1;margin:0">
+    <h3>Dates des évaluations</h3>
+    <p style="margin-top:0;color:#667085">Utile pour saisir une cotation réalisée précédemment sur papier.</p>
+    <div class="evalDatesGrid">
+      ${state.evals.map((e,i)=>`<div><label>Évaluation ${i+1}</label><input type="date" value="${e.date||""}" oninput="state.evals[${i}].date=this.value;render({preserveScroll:true})"></div>`).join("")}
+    </div>
+  </div>`;
+}
+function manualGoalKey(domainName){return String(domainName||"").replace(/\s+/g,"_").toLowerCase()}
+function manualGoalsForActiveEval(){
+  const e = activeE();
+  e.manualGoals = e.manualGoals || {};
+  return `<div class="card">
+    <h3>Objectifs de travail proposés par l’intervenant</h3>
+    <p style="margin-top:0;color:#667085">Ces espaces sont libres : ils permettent de noter les objectifs prévus par le professionnel, même si les propositions automatiques ne sont pas utilisées.</p>
+    <div class="freeGoalsGrid">
+      ${domains().map(d=>{
+        const k = manualGoalKey(d.name);
+        return `<div class="freeGoalCard" style="border-left:7px solid ${domainColor(d.name)}">
+          <h4>${d.name}</h4>
+          <textarea placeholder="Objectifs de travail prévus pour ce domaine..." oninput="activeE().manualGoals=activeE().manualGoals||{};activeE().manualGoals['${k}']=this.value">${escHtml(e.manualGoals[k]||"")}</textarea>
+        </div>`;
+      }).join("")}
+    </div>
+  </div>`;
+}
 function ensureStudyCode(){
   return updateStudyCodeFromIdentity();
 }
@@ -2739,7 +2802,10 @@ function viewInfo(){
       <div><label>Sexe</label><select onchange="state.patient.sex=this.value">${sexOptions.map(s=>`<option value="${s}" ${p.sex===s?'selected':''}>${s||"Sélectionner"}</option>`).join("")}</select></div>
       <div><label>Professionnel référent</label><input value="${p.professional}" oninput="state.patient.professional=this.value"></div>
       ${groupFields}
-      <div><label>Date évaluation active</label><input type="date" value="${activeE().date}" oninput="activeE().date=this.value;render()"></div>
+      <div><label>Fréquence des séances</label><select onchange="state.patient.sessionFrequency=this.value">${selectOptions(SESSION_FREQUENCY_OPTIONS, p.sessionFrequency || "", "Sélectionner")}</select></div>
+      <div><label>Durée d’une séance</label><select onchange="state.patient.sessionDuration=this.value">${selectOptions(SESSION_DURATION_OPTIONS, p.sessionDuration || "", "Sélectionner")}</select></div>
+      <div style="grid-column:1/-1"><label>Motif d’accompagnement / demande de la famille / projet de la personne</label><textarea placeholder="Ex. : travailler les interactions sociales, la coopération, l’autonomie, la communication..." oninput="state.patient.accompanimentReason=this.value">${escHtml(p.accompanimentReason||"")}</textarea></div>
+      ${evaluationDatesPanel()}
       ${situationChecklist()}
     </div>
   </div>
@@ -2755,7 +2821,14 @@ function viewEval(){const e=activeE(),sc=scoreEval(e),d=domains()[state.activeDo
   <div class="quickAction" onclick="nav('export')" style="cursor:pointer"><span class="quickIcon">↓</span><div>Exporter PDF<br><small>Famille / Pro / Synthétique</small></div></div>
 </div>
 ${domainTabs()}${evalCotationToolbar(ds,d)}<div class="card"><h3>${d.name}</h3><div class="scorebar"><span style="width:${ds.pct}%"></span></div><p><b>${ds.score}/${ds.max}</b> · ${ds.pct}% · ${level(ds.pct)} · NC : ${ds.nc}</p></div>${warning}`+evalVisibleItems(d).map(it=>{if(it.section)return`<div class="sectionTitle">${it.code}</div>`; const r=getRating(state.activeDomain,it.code); return `<div class="item" data-eval-item="${state.activeDomain}::${it.code}"><div class="itemTop"><div class="itemText"><span class="itemQuestionLine"><span class="itemQuestionText"><span class="code">${it.code}</span>${it.text}</span>${guideCard(guideForItem(d.name,it))}</span></div><div class="rating">${[1,2,3,4,5,6].map(n=>`<button class="rate ${r===n?'active':''}" onclick="setRating(${state.activeDomain},'${it.code}',${n})">${n}</button>`).join("")}<button class="rate nc ${r==='NC'?'active':''}" onclick="setRating(${state.activeDomain},'${it.code}','NC')">NC</button></div></div><div class="metaRow"><select class="helpSelect" onchange="setHelp(${state.activeDomain},'${it.code}',this.value)">${helpOptions.map(h=>`<option ${e.helps[key(state.activeDomain,it.code)]===h?'selected':''}>${h}</option>`).join("")}</select><input class="commentInput" placeholder="Commentaire optionnel" value="${e.comments[key(state.activeDomain,it.code)]||''}" oninput="setComment(${state.activeDomain},'${it.code}',this.value)"></div></div>`}).join("")+headerActions()}
-function viewGoals(){const th=topAndLow(activeE()), sugg=suggestionsByDomain(activeE()); if(!th.low.length)return`<h2>Objectifs de séance</h2>${pageVisualHero("goals")}${pageIntro("Aide à la priorisation", "L’outil propose une lecture clinique et des objectifs SMART à partir des domaines renseignés. L’évaluateur garde toujours la main sur le choix final des objectifs.", "◎")}${clinicalProfileV27()}${smartGoalsV27()}${smartClinicalProfile()}${smartObjectives()}${evalTabs()}<div class="notice ok">Aucune cotation numérique pour l’instant. Renseigne au moins un item pour générer une proposition.</div>${headerActions()}`; return `<h2>Objectifs de séance – Évaluation ${state.activeEval+1}</h2>${pageVisualHero("goals")}${evalTabs()}<div class="notice">Sélectionner au maximum <b>3 objectifs de travail</b> au départ afin de garder une progression réaliste et observable.</div><div class="cards"><div class="card"><h3>Scores les plus faibles</h3><ul>${th.low.map(x=>`<li><b>${x.score}/6</b> – ${x.domain} : ${x.item}</li>`).join("")}</ul></div><div class="card"><h3>Compétences bien installées</h3><ul>${th.high.map(x=>`<li><b>${x.score}/6</b> – ${x.domain} : ${x.item}</li>`).join("")}</ul></div><div class="card"><h3>Conseil d’utilisation</h3><p>Choisir 1 objectif prioritaire, 1 objectif secondaire et 1 compétence d’appui pour soutenir l’engagement en séance.</p></div></div><div class="card"><h3>Propositions par domaine</h3><table class="table"><tbody>${sugg.map(s=>`<tr><th>${s.domain}</th><td>${s.text}</td></tr>`).join("")}</tbody></table></div>${headerActions()}`}
+function viewGoals(){
+  const th=topAndLow(activeE()), sugg=suggestionsByDomain(activeE());
+  const base = `<h2>Objectifs de séance – Évaluation ${state.activeEval+1}</h2>${pageVisualHero("goals")}${pageIntro("Aide à la priorisation", "L’outil propose une lecture clinique et des objectifs SMART à partir des domaines renseignés. L’évaluateur garde toujours la main sur le choix final des objectifs.", "◎")}${evalTabs()}`;
+  if(!th.low.length){
+    return `${base}<div class="card"><h3>Propositions automatiques</h3><div class="notice ok" style="margin:0">Aucune cotation numérique pour l’instant. Renseigne quelques items pour faire apparaître les scores les plus faibles, les compétences d’appui et les propositions par domaine.</div></div>${clinicalProfileV27()}${smartGoalsV27()}${smartClinicalProfile()}${smartObjectives()}${manualGoalsForActiveEval()}${headerActions()}`;
+  }
+  return `${base}<div class="notice">Sélectionner au maximum <b>3 objectifs de travail</b> au départ afin de garder une progression réaliste et observable.</div><div class="card"><h3>Propositions automatiques</h3><p style="margin-top:0;color:#667085">Ces propositions sont générées à partir des cotations renseignées. Elles restent modifiables et à interpréter par le professionnel.</p><div class="cards" style="margin:0"><div class="card"><h3>Scores les plus faibles</h3><ul>${th.low.map(x=>`<li><b>${x.score}/6</b> – ${x.domain} : ${x.item}</li>`).join("")}</ul></div><div class="card"><h3>Compétences bien installées</h3><ul>${th.high.map(x=>`<li><b>${x.score}/6</b> – ${x.domain} : ${x.item}</li>`).join("")}</ul></div><div class="card"><h3>Conseil d’utilisation</h3><p>Choisir 1 objectif prioritaire, 1 objectif secondaire et 1 compétence d’appui pour soutenir l’engagement en séance.</p></div></div></div><div class="card"><h3>Propositions automatiques par domaine</h3><table class="table"><tbody>${sugg.map(s=>`<tr><th>${s.domain}</th><td>${s.text}</td></tr>`).join("")}</tbody></table></div>${manualGoalsForActiveEval()}${headerActions()}`;
+}
 function viewSummary(){const rows=domains().map((d,di)=>{let cells=state.evals.map(e=>domainPctOrNull(e,di));let used=cells.filter(v=>v!==null);let evo=used.length>=2?used[used.length-1]-used[0]:null;return`<tr><td>${d.name}</td>${cells.map(v=>`<td>${v===null?"–":v+"%"}</td>`).join("")}<td><b>${evo===null?"–":(evo>0?"+":"")+evo}</b></td></tr>`}).join(""); return `<h2>Évolution du dossier</h2>${pageVisualHero("summary")}${pageIntro("Progression longitudinale", "Compare les évaluations successives sans interpréter les évaluations non réalisées comme une régression. Les courbes s’arrêtent aux données réellement renseignées.", "↗")}${evalTabs()}${clinicalProfileV27()}${evolutionLineChart()}${heatmapView()}<table class="table"><thead><tr><th>Domaine</th>${state.evals.map((e,i)=>`<th>Éval. ${i+1}<br><small>${e.date||"–"}</small></th>`).join("")}<th>Évolution</th></tr></thead><tbody>${rows}</tbody></table>${headerActions()}`}
 function viewSaves(){const saves=JSON.parse(localStorage.getItem("ptb_patient_files")||"[]"); if(!saves.length)return`<h2>Mes dossiers</h2>${pageIntro("Sauvegardes locales", "Retrouve les dossiers enregistrés sur cet appareil et ce navigateur. Pense à exporter les PDF pour conserver une trace externe si nécessaire.", "▣")}<div class="notice">Aucune sauvegarde locale pour l’instant.</div>`; return `<h2>Mes dossiers</h2><div class="saveCard"><table class="table"><thead><tr><th>Nom</th><th>Date de naissance</th><th>Âge</th><th>Mode</th><th>Dernière sauvegarde</th><th>Évaluations</th><th></th></tr></thead><tbody>`+saves.map(s=>`<tr><td>${s.state.patient.name||"Sans nom"}</td><td>${s.state.patient.birth||"–"}</td><td>${calculateAge(s.state.patient.birth)||s.state.patient.age||"–"}</td><td>${s.state.mode||"–"}</td><td>${new Date(s.savedAt).toLocaleString("fr-FR")}</td><td>${s.state.evals.filter(e=>e.date||Object.keys(e.ratings||{}).length).length}/6</td><td><button class="secondary" onclick="loadSave('${s.id}')">Rouvrir</button></td></tr>`).join("")+`</tbody></table></div>`}
 function ptbSavedContributionFiles(){
@@ -3452,6 +3525,7 @@ function viewExport(){
  </div>`;
 }
 function render(options){
+  ensureStateShape();
   const opts = options || {};
   const mainEl = el("main");
   const previousWindowScroll = window.scrollY || 0;
@@ -4216,13 +4290,28 @@ function ptbResearchObjectivesForEval(state, evalIndex){
   try {
     state.activeEval = evalIndex;
     const th = topAndLow(evaluation);
-    return (th.low || []).slice(0, 3).map((item, idx) => ({
+    const generated = (th.low || []).slice(0, 3).map((item, idx) => ({
       evaluation_numero: evalIndex + 1,
       priorite: idx + 1,
+      source: "automatique",
       domaine: item.domain || "",
       code_item: item.code || "",
       objectif: item.item ? "Travailler : " + item.item : ""
     }));
+    const manualGoals = evaluation.manualGoals || {};
+    const manual = domains().map(d => {
+      const text = String(manualGoals[manualGoalKey(d.name)] || "").trim();
+      if(!text) return null;
+      return {
+        evaluation_numero: evalIndex + 1,
+        priorite: "",
+        source: "intervenant",
+        domaine: d.name,
+        code_item: "",
+        objectif: text
+      };
+    }).filter(Boolean);
+    return generated.concat(manual);
   } catch(e) {
     return [];
   } finally {
@@ -4248,6 +4337,9 @@ function ptbBuildResearchPayload(state, evalIndexes, rows, allEvalScores){
     sexe_ou_genre: p.sex || "non renseigné",
     profil_general: ptbResearchProfile(p),
     contexte: state.mode || "non renseigné",
+    frequence_seances: p.sessionFrequency || "",
+    duree_seance: p.sessionDuration || "",
+    motif_accompagnement: p.accompanimentReason || "",
     evaluations_selectionnees: evalIndexes.map(i => i + 1),
     dates_evaluation: evalIndexes.map(i => ({
       evaluation_numero: i + 1,
@@ -4409,6 +4501,9 @@ function ptbBuildTransmissionPayload(){
     patient_sexe: p.sex || "",
     groupe_nom: "",
     groupe_objectif: "",
+    frequence_seances: p.sessionFrequency || "",
+    duree_seance: p.sessionDuration || "",
+    motif_accompagnement: p.accompanimentReason || "",
     diagnostics: researchPayload.profil_general,
     diagnostic_autre: "",
     situation: Array.isArray(p.situationItems) ? p.situationItems.join(", ") : (p.schoolStatus || ""),
@@ -4782,6 +4877,15 @@ function ptbPublicToast(message){
       <p class="v47Note" style="margin-top:2mm">Lecture clinique : les résultats doivent rester articulés aux observations qualitatives, au contexte relationnel et au niveau d’aide apporté. Les domaines les plus solides, notamment ${bestDomains}, peuvent servir de points d’appui pour construire une progression réaliste.</p>
     </div>`;
   }
+  function manualGoalsSummary(index){
+    const ev = st().evals[index] || {};
+    const goals = ev.manualGoals || {};
+    const rows = domains().map(d => {
+      const text = String(goals[manualGoalKey(d.name)] || "").trim();
+      return text ? `<tr><th>${safe(d.name)}</th><td>${safe(text)}</td></tr>` : "";
+    }).join("");
+    return rows ? `<div class="v47Box"><h2>Objectifs proposés par l’intervenant</h2><table class="v47InfoTable">${rows}</table></div>` : "";
+  }
   function coverPage(){
     const s = st();
     const p = s.patient || {};
@@ -4813,9 +4917,12 @@ function ptbPublicToast(message){
           <tr><th>Profession</th><td>${safe(p.evaluatorProfession)}</td></tr>
           <tr><th>Pays</th><td>${safe(p.evaluatorCountry)}</td></tr>
           <tr><th>Mode</th><td>${safe(s.mode)}</td></tr>
+          <tr><th>Fréquence</th><td>${safe(p.sessionFrequency)}</td></tr>
+          <tr><th>Durée séance</th><td>${safe(p.sessionDuration)}</td></tr>
           <tr><th>Évaluations</th><td>${idxs.map(i=>"Évaluation "+(i+1)).join(", ")}</td></tr>
         </table></div>
       </div>
+      ${p.accompanimentReason ? `<div class="v47Box v47NoBreak"><h2>Motif d’accompagnement / projet</h2><p class="v47Note">${safe(p.accompanimentReason)}</p></div>` : ""}
       <div class="v47Grid3">
         <div class="v47Box"><h3>Score initial</h3><div class="v47MiniScore">${firstScore || "–"}${firstScore ? "%" : ""}</div></div>
         <div class="v47Box"><h3>Dernier score</h3><div class="v47MiniScore">${lastScore || "–"}${lastScore ? "%" : ""}</div></div>
@@ -4826,6 +4933,7 @@ function ptbPublicToast(message){
         <div class="v47Box"><h2>Priorités de travail</h2><p class="v47Note">${low}</p></div>
         <div class="v47Box"><h2>Compétences d’appui</h2><p class="v47Note">${high}</p></div>
       </div>
+      ${manualGoalsSummary(lastIndex)}
       <div class="v47Grid2">
         ${idxs.length > 1 ? printEvolutionLineChart(idxs) : `<div class="v47Box"><h2>Évolution globale</h2><p class="v47Note">Sélectionnez au moins deux évaluations pour afficher la courbe d’évolution.</p></div>`}
         ${printRadarForEval(lastIndex)}
