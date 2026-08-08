@@ -468,6 +468,83 @@ body:before{
 .evalFastMode .evalCotationToolbar{
   top:0!important;
 }
+.sessionModeTools{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
+  margin-top:12px;
+}
+.sessionCompact{
+  overflow:hidden;
+  padding:0!important;
+}
+.sessionHeader,
+.sessionRow{
+  display:grid;
+  grid-template-columns:72px 72px minmax(260px,1fr) minmax(330px,auto);
+  gap:10px;
+  align-items:center;
+}
+.sessionHeader{
+  padding:12px 16px;
+  background:#f1fbf5;
+  color:#174132;
+  font-size:13px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.02em;
+}
+.sessionRow{
+  padding:10px 16px;
+  border-top:1px solid var(--line);
+}
+.sessionRow:hover{
+  background:#fbfffd;
+}
+.sessionPick{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:12px;
+  color:#667085;
+  font-weight:800;
+}
+.sessionCode{
+  font-weight:900;
+  color:#0b4a54;
+}
+.sessionText{
+  font-weight:800;
+  color:#111827;
+  line-height:1.35;
+}
+.sessionRating{
+  display:flex;
+  justify-content:flex-end;
+  gap:6px;
+}
+.sessionDetails{
+  grid-column:3/5;
+}
+.sessionDetails summary{
+  cursor:pointer;
+  color:#0f7a42;
+  font-weight:900;
+  margin:4px 0 8px;
+}
+.sessionDetailsGrid{
+  display:grid;
+  grid-template-columns:220px 1fr;
+  gap:10px;
+}
+.sessionSection{
+  padding:11px 16px;
+  background:#fff7e7;
+  color:#8a4b00;
+  font-weight:900;
+  border-top:1px solid #f2dfbf;
+}
 .evalProgressText{
   display:flex!important;
   align-items:center!important;
@@ -496,6 +573,11 @@ body:before{
   .rating{justify-content:flex-start!important;margin-top:12px!important}
   .rate{min-width:46px!important;height:44px!important}
   .metaRow{grid-template-columns:1fr!important}
+  .sessionHeader{display:none}
+  .sessionRow{grid-template-columns:54px 48px 1fr;padding:12px}
+  .sessionRating{grid-column:1/-1;justify-content:flex-start;flex-wrap:wrap}
+  .sessionDetails{grid-column:1/-1}
+  .sessionDetailsGrid{grid-template-columns:1fr}
 }
 .table{
   border-radius:16px!important;
@@ -1972,6 +2054,7 @@ window.__ptbGetState = function(){ return state; };
 function ensureStateShape(){
   if(state.evalFastMode === undefined) state.evalFastMode = false;
   if(state.evalShowUnratedOnly === undefined) state.evalShowUnratedOnly = false;
+  if(state.evalSelectedOnly === undefined) state.evalSelectedOnly = false;
   state.patient = state.patient || {};
   if(!Array.isArray(state.patient.diagnoses)) state.patient.diagnoses = [];
   ["sessionFrequency","sessionDuration","accompanimentReason","groupName","groupGoal","notes","otherDiagnosis"].forEach(k=>{
@@ -1981,6 +2064,9 @@ function ensureStateShape(){
   while(state.evals.length < MAX_EVALS){
     state.evals.push({date:"", ratings:{}, helps:{}, comments:{}, manualGoals:{}});
   }
+  state.evals.forEach(e=>{
+    if(!e.sessionItems) e.sessionItems = {};
+  });
   state.evals = state.evals.slice(0, MAX_EVALS).map((e,i)=>({
     date:e?.date || (i===0 ? new Date().toISOString().slice(0,10) : ""),
     ratings:e?.ratings || {},
@@ -2256,10 +2342,37 @@ function diagnosisChecklist(){
 function getRating(d,c){return activeE().ratings[key(d,c)]}
 function setRating(d,c,v){
   activeE().ratings[key(d,c)]=v;
+  const shouldAdvance = state.evalFastMode;
   render({preserveScroll:true});
+  if(shouldAdvance) setTimeout(()=>scrollNextSessionItem(d,c), 70);
 }
 function setHelp(d,c,v){activeE().helps[key(d,c)]=v}
 function setComment(d,c,v){activeE().comments[key(d,c)]=v}
+function isSessionItemSelected(d,c){
+  const e = activeE();
+  e.sessionItems = e.sessionItems || {};
+  return !!e.sessionItems[key(d,c)];
+}
+function setSessionItemSelected(d,c,checked){
+  const e = activeE();
+  e.sessionItems = e.sessionItems || {};
+  if(checked) e.sessionItems[key(d,c)] = true;
+  else delete e.sessionItems[key(d,c)];
+  render({preserveScroll:true});
+}
+function selectedItemsInDomain(domainIndex){
+  const d = domains()[domainIndex];
+  if(!d) return [];
+  return cotableItems(d).filter(it => isSessionItemSelected(domainIndex, it.code));
+}
+function scrollNextSessionItem(d,c){
+  const visible = evalVisibleItems(domains()[d]).filter(it=>!it.section);
+  const idx = visible.findIndex(it => String(it.code) === String(c));
+  const next = visible[idx+1];
+  if(!next) return;
+  const target = document.querySelector(`[data-eval-item="${d}::${next.code}"]`);
+  if(target) target.scrollIntoView({behavior:"smooth", block:"center"});
+}
 function cotableItems(d){return d.items.filter(x=>!x.section)}
 function scoreEval(e){let total=0,max=0,unanswered=0,nc=0,rated=0,domainScores=[];domains().forEach((d,di)=>{let s=0,m=0,u=0,n=0,ratedItems=0;cotableItems(d).forEach(it=>{const r=e.ratings[key(di,it.code)];if(r===undefined)u++;else if(r==="NC")n++;else{s+=Number(r);m+=6;ratedItems++}});const pct=m?Math.round(s/m*100):0;domainScores.push({name:d.name,color:d.color,score:s,max:m,pct,unanswered:u,nc:n,rated:ratedItems,totalItems:cotableItems(d).length});total+=s;max+=m;unanswered+=u;nc+=n;rated+=ratedItems});return{total,max,pct:max?Math.round(total/max*100):0,unanswered,nc,rated,domains:domainScores}}
 function escHtml(value){return String(value??"").replace(/[&<>"']/g, ch => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[ch]))}
@@ -2394,13 +2507,19 @@ function sessionsSincePreviousCard(){
   </div>`;
 }
 function evalVisibleItems(domain){
-  if(!state.evalShowUnratedOnly) return domain.items;
-  return domain.items.filter(it => it.section || getRating(state.activeDomain, it.code) === undefined);
+  const hasSelection = selectedItemsInDomain(state.activeDomain).length > 0;
+  return domain.items.filter(it => {
+    if(it.section) return true;
+    if(state.evalFastMode && state.evalSelectedOnly && hasSelection && !isSessionItemSelected(state.activeDomain, it.code)) return false;
+    if(state.evalShowUnratedOnly && getRating(state.activeDomain, it.code) !== undefined) return false;
+    return true;
+  });
 }
 function evalCotationToolbar(ds, domain){
   const total = cotableItems(domain).length;
   const done = Math.max(0, total - ds.unanswered);
   const pct = total ? Math.round(done / total * 100) : 0;
+  const selected = selectedItemsInDomain(state.activeDomain).length;
   const scoreNote = ds.rated
     ? `${ds.score}/${ds.max} calculé sur ${ds.rated} item${ds.rated>1?"s":""} coté${ds.rated>1?"s":""}`
     : "Aucun item numérique coté pour ce domaine";
@@ -2412,10 +2531,14 @@ function evalCotationToolbar(ds, domain){
     <div class="scorebar" style="margin:10px 0 14px"><span style="width:${pct}%"></span></div>
     <div style="margin:-4px 0 12px;color:#52645d;font-weight:800;font-size:13px">${scoreNote}. Les items NC ou non renseignés n’entrent pas dans le pourcentage.</div>
     <div class="exportTopActions" style="margin:0">
-      <button class="${state.evalFastMode ? "primary" : "secondary"}" onclick="toggleFastRatingMode()">${state.evalFastMode ? "Quitter le mode rapide" : "Mode cotation rapide"}</button>
+      <button class="${state.evalFastMode ? "primary" : "secondary"}" onclick="toggleFastRatingMode()">${state.evalFastMode ? "Quitter le mode séance" : "Mode séance"}</button>
       <button class="secondary" onclick="goNextUnratedItem()">Prochain item non coté</button>
       <button class="${state.evalShowUnratedOnly ? "primary" : "secondary"}" onclick="toggleUnratedOnly()">${state.evalShowUnratedOnly ? "Afficher tous les items" : "Afficher seulement les non cotés"}</button>
     </div>
+    ${state.evalFastMode ? `<div class="sessionModeTools">
+      <button class="${state.evalSelectedOnly ? "primary" : "secondary"}" onclick="toggleSelectedOnly()">${state.evalSelectedOnly ? "Voir toute la grille" : "Afficher la sélection séance"}</button>
+      <span style="color:#667085;font-weight:800">${selected} item${selected>1?"s":""} sélectionné${selected>1?"s":""} pour cette séance</span>
+    </div>` : ""}
   </div>`;
 }
 function toggleFastRatingMode(){
@@ -2424,6 +2547,10 @@ function toggleFastRatingMode(){
 }
 function toggleUnratedOnly(){
   state.evalShowUnratedOnly = !state.evalShowUnratedOnly;
+  render({preserveScroll:true});
+}
+function toggleSelectedOnly(){
+  state.evalSelectedOnly = !state.evalSelectedOnly;
   render({preserveScroll:true});
 }
 function goNextUnratedItem(){
@@ -2450,6 +2577,39 @@ function summaryTiles(){const sc=scoreEval(activeE()); return `<div class="summa
       <div class="domainSoftIcon" style="background:${domainColor(d.name)}">${softIcon(domainIconName(d.name))}</div>
       <span>${d.name}</span><b>${d.pct}%</b><small>${d.score}/${d.max||0} · ${d.rated||0} item${(d.rated||0)>1?"s":""} coté${(d.rated||0)>1?"s":""} · NC ${d.nc}</small>
     </div>`).join("")+`</div>`}
+function evalSessionRows(domain){
+  const e = activeE();
+  const visible = evalVisibleItems(domain);
+  const cotableVisible = visible.filter(it=>!it.section).length;
+  if(!cotableVisible){
+    return `<div class="notice" style="margin:14px">Aucun item dans cette sélection. Décoche “Afficher la sélection séance” ou ajoute des items à ta sélection.</div>`;
+  }
+  return `<div class="card sessionCompact">
+    <div class="sessionHeader"><span>Séance</span><span>Code</span><span>Item observé</span><span>Cotation</span></div>
+    ${visible.map(it=>{
+      if(it.section) return `<div class="sessionSection">${it.code}</div>`;
+      const r = getRating(state.activeDomain,it.code);
+      const k = key(state.activeDomain,it.code);
+      return `<div class="sessionRow" data-eval-item="${state.activeDomain}::${it.code}">
+        <label class="sessionPick"><input type="checkbox" ${isSessionItemSelected(state.activeDomain,it.code)?"checked":""} onchange="setSessionItemSelected(${state.activeDomain},'${it.code}',this.checked)"> garder</label>
+        <div class="sessionCode">${it.code}</div>
+        <div class="sessionText"><span class="itemQuestionLine"><span class="itemQuestionText">${it.text}</span>${guideCard(guideForItem(domain.name,it))}</span></div>
+        <div class="sessionRating">${[1,2,3,4,5,6].map(n=>`<button class="rate ${r===n?'active':''}" onclick="setRating(${state.activeDomain},'${it.code}',${n})">${n}</button>`).join("")}<button class="rate nc ${r==='NC'?'active':''}" onclick="setRating(${state.activeDomain},'${it.code}','NC')">NC</button></div>
+        <details class="sessionDetails">
+          <summary>Aide / commentaire</summary>
+          <div class="sessionDetailsGrid">
+            <select class="helpSelect" onchange="setHelp(${state.activeDomain},'${it.code}',this.value)">${helpOptions.map(h=>`<option ${e.helps[k]===h?'selected':''}>${h}</option>`).join("")}</select>
+            <input class="commentInput" placeholder="Commentaire optionnel" value="${e.comments[k]||''}" oninput="setComment(${state.activeDomain},'${it.code}',this.value)">
+          </div>
+        </details>
+      </div>`;
+    }).join("")}
+  </div>`;
+}
+function evalFullRows(domain){
+  const e = activeE();
+  return evalVisibleItems(domain).map(it=>{if(it.section)return`<div class="sectionTitle">${it.code}</div>`; const r=getRating(state.activeDomain,it.code); return `<div class="item" data-eval-item="${state.activeDomain}::${it.code}"><div class="itemTop"><div class="itemText"><span class="itemQuestionLine"><span class="itemQuestionText"><span class="code">${it.code}</span>${it.text}</span>${guideCard(guideForItem(domain.name,it))}</span></div><div class="rating">${[1,2,3,4,5,6].map(n=>`<button class="rate ${r===n?'active':''}" onclick="setRating(${state.activeDomain},'${it.code}',${n})">${n}</button>`).join("")}<button class="rate nc ${r==='NC'?'active':''}" onclick="setRating(${state.activeDomain},'${it.code}','NC')">NC</button></div></div><div class="metaRow"><select class="helpSelect" onchange="setHelp(${state.activeDomain},'${it.code}',this.value)">${helpOptions.map(h=>`<option ${e.helps[key(state.activeDomain,it.code)]===h?'selected':''}>${h}</option>`).join("")}</select><input class="commentInput" placeholder="Commentaire optionnel" value="${e.comments[key(state.activeDomain,it.code)]||''}" oninput="setComment(${state.activeDomain},'${it.code}',this.value)"></div></div>`}).join("");
+}
 function allRatedItems(e){let arr=[];domains().forEach((d,di)=>cotableItems(d).forEach(it=>{const r=e.ratings[key(di,it.code)];if(typeof r==="number")arr.push({domain:d.name,domainIndex:di,code:it.code,item:it.text,score:r,help:e.helps[key(di,it.code)]||"",comment:e.comments[key(di,it.code)]||""})}));return arr}
 function topAndLow(e){const arr=allRatedItems(e);return{low:[...arr].sort((a,b)=>a.score-b.score).slice(0,8), high:[...arr].sort((a,b)=>b.score-a.score).slice(0,8)}}
 function domainHasNumericRating(e, di){
@@ -2888,7 +3048,7 @@ function viewInfo(){
   ${diagnosisChecklist()}
   <label>Observations générales</label><textarea oninput="state.patient.notes=this.value">${p.notes}</textarea>${headerActions()}`
 }
-function viewEval(){const e=activeE(),sc=scoreEval(e),d=domains()[state.activeDomain],ds=sc.domains[state.activeDomain]; const warning=ds.unanswered?`<div class="notice">Il reste ${ds.unanswered} item(s) sans réponse dans ce domaine. Vous pouvez les coter ou choisir NC si l’item n’a pas été évalué pour l’instant.</div>`:`<div class="notice ok">Tous les items de ce domaine sont renseignés.</div>`; const fastBanner=state.evalFastMode?`<div class="fastModeBanner noPrint"><span>Mode cotation rapide : l’écran est simplifié pour coter en séance, avec moins d’éléments autour.</span><button class="secondary" onclick="toggleFastRatingMode()">Revenir à l’affichage complet</button></div>`:""; return `<h2>${state.patient.name||"Dossier sans nom"} – Évaluation ${state.activeEval+1}</h2>${fastBanner}${evalTabs()}${sessionsSincePreviousCard()}${summaryTiles()}${visualProfile()}${heatmapView()}
+function viewEval(){const e=activeE(),sc=scoreEval(e),d=domains()[state.activeDomain],ds=sc.domains[state.activeDomain]; const warning=ds.unanswered?`<div class="notice">Il reste ${ds.unanswered} item(s) sans réponse dans ce domaine. Vous pouvez les coter ou choisir NC si l’item n’a pas été évalué pour l’instant.</div>`:`<div class="notice ok">Tous les items de ce domaine sont renseignés.</div>`; const fastBanner=state.evalFastMode?`<div class="fastModeBanner noPrint"><span>Mode séance : cotation compacte, aides repliées, sélection possible des items à observer et passage automatique à l’item suivant.</span><button class="secondary" onclick="toggleFastRatingMode()">Revenir à l’affichage complet</button></div>`:""; const rows=state.evalFastMode?evalSessionRows(d):evalFullRows(d); return `<h2>${state.patient.name||"Dossier sans nom"} – Évaluation ${state.activeEval+1}</h2>${fastBanner}${evalTabs()}${sessionsSincePreviousCard()}${summaryTiles()}${visualProfile()}${heatmapView()}
 <div class="quickActions noPrint">
   <div class="quickAction" onclick="nav('summary')" style="cursor:pointer"><span class="quickIcon">⌘</span><div>Analyse clinique<br><small>Synthèse et recommandations</small></div></div>
   <div class="quickAction" onclick="nav('goals')" style="cursor:pointer"><span class="quickIcon">◎</span><div>Objectifs thérapeutiques<br><small>Générer des objectifs SMART</small></div></div>
@@ -2896,7 +3056,7 @@ function viewEval(){const e=activeE(),sc=scoreEval(e),d=domains()[state.activeDo
   <div class="quickAction" onclick="nav('summary')" style="cursor:pointer"><span class="quickIcon">↗</span><div>Évolution<br><small>Comparer les évaluations</small></div></div>
   <div class="quickAction" onclick="nav('export')" style="cursor:pointer"><span class="quickIcon">↓</span><div>Exporter PDF<br><small>Famille / Pro / Synthétique</small></div></div>
 </div>
-${domainTabs()}${evalCotationToolbar(ds,d)}<div class="card"><h3>${d.name}</h3><div class="scorebar"><span style="width:${ds.pct}%"></span></div><p><b>${ds.score}/${ds.max||0}</b> · ${ds.pct}% · ${level(ds.pct)} · ${ds.rated||0} item${(ds.rated||0)>1?"s":""} coté${(ds.rated||0)>1?"s":""} · NC : ${ds.nc}</p><p style="margin-top:6px;color:#667085">Le pourcentage est calculé uniquement sur les items cotés de 1 à 6. Les items NC ou non renseignés ne font pas baisser le score.</p></div>${warning}`+evalVisibleItems(d).map(it=>{if(it.section)return`<div class="sectionTitle">${it.code}</div>`; const r=getRating(state.activeDomain,it.code); return `<div class="item" data-eval-item="${state.activeDomain}::${it.code}"><div class="itemTop"><div class="itemText"><span class="itemQuestionLine"><span class="itemQuestionText"><span class="code">${it.code}</span>${it.text}</span>${guideCard(guideForItem(d.name,it))}</span></div><div class="rating">${[1,2,3,4,5,6].map(n=>`<button class="rate ${r===n?'active':''}" onclick="setRating(${state.activeDomain},'${it.code}',${n})">${n}</button>`).join("")}<button class="rate nc ${r==='NC'?'active':''}" onclick="setRating(${state.activeDomain},'${it.code}','NC')">NC</button></div></div><div class="metaRow"><select class="helpSelect" onchange="setHelp(${state.activeDomain},'${it.code}',this.value)">${helpOptions.map(h=>`<option ${e.helps[key(state.activeDomain,it.code)]===h?'selected':''}>${h}</option>`).join("")}</select><input class="commentInput" placeholder="Commentaire optionnel" value="${e.comments[key(state.activeDomain,it.code)]||''}" oninput="setComment(${state.activeDomain},'${it.code}',this.value)"></div></div>`}).join("")+headerActions()}
+${domainTabs()}${evalCotationToolbar(ds,d)}<div class="card"><h3>${d.name}</h3><div class="scorebar"><span style="width:${ds.pct}%"></span></div><p><b>${ds.score}/${ds.max||0}</b> · ${ds.pct}% · ${level(ds.pct)} · ${ds.rated||0} item${(ds.rated||0)>1?"s":""} coté${(ds.rated||0)>1?"s":""} · NC : ${ds.nc}</p><p style="margin-top:6px;color:#667085">Le pourcentage est calculé uniquement sur les items cotés de 1 à 6. Les items NC ou non renseignés ne font pas baisser le score.</p></div>${warning}${rows}${headerActions()}`}
 function viewGoals(){
   const th=topAndLow(activeE()), sugg=suggestionsByDomain(activeE());
   const base = `<h2>Objectifs de séance – Évaluation ${state.activeEval+1}</h2>${pageVisualHero("goals")}${pageIntro("Aide à la priorisation", "L’outil propose une lecture clinique et des objectifs SMART à partir des domaines renseignés. L’évaluateur garde toujours la main sur le choix final des objectifs.", "◎")}${evalTabs()}`;
