@@ -482,7 +482,7 @@ body:before{
 .sessionHeader,
 .sessionRow{
   display:grid;
-  grid-template-columns:72px 72px minmax(260px,1fr) minmax(330px,auto);
+  grid-template-columns:62px minmax(260px,1fr) minmax(330px,auto);
   gap:10px;
   align-items:center;
 }
@@ -502,14 +502,6 @@ body:before{
 .sessionRow:hover{
   background:#fbfffd;
 }
-.sessionPick{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-size:12px;
-  color:#667085;
-  font-weight:800;
-}
 .sessionCode{
   font-weight:900;
   color:#0b4a54;
@@ -525,7 +517,7 @@ body:before{
   gap:6px;
 }
 .sessionDetails{
-  grid-column:3/5;
+  grid-column:2/4;
 }
 .sessionDetails summary{
   cursor:pointer;
@@ -574,7 +566,7 @@ body:before{
   .rate{min-width:46px!important;height:44px!important}
   .metaRow{grid-template-columns:1fr!important}
   .sessionHeader{display:none}
-  .sessionRow{grid-template-columns:54px 48px 1fr;padding:12px}
+  .sessionRow{grid-template-columns:48px 1fr;padding:12px}
   .sessionRating{grid-column:1/-1;justify-content:flex-start;flex-wrap:wrap}
   .sessionDetails{grid-column:1/-1}
   .sessionDetailsGrid{grid-template-columns:1fr}
@@ -2348,23 +2340,6 @@ function setRating(d,c,v){
 }
 function setHelp(d,c,v){activeE().helps[key(d,c)]=v}
 function setComment(d,c,v){activeE().comments[key(d,c)]=v}
-function isSessionItemSelected(d,c){
-  const e = activeE();
-  e.sessionItems = e.sessionItems || {};
-  return !!e.sessionItems[key(d,c)];
-}
-function setSessionItemSelected(d,c,checked){
-  const e = activeE();
-  e.sessionItems = e.sessionItems || {};
-  if(checked) e.sessionItems[key(d,c)] = true;
-  else delete e.sessionItems[key(d,c)];
-  render({preserveScroll:true});
-}
-function selectedItemsInDomain(domainIndex){
-  const d = domains()[domainIndex];
-  if(!d) return [];
-  return cotableItems(d).filter(it => isSessionItemSelected(domainIndex, it.code));
-}
 function scrollNextSessionItem(d,c){
   const visible = evalVisibleItems(domains()[d]).filter(it=>!it.section);
   const idx = visible.findIndex(it => String(it.code) === String(c));
@@ -2507,10 +2482,8 @@ function sessionsSincePreviousCard(){
   </div>`;
 }
 function evalVisibleItems(domain){
-  const hasSelection = selectedItemsInDomain(state.activeDomain).length > 0;
   return domain.items.filter(it => {
     if(it.section) return true;
-    if(state.evalFastMode && state.evalSelectedOnly && hasSelection && !isSessionItemSelected(state.activeDomain, it.code)) return false;
     if(state.evalShowUnratedOnly && getRating(state.activeDomain, it.code) !== undefined) return false;
     return true;
   });
@@ -2519,7 +2492,6 @@ function evalCotationToolbar(ds, domain){
   const total = cotableItems(domain).length;
   const done = Math.max(0, total - ds.unanswered);
   const pct = total ? Math.round(done / total * 100) : 0;
-  const selected = selectedItemsInDomain(state.activeDomain).length;
   const scoreNote = ds.rated
     ? `${ds.score}/${ds.max} calculé sur ${ds.rated} item${ds.rated>1?"s":""} coté${ds.rated>1?"s":""}`
     : "Aucun item numérique coté pour ce domaine";
@@ -2535,10 +2507,6 @@ function evalCotationToolbar(ds, domain){
       <button class="secondary" onclick="goNextUnratedItem()">Prochain item non coté</button>
       <button class="${state.evalShowUnratedOnly ? "primary" : "secondary"}" onclick="toggleUnratedOnly()">${state.evalShowUnratedOnly ? "Afficher tous les items" : "Afficher seulement les non cotés"}</button>
     </div>
-    ${state.evalFastMode ? `<div class="sessionModeTools">
-      <button class="${state.evalSelectedOnly ? "primary" : "secondary"}" onclick="toggleSelectedOnly()">${state.evalSelectedOnly ? "Voir toute la grille" : "Afficher la sélection séance"}</button>
-      <span style="color:#667085;font-weight:800">${selected} item${selected>1?"s":""} sélectionné${selected>1?"s":""} pour cette séance</span>
-    </div>` : ""}
   </div>`;
 }
 function toggleFastRatingMode(){
@@ -2547,10 +2515,6 @@ function toggleFastRatingMode(){
 }
 function toggleUnratedOnly(){
   state.evalShowUnratedOnly = !state.evalShowUnratedOnly;
-  render({preserveScroll:true});
-}
-function toggleSelectedOnly(){
-  state.evalSelectedOnly = !state.evalSelectedOnly;
   render({preserveScroll:true});
 }
 function goNextUnratedItem(){
@@ -2582,16 +2546,15 @@ function evalSessionRows(domain){
   const visible = evalVisibleItems(domain);
   const cotableVisible = visible.filter(it=>!it.section).length;
   if(!cotableVisible){
-    return `<div class="notice" style="margin:14px">Aucun item dans cette sélection. Décoche “Afficher la sélection séance” ou ajoute des items à ta sélection.</div>`;
+    return `<div class="notice" style="margin:14px">Aucun item à afficher avec ce filtre. Clique sur “Afficher tous les items” pour revenir à la grille complète.</div>`;
   }
   return `<div class="card sessionCompact">
-    <div class="sessionHeader"><span>Séance</span><span>Code</span><span>Item observé</span><span>Cotation</span></div>
+    <div class="sessionHeader"><span>Code</span><span>Item observé</span><span>Cotation</span></div>
     ${visible.map(it=>{
       if(it.section) return `<div class="sessionSection">${it.code}</div>`;
       const r = getRating(state.activeDomain,it.code);
       const k = key(state.activeDomain,it.code);
       return `<div class="sessionRow" data-eval-item="${state.activeDomain}::${it.code}">
-        <label class="sessionPick"><input type="checkbox" ${isSessionItemSelected(state.activeDomain,it.code)?"checked":""} onchange="setSessionItemSelected(${state.activeDomain},'${it.code}',this.checked)"> garder</label>
         <div class="sessionCode">${it.code}</div>
         <div class="sessionText"><span class="itemQuestionLine"><span class="itemQuestionText">${it.text}</span>${guideCard(guideForItem(domain.name,it))}</span></div>
         <div class="sessionRating">${[1,2,3,4,5,6].map(n=>`<button class="rate ${r===n?'active':''}" onclick="setRating(${state.activeDomain},'${it.code}',${n})">${n}</button>`).join("")}<button class="rate nc ${r==='NC'?'active':''}" onclick="setRating(${state.activeDomain},'${it.code}','NC')">NC</button></div>
