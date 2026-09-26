@@ -3885,19 +3885,20 @@ if(typeof viewSaves === "function"){
   viewSaves = function(){
     const saves = JSON.parse(localStorage.getItem("ptb_patient_files") || "[]");
     if(!saves.length){
-      return `<h2>Mes dossiers</h2>${typeof pageIntro==="function" ? pageIntro("Sauvegardes locales", "Les dossiers sont enregistrés automatiquement sur cet appareil et ce navigateur. Vous pouvez aussi importer un dossier déjà téléchargé.", "▣") : ""}
+      return `<h2>Mes dossiers</h2>${typeof pageIntro==="function" ? pageIntro("Sauvegardes locales", "Les dossiers sont enregistrés automatiquement sur cet appareil et ce navigateur. Sur iPad ou Safari, il est recommandé de télécharger une copie du dossier pour éviter toute perte si le navigateur nettoie ses données.", "▣") : ""}
       <div class="exportTopActions noPrint" style="margin:0 0 18px">
         <button class="primary" onclick="saveLocal()">Enregistrer maintenant</button>
         <button class="secondary" onclick="ptbImportJSON()">Importer un dossier</button>
       </div>
-      <div class="notice">Aucune sauvegarde locale pour l’instant. Dès que vous commencerez à remplir une évaluation, le dossier sera sauvegardé automatiquement ici.</div>`;
+      <div class="notice">Aucune sauvegarde locale pour l’instant. Dès que vous commencerez à remplir une évaluation, le dossier sera sauvegardé automatiquement ici. Pour un suivi important, utilisez aussi le bouton “Dossier” en haut de page afin de télécharger une copie de sécurité.</div>`;
     }
-    return `<h2>Mes dossiers</h2>${typeof pageIntro==="function" ? pageIntro("Sauvegardes locales", "Les dossiers sont enregistrés automatiquement sur cet appareil et ce navigateur. Pour sécuriser un suivi, vous pouvez aussi télécharger un dossier puis le réimporter sur un autre appareil.", "▣") : ""}
+    return `<h2>Mes dossiers</h2>${typeof pageIntro==="function" ? pageIntro("Sauvegardes locales", "Les dossiers sont enregistrés automatiquement sur cet appareil et ce navigateur. Pour sécuriser un suivi, téléchargez aussi une copie du dossier, surtout sur iPad ou Safari.", "▣") : ""}
     <div class="exportTopActions noPrint" style="margin:0 0 18px">
       <button class="primary" onclick="saveLocal()">Enregistrer maintenant</button>
       <button class="secondary" onclick="ptbExportJSON()">Télécharger le dossier ouvert</button>
       <button class="secondary" onclick="ptbImportJSON()">Importer un dossier</button>
     </div>
+    <div class="notice" style="margin-bottom:18px">Conseil sécurité : la sauvegarde locale peut être supprimée par le navigateur, notamment sur iPad. Le fichier téléchargé permet de rouvrir le dossier même si la sauvegarde locale disparaît.</div>
     <div class="saveCard"><table class="table">
       <thead><tr><th>Nom</th><th>Date de naissance</th><th>Âge</th><th>Mode</th><th>Dernière sauvegarde</th><th>Type</th><th></th></tr></thead>
       <tbody>
@@ -5479,5 +5480,175 @@ window.ptbSetLanguage = function(lang){
 setInterval(ptbKillTranslateChrome, 900);
 </script>
 <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<script id="ptb-ipad-storage-safety">
+/* V50 : dossiers distincts et sauvegarde de secours pour Safari / iPad */
+(function(){
+  const SAVES_KEY = "ptb_patient_files";
+  const DB_NAME = "ptb_lbt_tracker";
+  const STORE_NAME = "patient_files";
+
+  function readLocalSaves(){
+    try{
+      const value = JSON.parse(localStorage.getItem(SAVES_KEY) || "[]");
+      return Array.isArray(value) ? value : [];
+    }catch(e){
+      return [];
+    }
+  }
+
+  function writeLocalSaves(saves){
+    localStorage.setItem(SAVES_KEY, JSON.stringify(saves.slice(0, 120)));
+  }
+
+  function openBackupDb(){
+    return new Promise((resolve, reject) => {
+      if(!window.indexedDB) return reject(new Error("IndexedDB indisponible"));
+      const request = indexedDB.open(DB_NAME, 1);
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if(!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME, {keyPath:"id"});
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error || new Error("Ouverture impossible"));
+    });
+  }
+
+  async function mirrorSave(entry){
+    try{
+      const db = await openBackupDb();
+      await new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, "readwrite");
+        tx.objectStore(STORE_NAME).put(entry);
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
+      });
+      db.close();
+    }catch(e){
+      console.warn("Sauvegarde de secours indisponible", e);
+    }
+  }
+
+  async function recoverBackupSaves(){
+    try{
+      const db = await openBackupDb();
+      const backups = await new Promise((resolve, reject) => {
+        const request = db.transaction(STORE_NAME, "readonly").objectStore(STORE_NAME).getAll();
+        request.onsuccess = () => resolve(request.result || []);
+        request.onerror = () => reject(request.error);
+      });
+      db.close();
+      if(!backups.length) return;
+      const local = readLocalSaves();
+      const merged = new Map(local.map(item => [item.id, item]));
+      backups.forEach(item => {
+        const current = merged.get(item.id);
+        if(!current || String(item.savedAt || "") > String(current.savedAt || "")) merged.set(item.id, item);
+      });
+      const restored = Array.from(merged.values()).sort((a,b) => String(b.savedAt||"").localeCompare(String(a.savedAt||"")));
+      if(restored.length !== local.length || (!local.length && restored.length)){
+        writeLocalSaves(restored);
+        if(state.view === "saves") render();
+        showSaveToast("Dossiers récupérés sur cet iPad");
+      }
+    }catch(e){
+      console.warn("Récupération de secours indisponible", e);
+    }
+  }
+
+  function freshEvaluation(index){
+    return {date:index === 0 ? new Date().toISOString().slice(0,10) : "", ratings:{}, helps:{}, comments:{}, manualGoals:{}, sessionsSincePrevious:""};
+  }
+
+  function freshPatient(){
+    const profile = typeof ptbLoadContributorProfile === "function" ? ptbLoadContributorProfile() : {};
+    const names = String(profile.professionalName || "").trim().split(/\s+/).filter(Boolean);
+    return {
+      name:"", birth:"", age:"", sex:"", professional:profile.professionalName || "",
+      groupName:"", groupGoal:"", sessionFrequency:"", sessionDuration:"",
+      accompanimentReason:"", notes:"", diagnoses:[], otherDiagnosis:"",
+      evaluatorFirstName:names.length > 1 ? names.slice(0,-1).join(" ") : (names[0] || ""),
+      evaluatorLastName:names.length > 1 ? names[names.length-1] : "",
+      evaluatorProfession:profile.profession || "", evaluatorCountry:profile.countryRegion || "France",
+      evaluatorPracticeMode:profile.practiceMode || ""
+    };
+  }
+
+  function currentHasContent(){
+    const patient = state.patient || {};
+    if(patient.name || patient.birth || patient.notes || patient.accompanimentReason) return true;
+    return (state.evals || []).some(e => Object.keys(e.ratings || {}).length || Object.keys(e.comments || {}).length);
+  }
+
+  window.ptbStartNewDossier = function(){
+    if(currentHasContent()) upsertCurrentFile("manual");
+    const unique = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : Date.now() + "_" + Math.random().toString(36).slice(2);
+    state = {
+      view:"info", mode:"individuel", patient:freshPatient(), activeEval:0, activeDomain:0,
+      fileId:"ptb_file_" + unique,
+      exportOptions:{type:"synthetique", audience:"pro", showHelp:false, showComments:false, selectedEvals:[0]},
+      evals:Array.from({length:MAX_EVALS}, (_, index) => freshEvaluation(index))
+    };
+    ensureStateShape();
+    render();
+    upsertCurrentFile("auto");
+    showSaveToast("Nouveau dossier créé séparément");
+  };
+
+  /* Chaque dossier est mis à jour par son identifiant, puis copié dans une seconde mémoire du navigateur. */
+  upsertCurrentFile = function(mode){
+    try{
+      const saves = readLocalSaves();
+      const existingId = state.fileId || "";
+      if(mode === "auto" && !currentHasContent() && (!existingId || !saves.some(item => item.id === existingId))){
+        updateSaveStatus("Prêt à enregistrer");
+        return true;
+      }
+      const id = getCurrentFileId();
+      const previous = saves.find(item => item.id === id);
+      const now = new Date().toISOString();
+      const copy = serializeCurrentState();
+      copy.fileId = id;
+      const entry = {
+        id,
+        patientKey:getPatientKey(),
+        savedAt:now,
+        autoSavedAt:mode === "auto" ? now : (previous?.autoSavedAt || ""),
+        manualSavedAt:mode === "manual" ? now : (previous?.manualSavedAt || ""),
+        state:copy
+      };
+      const index = saves.findIndex(item => item.id === id);
+      if(index >= 0) saves[index] = {...saves[index], ...entry};
+      else saves.unshift(entry);
+      saves.sort((a,b) => String(b.savedAt||"").localeCompare(String(a.savedAt||"")));
+      writeLocalSaves(saves);
+      localStorage.setItem("ptb_last_autosave", JSON.stringify(entry));
+      mirrorSave(entry);
+      const time = new Date().toLocaleTimeString("fr-FR", {hour:"2-digit", minute:"2-digit"});
+      updateSaveStatus(mode === "manual" ? "Enregistré à " + time : "Sauvegardé à " + time);
+      return true;
+    }catch(e){
+      console.error("Erreur sauvegarde locale", e);
+      updateSaveStatus("Sauvegarde impossible");
+      return false;
+    }
+  };
+
+  const previousViewSaves = viewSaves;
+  viewSaves = function(){
+    const html = previousViewSaves();
+    const action = `<div class="noPrint" style="margin:0 0 18px"><button class="primary" onclick="ptbStartNewDossier()">+ Créer un nouveau dossier</button><p style="margin:8px 0 0;color:#667085;font-size:14px">Utilisez toujours ce bouton pour un nouveau bénéficiaire : le dossier précédent restera conservé.</p></div>`;
+    return html.replace("</h2>", "</h2>" + action);
+  };
+
+  const previousViewHome = viewHome;
+  viewHome = function(){
+    return previousViewHome().replace('onclick="nav(\'info\')">Commencer une évaluation', 'onclick="ptbStartNewDossier()">Commencer un nouveau dossier');
+  };
+
+  recoverBackupSaves();
+  if(state.view === "home") render();
+})();
+</script>
 
 </body></html>
