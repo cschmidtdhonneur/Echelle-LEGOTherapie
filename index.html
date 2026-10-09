@@ -2534,8 +2534,9 @@ function toggleMobileMenu(){document.body.classList.toggle("mobile-menu-open")}
 function closeMobileMenu(){document.body.classList.remove("mobile-menu-open")}
 function nav(v){state.view=v;closeMobileMenu();render()} document.querySelectorAll(".navBtn").forEach(b=>b.onclick=()=>nav(b.dataset.view));
 document.addEventListener("keydown", e => { if(e.key === "Escape") closeMobileMenu(); });
-window.addEventListener("pagehide",ptbAutosaveDraft);
-window.addEventListener("DOMContentLoaded",()=>setTimeout(ptbRecoverLocalDraft,250));
+window.addEventListener("pagehide",()=>{if(window.ptbDraftSaveTimer)ptbAutosaveDraft()});
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(ptbRecoverLocalDraft,250));
+else setTimeout(ptbRecoverLocalDraft,250);
 function headerActions(){return `<div class="actions noPrint"><button class="primary" onclick="saveLocal()">Enregistrer maintenant</button><button class="secondary" onclick="newFromCurrent()">Nouvelle évaluation vierge</button><button class="secondary" onclick="state.view='export'; render()">Préparer l’export</button></div>`}
 function evalTabs(){return `<div class="evalTabs noPrint">`+state.evals.map((e,i)=>`<div class="evalTab ${i===state.activeEval?'active':''}" onclick="state.activeEval=${i};lastSessionItem=null;render()"><b>Évaluation ${i+1}</b><input type="date" value="${e.date||""}" onclick="event.stopPropagation()" oninput="state.evals[${i}].date=this.value;render({preserveScroll:true})"><small>${i>0 && e.sessionsSincePrevious ? e.sessionsSincePrevious+" séance(s)" : e.date ? "Date modifiable" : "Non renseignée"}</small></div>`).join("")+`</div>`}
 function sessionsSincePreviousCard(){
@@ -3813,7 +3814,6 @@ function viewExport(){
  </div>`;
 }
 function render(options){
-  ptbScheduleDraftSave();
   ensureStateShape();
   const opts = options || {};
   document.body.classList.toggle("evalFastMode", state.view === "eval" && !!state.evalFastMode);
