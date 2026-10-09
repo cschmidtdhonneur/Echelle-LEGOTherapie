@@ -1366,6 +1366,11 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 @media(max-width:1200px){.header{grid-template-columns:72px 1fr auto!important}.saveChip small,.evaluatorChip small{display:none!important}.saveChip,.evaluatorChip,.manualSaveBtn{padding:6px 10px!important}}
 @media(max-width:850px){.header{grid-template-columns:70px 1fr!important;padding:14px 18px!important}.grid{grid-template-columns:1fr!important}.side{position:static!important;min-height:0!important}.summaryGrid,.heatmap,.quickActions{grid-template-columns:1fr!important}}
 
+
+/* Ergonomie tactile : grands boutons et commentaires multilignes */
+.sessionDetailsGrid textarea.commentInput,.metaRow textarea.commentInput{min-height:88px;resize:vertical;width:100%;line-height:1.45}
+@media (pointer:coarse){.rate{min-width:46px;min-height:46px;touch-action:manipulation}.domainTab,.evalCotationToolbar button,.domainNavRow button{min-height:48px;touch-action:manipulation}.sessionRating{gap:8px}.sessionDetails summary{padding:12px 0;cursor:pointer}.sessionRow{scroll-margin-top:120px}}
+@media(max-width:900px){.sessionDetailsGrid{grid-template-columns:1fr}.evalCotationToolbar .exportTopActions{display:flex;flex-wrap:wrap;gap:9px}.evalCotationToolbar .exportTopActions button{flex:1 1 185px}}
 </style>
 
 
@@ -2332,7 +2337,24 @@ function diagnosisChecklist(){
     `</div><div style="margin-top:12px"><label>Précision si “Autre”</label><input value="${state.patient.otherDiagnosis||""}" oninput="state.patient.otherDiagnosis=this.value" placeholder="Préciser si besoin"></div></div>`;
 }
 function getRating(d,c){return activeE().ratings[key(d,c)]}
+const sessionRatingHistory = [];
+function undoLastSessionRating(){
+  const last = sessionRatingHistory.pop();
+  if(!last) return;
+  if(last.previous === undefined) delete last.evaluation.ratings[last.itemKey];
+  else last.evaluation.ratings[last.itemKey] = last.previous;
+  state.activeDomain = last.domain;
+  render({preserveScroll:true});
+  setTimeout(()=>document.querySelector('[data-eval-item="'+last.domain+'::'+last.code+'"]')?.scrollIntoView({behavior:"smooth",block:"center"}),60);
+}
 function setRating(d,c,v){
+  const evaluation = activeE();
+  const itemKey = key(d,c);
+  const previous = evaluation.ratings[itemKey];
+  if(previous !== v){
+    sessionRatingHistory.push({evaluation,itemKey,previous,domain:d,code:c});
+    if(sessionRatingHistory.length>30) sessionRatingHistory.shift();
+  }
   activeE().ratings[key(d,c)]=v;
   const shouldAdvance = state.evalFastMode;
   render({preserveScroll:true});
@@ -2504,6 +2526,7 @@ function evalCotationToolbar(ds, domain){
     <div style="margin:-4px 0 12px;color:#52645d;font-weight:800;font-size:13px">${scoreNote}. Les items NC ou non renseignés n’entrent pas dans le pourcentage.</div>
     <div class="exportTopActions" style="margin:0">
       <button class="${state.evalFastMode ? "primary" : "secondary"}" onclick="toggleFastRatingMode()">${state.evalFastMode ? "Quitter le mode séance" : "Mode séance"}</button>
+      <button class="secondary" onclick="undoLastSessionRating()" id="undoSessionRating" ${sessionRatingHistory.length?"":"disabled"}>← Annuler la dernière cotation</button>
       <button class="secondary" onclick="goNextUnratedItem()">Prochain item non coté</button>
       <button class="${state.evalShowUnratedOnly ? "primary" : "secondary"}" onclick="toggleUnratedOnly()">${state.evalShowUnratedOnly ? "Afficher tous les items" : "Afficher seulement les non cotés"}</button>
     </div>
@@ -2562,7 +2585,7 @@ function evalSessionRows(domain){
           <summary>Aide / commentaire</summary>
           <div class="sessionDetailsGrid">
             <select class="helpSelect" onchange="setHelp(${state.activeDomain},'${it.code}',this.value)">${helpOptions.map(h=>`<option ${e.helps[k]===h?'selected':''}>${h}</option>`).join("")}</select>
-            <input class="commentInput" placeholder="Commentaire optionnel" value="${e.comments[k]||''}" oninput="setComment(${state.activeDomain},'${it.code}',this.value)">
+            <textarea class="commentInput" rows="3" placeholder="Observation qualitative : contexte, aide apportée, comportement, ajustements…" oninput="setComment(${state.activeDomain},'${it.code}',this.value)">${escHtml(e.comments[k]||"")}</textarea>
           </div>
         </details>
       </div>`;
@@ -2571,7 +2594,7 @@ function evalSessionRows(domain){
 }
 function evalFullRows(domain){
   const e = activeE();
-  return evalVisibleItems(domain).map(it=>{if(it.section)return`<div class="sectionTitle">${it.code}</div>`; const r=getRating(state.activeDomain,it.code); return `<div class="item" data-eval-item="${state.activeDomain}::${it.code}"><div class="itemTop"><div class="itemText"><span class="itemQuestionLine"><span class="itemQuestionText"><span class="code">${it.code}</span>${it.text}</span>${guideCard(guideForItem(domain.name,it))}</span></div><div class="rating">${[1,2,3,4,5,6].map(n=>`<button class="rate ${r===n?'active':''}" onclick="setRating(${state.activeDomain},'${it.code}',${n})">${n}</button>`).join("")}<button class="rate nc ${r==='NC'?'active':''}" onclick="setRating(${state.activeDomain},'${it.code}','NC')">NC</button></div></div><div class="metaRow"><select class="helpSelect" onchange="setHelp(${state.activeDomain},'${it.code}',this.value)">${helpOptions.map(h=>`<option ${e.helps[key(state.activeDomain,it.code)]===h?'selected':''}>${h}</option>`).join("")}</select><input class="commentInput" placeholder="Commentaire optionnel" value="${e.comments[key(state.activeDomain,it.code)]||''}" oninput="setComment(${state.activeDomain},'${it.code}',this.value)"></div></div>`}).join("");
+  return evalVisibleItems(domain).map(it=>{if(it.section)return`<div class="sectionTitle">${it.code}</div>`; const r=getRating(state.activeDomain,it.code); return `<div class="item" data-eval-item="${state.activeDomain}::${it.code}"><div class="itemTop"><div class="itemText"><span class="itemQuestionLine"><span class="itemQuestionText"><span class="code">${it.code}</span>${it.text}</span>${guideCard(guideForItem(domain.name,it))}</span></div><div class="rating">${[1,2,3,4,5,6].map(n=>`<button class="rate ${r===n?'active':''}" onclick="setRating(${state.activeDomain},'${it.code}',${n})">${n}</button>`).join("")}<button class="rate nc ${r==='NC'?'active':''}" onclick="setRating(${state.activeDomain},'${it.code}','NC')">NC</button></div></div><div class="metaRow"><select class="helpSelect" onchange="setHelp(${state.activeDomain},'${it.code}',this.value)">${helpOptions.map(h=>`<option ${e.helps[key(state.activeDomain,it.code)]===h?'selected':''}>${h}</option>`).join("")}</select><textarea class="commentInput" rows="3" placeholder="Observation qualitative (facultative)" oninput="setComment(${state.activeDomain},'${it.code}',this.value)">${escHtml(e.comments[key(state.activeDomain,it.code)]||"")}</textarea></div></div>`}).join("");
 }
 function allRatedItems(e){let arr=[];domains().forEach((d,di)=>cotableItems(d).forEach(it=>{const r=e.ratings[key(di,it.code)];if(typeof r==="number")arr.push({domain:d.name,domainIndex:di,code:it.code,item:it.text,score:r,help:e.helps[key(di,it.code)]||"",comment:e.comments[key(di,it.code)]||""})}));return arr}
 function topAndLow(e){const arr=allRatedItems(e);return{low:[...arr].sort((a,b)=>a.score-b.score).slice(0,8), high:[...arr].sort((a,b)=>b.score-a.score).slice(0,8)}}
