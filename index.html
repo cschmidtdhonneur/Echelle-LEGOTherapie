@@ -2070,6 +2070,7 @@ function ensureStateShape(){
     helps:e?.helps || {},
     comments:e?.comments || {},
     sessionNote:e?.sessionNote || "",
+    domainNotes:e?.domainNotes || {},
     manualGoals:e?.manualGoals || {},
     sessionsSincePrevious:e?.sessionsSincePrevious || ""
   }));
@@ -2364,6 +2365,9 @@ function setRating(d,c,v){
 function setHelp(d,c,v){activeE().helps[key(d,c)]=v}
 function setComment(d,c,v){activeE().comments[key(d,c)]=v}
 function setSessionNote(v){activeE().sessionNote=v}
+function setDomainNote(domainIndex,value){activeE().domainNotes=activeE().domainNotes||{};activeE().domainNotes[String(domainIndex)]=value}
+function domainNarrativeEditor(){const idx=state.activeDomain;const note=activeE().domainNotes?.[String(idx)]||"";return `<section class="card domainNarrative" aria-label="Observations globales du domaine"><h3>Observations globales — ${escHtml(domains()[idx].name)}</h3><p style="color:#667085">Notes libres sur ce domaine, même si seuls quelques items ont été observés. Il n’est pas nécessaire de commenter chaque item.</p><textarea rows="5" style="width:100%;min-height:120px;resize:vertical" placeholder="Observations, contexte, interactions, aides, réussites, difficultés, pistes de travail…" oninput="setDomainNote(${idx},this.value)">${escHtml(note)}</textarea></section>`}
+
 function sessionNarrativeEditor(){return `<section class="card noPrint" aria-label="Compte rendu qualitatif de séance"><h3>Observations générales de la séance</h3><p style="color:#667085">Décrire librement le contexte, les interactions, les aides apportées, les difficultés et les ajustements. Les cotations restent facultatives.</p><textarea id="sessionNarrative" rows="5" style="width:100%;min-height:125px" placeholder="Contexte, comportements observés, coopération, communication, régulation, aides et pistes pour la prochaine séance…" oninput="setSessionNote(this.value)">${escHtml(activeE().sessionNote||"")}</textarea><small>Cette note est conservée dans le dossier lors de son enregistrement local.</small></section>`}
 
 function scrollNextSessionItem(d,c){
@@ -2486,7 +2490,7 @@ function guideForItem(domainName, item){
 function level(pct){ return levelObj(pct).label; }
 function saveLocal(){const patientKey=(state.patient.name||"sans_nom").toLowerCase().replace(/\W+/g,"_")+"_"+(state.patient.birth||"date"); const id="ptb_dossier_"+patientKey+"_"+Date.now(); const saves=JSON.parse(localStorage.getItem("ptb_patient_files")||"[]"); saves.unshift({id,patientKey,savedAt:new Date().toISOString(),state:JSON.parse(JSON.stringify(state))}); localStorage.setItem("ptb_patient_files",JSON.stringify(saves.slice(0,100))); alert("Dossier patient sauvegardé dans Mes dossiers.")}
 function loadSave(id){const saves=JSON.parse(localStorage.getItem("ptb_patient_files")||"[]"); const s=saves.find(x=>x.id===id); if(s){state=s.state;ensureStateShape();state.view="info";render()}}
-function newFromCurrent(){const next=state.evals.findIndex((e,i)=>i>0&&!e.date&&Object.keys(e.ratings).length===0); if(next<0)return alert("Les 6 évaluations sont déjà utilisées."); state.activeEval=next; state.evals[next]={date:new Date().toISOString().slice(0,10),ratings:{},helps:{},comments:{},sessionNote:"",manualGoals:{}}; state.view="eval"; render()}
+function newFromCurrent(){const next=state.evals.findIndex((e,i)=>i>0&&!e.date&&Object.keys(e.ratings).length===0); if(next<0)return alert("Les 6 évaluations sont déjà utilisées."); state.activeEval=next; state.evals[next]={date:new Date().toISOString().slice(0,10),ratings:{},helps:{},comments:{},sessionNote:"",domainNotes:{},manualGoals:{}}; state.view="eval"; render()}
 function toggleMobileMenu(){document.body.classList.toggle("mobile-menu-open")}
 function closeMobileMenu(){document.body.classList.remove("mobile-menu-open")}
 function nav(v){state.view=v;closeMobileMenu();render()} document.querySelectorAll(".navBtn").forEach(b=>b.onclick=()=>nav(b.dataset.view));
@@ -3052,7 +3056,7 @@ function viewEval(){const e=activeE(),sc=scoreEval(e),d=domains()[state.activeDo
   <div class="quickAction" onclick="nav('summary')" style="cursor:pointer"><span class="quickIcon">↗</span><div>Évolution<br><small>Comparer les évaluations</small></div></div>
   <div class="quickAction" onclick="nav('export')" style="cursor:pointer"><span class="quickIcon">↓</span><div>Exporter PDF<br><small>Famille / Pro / Synthétique</small></div></div>
 </div>
-${sessionNarrativeEditor()}${domainTabs()}${evalCotationToolbar(ds,d)}<div class="card"><h3>${d.name}</h3><div class="scorebar"><span style="width:${ds.pct}%"></span></div><p><b>${ds.score}/${ds.max||0}</b> · ${ds.rated?ds.pct+"% · "+level(ds.pct):"Données insuffisantes pour interprétation"} · ${ds.rated||0} item${(ds.rated||0)>1?"s":""} coté${(ds.rated||0)>1?"s":""} · NC : ${ds.nc}</p><p style="margin-top:6px;color:#667085">Le pourcentage est calculé uniquement sur les items cotés de 1 à 6. Les items NC ou non renseignés ne font pas baisser le score.</p></div>${warning}${rows}${headerActions()}`}
+${sessionNarrativeEditor()}${domainTabs()}${evalCotationToolbar(ds,d)}<div class="card"><h3>${d.name}</h3><div class="scorebar"><span style="width:${ds.pct}%"></span></div><p><b>${ds.score}/${ds.max||0}</b> · ${ds.rated?ds.pct+"% · "+level(ds.pct):"Données insuffisantes pour interprétation"} · ${ds.rated||0} item${(ds.rated||0)>1?"s":""} coté${(ds.rated||0)>1?"s":""} · NC : ${ds.nc}</p><p style="margin-top:6px;color:#667085">Le pourcentage est calculé uniquement sur les items cotés de 1 à 6. Les items NC ou non renseignés ne font pas baisser le score.</p></div>${warning}${rows}${domainNarrativeEditor()}${headerActions()}`}
 function viewGoals(){
   const th=topAndLow(activeE()), sugg=suggestionsByDomain(activeE());
   const base = `<h2>Objectifs de séance – Évaluation ${state.activeEval+1}</h2>${pageVisualHero("goals")}${pageIntro("Aide à la priorisation", "L’outil propose une lecture clinique et des objectifs SMART à partir des domaines renseignés. L’évaluateur garde toujours la main sur le choix final des objectifs.", "◎")}${evalTabs()}`;
@@ -5264,6 +5268,7 @@ function ptbPublicToast(message){
         <div class="v47Box"><h2>Scores par domaine</h2><table class="v47ScoreTable"><thead><tr><th>Domaine</th><th>Score</th><th>%</th><th>Profil</th><th>Niveau</th><th>NC</th></tr></thead><tbody>${scoreRows(index)}</tbody></table></div>
       </div>
       <div class="v47Grid2"><div class="v47Box"><h2>Synthèse</h2><p class="v47Note">Cette fiche présente l’état observé pour l’évaluation ${index+1}. Les domaines les plus faibles peuvent guider les objectifs prioritaires ; les domaines les plus solides peuvent servir d’appui en séance.</p></div><div class="v47Box"><h2>Objectifs proposés</h2><ul class="v47List">${(th.low.slice(0,3).length ? th.low.slice(0,3) : []).map((x,i)=>`<li><strong>Objectif ${i+1} :</strong> travailler ${x.item.toLowerCase()} dans le domaine ${x.domain}.</li>`).join("") || "<li>Renseigner les cotations pour générer des objectifs.</li>"}</ul></div></div>
+      ${ev.domainNotes && Object.values(ev.domainNotes).some(Boolean) ? `<div class="v47Box"><h2>Observations par domaine</h2>${Object.entries(ev.domainNotes).filter(([_,note])=>String(note).trim()).map(([di,note])=>`<h3>${safe((typeof domains==="function"&&domains()[Number(di)]?.name)||"Domaine "+(Number(di)+1))}</h3><p class="v47Note" style="white-space:pre-wrap">${safe(note)}</p>`).join("")}</div>` : ""}
       ${ev.sessionNote ? `<div class="v47Box"><h2>Observations générales de la séance</h2><p class="v47Note" style="white-space:pre-wrap">${safe(ev.sessionNote)}</p></div>` : ""}
       ${includeDetails ? `<div class="v47Box"><h2>Annexe compacte · items cotés</h2><table class="v47ScoreTable v47DetailsTable"><thead><tr><th>Domaine</th><th>Code</th><th>Item</th><th>Score</th><th>Aide</th><th>Commentaire</th></tr></thead><tbody>${detailRows}</tbody></table></div>` : ""}
       <div class="v47Footer"><span>Créé par Chloé Schmidt-Dhonneur · Pose ta brique®</span><span>Tous droits réservés</span></div>
