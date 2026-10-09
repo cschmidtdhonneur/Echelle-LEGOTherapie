@@ -2347,7 +2347,7 @@ function goAdjacentSessionItem(delta){
   const visible = [...document.querySelectorAll('[data-eval-item]')].filter(el=>el.getAttribute('data-eval-item').startsWith(domainIndex+'::'));
   const focused = visible.find(el=>{const rect=el.getBoundingClientRect();return rect.top>=0&&rect.top<window.innerHeight*.55;});
   const focusedCode = focused?.getAttribute('data-eval-item')?.split('::')[1];
-  const index = focusedCode !== undefined ? items.findIndex(it=>String(it.code)===focusedCode) : current;
+  const index = current >= 0 ? current : (focusedCode !== undefined ? items.findIndex(it=>String(it.code)===focusedCode) : -1);
   const target = items[Math.max(0,Math.min(items.length-1,(index<0?(delta>0?-1:items.length):index)+delta))];
   if(!target) return;
   lastSessionItem={domain:domainIndex,code:target.code};
@@ -2492,7 +2492,7 @@ function closeMobileMenu(){document.body.classList.remove("mobile-menu-open")}
 function nav(v){state.view=v;closeMobileMenu();render()} document.querySelectorAll(".navBtn").forEach(b=>b.onclick=()=>nav(b.dataset.view));
 document.addEventListener("keydown", e => { if(e.key === "Escape") closeMobileMenu(); });
 function headerActions(){return `<div class="actions noPrint"><button class="primary" onclick="saveLocal()">Enregistrer maintenant</button><button class="secondary" onclick="newFromCurrent()">Nouvelle évaluation vierge</button><button class="secondary" onclick="state.view='export'; render()">Préparer l’export</button></div>`}
-function evalTabs(){return `<div class="evalTabs noPrint">`+state.evals.map((e,i)=>`<div class="evalTab ${i===state.activeEval?'active':''}" onclick="state.activeEval=${i};render()"><b>Évaluation ${i+1}</b><input type="date" value="${e.date||""}" onclick="event.stopPropagation()" oninput="state.evals[${i}].date=this.value;render({preserveScroll:true})"><small>${i>0 && e.sessionsSincePrevious ? e.sessionsSincePrevious+" séance(s)" : e.date ? "Date modifiable" : "Non renseignée"}</small></div>`).join("")+`</div>`}
+function evalTabs(){return `<div class="evalTabs noPrint">`+state.evals.map((e,i)=>`<div class="evalTab ${i===state.activeEval?'active':''}" onclick="state.activeEval=${i};lastSessionItem=null;render()"><b>Évaluation ${i+1}</b><input type="date" value="${e.date||""}" onclick="event.stopPropagation()" oninput="state.evals[${i}].date=this.value;render({preserveScroll:true})"><small>${i>0 && e.sessionsSincePrevious ? e.sessionsSincePrevious+" séance(s)" : e.date ? "Date modifiable" : "Non renseignée"}</small></div>`).join("")+`</div>`}
 function sessionsSincePreviousCard(){
   const e = activeE();
   return `<div class="card noPrint" style="margin:0 0 16px">
@@ -2563,12 +2563,13 @@ function goNextUnratedItem(){
   }, 60);
 }
 function goDomain(delta){
+  lastSessionItem=null;
   const list = domains();
   state.activeDomain = Math.max(0, Math.min(list.length - 1, state.activeDomain + delta));
   render({preserveScroll:true});
   setTimeout(()=>{try{document.querySelector(".evalCotationToolbar")?.scrollIntoView({behavior:"smooth",block:"start"})}catch(e){}}, 40);
 }
-function domainTabs(){return `<div class="domainNavRow noPrint"><button class="secondary" onclick="goDomain(-1)" ${state.activeDomain===0?"disabled":""}>← Domaine précédent</button><b>${state.activeDomain+1}/${domains().length} · ${domains()[state.activeDomain].name}</b><button class="secondary" onclick="goDomain(1)" ${state.activeDomain===domains().length-1?"disabled":""}>Domaine suivant →</button></div><div class="domainTabs noPrint">`+domains().map((d,i)=>`<button class="domainTab ${i===state.activeDomain?'active':''}" style="background:${d.color}" onclick="state.activeDomain=${i};render({preserveScroll:true})">${d.name}</button>`).join("")+`</div>`}
+function domainTabs(){return `<div class="domainNavRow noPrint"><button class="secondary" onclick="goDomain(-1)" ${state.activeDomain===0?"disabled":""}>← Domaine précédent</button><b>${state.activeDomain+1}/${domains().length} · ${domains()[state.activeDomain].name}</b><button class="secondary" onclick="goDomain(1)" ${state.activeDomain===domains().length-1?"disabled":""}>Domaine suivant →</button></div><div class="domainTabs noPrint">`+domains().map((d,i)=>`<button class="domainTab ${i===state.activeDomain?'active':''}" style="background:${d.color}" onclick="state.activeDomain=${i};lastSessionItem=null;render({preserveScroll:true})">${d.name}</button>`).join("")+`</div>`}
 function summaryTiles(){const sc=scoreEval(activeE()); return `<div class="summaryGrid">`+sc.domains.map(d=>`<div class="summaryTile">
       <div class="domainSoftIcon" style="background:${domainColor(d.name)}">${softIcon(domainIconName(d.name))}</div>
       <span>${d.name}</span><b>${d.rated?d.pct+"%":"—"}</b><small>${d.score}/${d.max||0} · ${d.rated||0} item${(d.rated||0)>1?"s":""} coté${(d.rated||0)>1?"s":""} · NC ${d.nc}</small>
@@ -4927,7 +4928,7 @@ function ptbPublicToast(message){
 <script id="ptb-complete-selected-report">
 (function(){
   function st(){ return window.__ptbGetState ? window.__ptbGetState() : (window.state || {}); }
-  function safe(x){ return (x===undefined || x===null || x==="") ? "–" : x; }
+  function safe(x){ return (x===undefined || x===null || x==="") ? "–" : escHtml(x); }
   function selectedIndexes(){
     const s = st();
     const checkedCards = Array.from(document.querySelectorAll(".evalExportCard input"))
@@ -4976,9 +4977,9 @@ function ptbPublicToast(message){
       <tr>
         <td><strong>${d.name}</strong></td>
         <td>${d.max ? d.score + "/" + d.max : "–"}</td>
-        <td>${d.pct || "–"}${d.max ? "%" : ""}</td>
+        <td>${d.max ? d.pct+"%" : "–"}</td>
         <td><div class="v47Bar"><div class="v47Fill" style="width:${d.pct||0}%"></div></div></td>
-        <td><span class="v47Badge ${d.pct>=80?"strong":d.pct>=60?"good":d.pct>=35?"mid":"low"}">${typeof level === "function" ? level(d.pct) : safe(d.pct)}</span></td>
+        <td>${d.max ? `<span class="v47Badge ${d.pct>=80?"strong":d.pct>=60?"good":d.pct>=35?"mid":"low"}">${typeof level === "function" ? level(d.pct) : safe(d.pct)}</span>` : "Non évalué"}</td>
         <td>${d.nc || 0}</td>
       </tr>`).join("");
   }
@@ -5252,6 +5253,7 @@ function ptbPublicToast(message){
         <div class="v47Box"><h2>Scores par domaine</h2><table class="v47ScoreTable"><thead><tr><th>Domaine</th><th>Score</th><th>%</th><th>Profil</th><th>Niveau</th><th>NC</th></tr></thead><tbody>${scoreRows(index)}</tbody></table></div>
       </div>
       <div class="v47Grid2"><div class="v47Box"><h2>Synthèse</h2><p class="v47Note">Cette fiche présente l’état observé pour l’évaluation ${index+1}. Les domaines les plus faibles peuvent guider les objectifs prioritaires ; les domaines les plus solides peuvent servir d’appui en séance.</p></div><div class="v47Box"><h2>Objectifs proposés</h2><ul class="v47List">${(th.low.slice(0,3).length ? th.low.slice(0,3) : []).map((x,i)=>`<li><strong>Objectif ${i+1} :</strong> travailler ${x.item.toLowerCase()} dans le domaine ${x.domain}.</li>`).join("") || "<li>Renseigner les cotations pour générer des objectifs.</li>"}</ul></div></div>
+      ${ev.sessionNote ? `<div class="v47Box"><h2>Observations générales de la séance</h2><p class="v47Note" style="white-space:pre-wrap">${safe(ev.sessionNote)}</p></div>` : ""}
       ${includeDetails ? `<div class="v47Box"><h2>Annexe compacte · items cotés</h2><table class="v47ScoreTable v47DetailsTable"><thead><tr><th>Domaine</th><th>Code</th><th>Item</th><th>Score</th><th>Aide</th><th>Commentaire</th></tr></thead><tbody>${detailRows}</tbody></table></div>` : ""}
       <div class="v47Footer"><span>Créé par Chloé Schmidt-Dhonneur · Pose ta brique®</span><span>Tous droits réservés</span></div>
     </div>`;
