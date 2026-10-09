@@ -2522,7 +2522,7 @@ function saveLocal(){
     saves.unshift({id,patientKey,savedAt:new Date().toISOString(),state:JSON.parse(JSON.stringify(state))});
     localStorage.setItem("ptb_patient_files",JSON.stringify(saves.slice(0,100)));
     ptbAutosaveDraft();
-    alert("Dossier sauvegardé sur cet appareil. Pour le conserver ailleurs, exportez également le document.");
+    alert("Copie locale enregistrée sur cet appareil uniquement. ATTENTION : elle peut disparaître si le navigateur efface ses données. Téléchargez aussi le dossier complet avec « Télécharger le dossier ouvert » et conservez-le dans un emplacement sécurisé.");
   }catch(error){
     alert("ATTENTION : impossible d’enregistrer le dossier sur cet appareil (stockage indisponible ou saturé). Ne fermez pas cette page ; exportez votre document.");
     console.error("Enregistrement du dossier impossible",error);
