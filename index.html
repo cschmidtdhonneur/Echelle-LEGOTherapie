@@ -2340,6 +2340,7 @@ function diagnosisChecklist(){
 function getRating(d,c){return activeE().ratings[key(d,c)]}
 let lastSessionItem = null;
 function goAdjacentSessionItem(delta){
+  if(state.evalShowUnratedOnly){state.evalShowUnratedOnly=false;render({preserveScroll:true});}
   const domainIndex = state.activeDomain;
   const items = cotableItems(domains()[domainIndex]);
   const current = lastSessionItem && lastSessionItem.domain === domainIndex ? items.findIndex(it=>String(it.code)===String(lastSessionItem.code)) : -1;
@@ -2366,12 +2367,15 @@ function setSessionNote(v){activeE().sessionNote=v}
 function sessionNarrativeEditor(){return `<section class="card noPrint" aria-label="Compte rendu qualitatif de séance"><h3>Observations générales de la séance</h3><p style="color:#667085">Décrire librement le contexte, les interactions, les aides apportées, les difficultés et les ajustements. Les cotations restent facultatives.</p><textarea id="sessionNarrative" rows="5" style="width:100%;min-height:125px" placeholder="Contexte, comportements observés, coopération, communication, régulation, aides et pistes pour la prochaine séance…" oninput="setSessionNote(this.value)">${escHtml(activeE().sessionNote||"")}</textarea><small>Cette note est conservée dans le dossier lors de son enregistrement local.</small></section>`}
 
 function scrollNextSessionItem(d,c){
-  const visible = evalVisibleItems(domains()[d]).filter(it=>!it.section);
-  const idx = visible.findIndex(it => String(it.code) === String(c));
-  const next = visible[idx+1];
+  // In mode séance, never hide the next item because of a filter.
+  const items = cotableItems(domains()[d]);
+  const idx = items.findIndex(it=>String(it.code)===String(c));
+  const next = items[idx+1];
   if(!next) return;
-  const target = document.querySelector(`[data-eval-item="${d}::${next.code}"]`);
-  if(target) target.scrollIntoView({behavior:"smooth", block:"center"});
+  if(state.evalShowUnratedOnly && getRating(d,next.code)!==undefined){state.evalShowUnratedOnly=false;render({preserveScroll:true});}
+  lastSessionItem={domain:d,code:next.code};
+  const target = document.querySelector('[data-eval-item="'+d+'::'+next.code+'"]');
+  if(target) target.scrollIntoView({behavior:"smooth",block:"center"});
 }
 function cotableItems(d){return d.items.filter(x=>!x.section)}
 function scoreEval(e){let total=0,max=0,unanswered=0,nc=0,rated=0,domainScores=[];domains().forEach((d,di)=>{let s=0,m=0,u=0,n=0,ratedItems=0;cotableItems(d).forEach(it=>{const r=e.ratings[key(di,it.code)];if(r===undefined)u++;else if(r==="NC")n++;else{s+=Number(r);m+=6;ratedItems++}});const pct=m?Math.round(s/m*100):0;domainScores.push({name:d.name,color:d.color,score:s,max:m,pct,unanswered:u,nc:n,rated:ratedItems,totalItems:cotableItems(d).length});total+=s;max+=m;unanswered+=u;nc+=n;rated+=ratedItems});return{total,max,pct:max?Math.round(total/max*100):0,unanswered,nc,rated,domains:domainScores}}
@@ -2482,7 +2486,7 @@ function guideForItem(domainName, item){
 function level(pct){ return levelObj(pct).label; }
 function saveLocal(){const patientKey=(state.patient.name||"sans_nom").toLowerCase().replace(/\W+/g,"_")+"_"+(state.patient.birth||"date"); const id="ptb_dossier_"+patientKey+"_"+Date.now(); const saves=JSON.parse(localStorage.getItem("ptb_patient_files")||"[]"); saves.unshift({id,patientKey,savedAt:new Date().toISOString(),state:JSON.parse(JSON.stringify(state))}); localStorage.setItem("ptb_patient_files",JSON.stringify(saves.slice(0,100))); alert("Dossier patient sauvegardé dans Mes dossiers.")}
 function loadSave(id){const saves=JSON.parse(localStorage.getItem("ptb_patient_files")||"[]"); const s=saves.find(x=>x.id===id); if(s){state=s.state;ensureStateShape();state.view="info";render()}}
-function newFromCurrent(){const next=state.evals.findIndex((e,i)=>i>0&&!e.date&&Object.keys(e.ratings).length===0); if(next<0)return alert("Les 6 évaluations sont déjà utilisées."); state.activeEval=next; state.evals[next]={date:new Date().toISOString().slice(0,10),ratings:{},helps:{},comments:{},manualGoals:{}}; state.view="eval"; render()}
+function newFromCurrent(){const next=state.evals.findIndex((e,i)=>i>0&&!e.date&&Object.keys(e.ratings).length===0); if(next<0)return alert("Les 6 évaluations sont déjà utilisées."); state.activeEval=next; state.evals[next]={date:new Date().toISOString().slice(0,10),ratings:{},helps:{},comments:{},sessionNote:"",manualGoals:{}}; state.view="eval"; render()}
 function toggleMobileMenu(){document.body.classList.toggle("mobile-menu-open")}
 function closeMobileMenu(){document.body.classList.remove("mobile-menu-open")}
 function nav(v){state.view=v;closeMobileMenu();render()} document.querySelectorAll(".navBtn").forEach(b=>b.onclick=()=>nav(b.dataset.view));
@@ -2538,6 +2542,7 @@ function evalCotationToolbar(ds, domain){
 }
 function toggleFastRatingMode(){
   state.evalFastMode = !state.evalFastMode;
+  if(state.evalFastMode) state.evalShowUnratedOnly = false;
   render({preserveScroll:true});
 }
 function toggleUnratedOnly(){
