@@ -2356,16 +2356,18 @@ function goAdjacentSessionItem(delta){
   setTimeout(()=>document.querySelector('[data-eval-item="'+domainIndex+'::'+target.code+'"]')?.scrollIntoView({behavior:"smooth",block:"center"}),50);
 }
 function setRating(d,c,v){
+  ptbScheduleDraftSave();
   lastSessionItem={domain:d,code:c};
   activeE().ratings[key(d,c)]=v;
   const shouldAdvance = state.evalFastMode;
   render({preserveScroll:true});
   if(shouldAdvance) setTimeout(()=>scrollNextSessionItem(d,c), 70);
 }
-function setHelp(d,c,v){activeE().helps[key(d,c)]=v}
-function setComment(d,c,v){activeE().comments[key(d,c)]=v}
-function setSessionNote(v){activeE().sessionNote=v}
-function setDomainNote(domainIndex,value){activeE().domainNotes=activeE().domainNotes||{};activeE().domainNotes[String(domainIndex)]=value}
+function setHelp(d,c,v){activeE().helps[key(d,c)]=v;ptbScheduleDraftSave()}
+function setComment(d,c,v){activeE().comments[key(d,c)]=v;ptbScheduleDraftSave()}
+function setSessionNote(v){activeE().sessionNote=v;ptbScheduleDraftSave()}
+function setDomainNote(domainIndex,value){activeE().domainNotes=activeE().domainNotes||{};activeE().domainNotes[String(domainIndex)]=value;ptbScheduleDraftSave()}
+function ptbScheduleDraftSave(){if(window.ptbDraftSaveTimer)clearTimeout(window.ptbDraftSaveTimer);window.ptbDraftSaveTimer=setTimeout(ptbAutosaveDraft,600)}
 function domainNarrativeEditor(){const idx=state.activeDomain;const note=activeE().domainNotes?.[String(idx)]||"";return `<section class="card domainNarrative" aria-label="Observations globales du domaine"><h3>Observations globales — ${escHtml(domains()[idx].name)}</h3><p style="color:#667085">Notes libres sur ce domaine, même si seuls quelques items ont été observés. Il n’est pas nécessaire de commenter chaque item.</p><textarea rows="5" style="width:100%;min-height:120px;resize:vertical" placeholder="Observations, contexte, interactions, aides, réussites, difficultés, pistes de travail…" oninput="setDomainNote(${idx},this.value)">${escHtml(note)}</textarea></section>`}
 
 function sessionNarrativeEditor(){return `<section class="card noPrint" aria-label="Compte rendu qualitatif de séance"><h3>Observations générales de la séance</h3><p style="color:#667085">Décrire librement le contexte, les interactions, les aides apportées, les difficultés et les ajustements. Les cotations restent facultatives.</p><textarea id="sessionNarrative" rows="5" style="width:100%;min-height:125px" placeholder="Contexte, comportements observés, coopération, communication, régulation, aides et pistes pour la prochaine séance…" oninput="setSessionNote(this.value)">${escHtml(activeE().sessionNote||"")}</textarea><small>Cette note est conservée dans le dossier lors de son enregistrement local.</small></section>`}
@@ -2488,13 +2490,52 @@ function guideForItem(domainName, item){
   return {evaluer:"Observer la compétence en situation de séance, avec une consigne simple et un contexte stable.", materiel:"Matériel LEGO adapté à l’âge, à la motricité et au niveau de la personne.", support:"Support visuel si nécessaire.", astuce:"Noter le niveau d’aide utilisé pour interpréter le score."};
 }
 function level(pct){ return levelObj(pct).label; }
-function saveLocal(){const patientKey=(state.patient.name||"sans_nom").toLowerCase().replace(/\W+/g,"_")+"_"+(state.patient.birth||"date"); const id="ptb_dossier_"+patientKey+"_"+Date.now(); const saves=JSON.parse(localStorage.getItem("ptb_patient_files")||"[]"); saves.unshift({id,patientKey,savedAt:new Date().toISOString(),state:JSON.parse(JSON.stringify(state))}); localStorage.setItem("ptb_patient_files",JSON.stringify(saves.slice(0,100))); alert("Dossier patient sauvegardé dans Mes dossiers.")}
+function ptbLocalDraftKey(){return "ptb_active_draft_v1"}
+function ptbAutosaveDraft(){
+  try{
+    localStorage.setItem(ptbLocalDraftKey(),JSON.stringify({savedAt:new Date().toISOString(),state:state}));
+    const badge=document.getElementById("ptbAutosaveStatus");
+    if(badge)badge.textContent="Brouillon enregistré sur cet appareil à "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+    return true;
+  }catch(error){
+    const badge=document.getElementById("ptbAutosaveStatus");
+    if(badge)badge.textContent="Échec de sauvegarde locale : exporter votre dossier";
+    console.error("Sauvegarde automatique impossible",error);
+    return false;
+  }
+}
+function ptbRecoverLocalDraft(){
+  try{
+    const raw=localStorage.getItem(ptbLocalDraftKey());
+    if(!raw)return;
+    const draft=JSON.parse(raw);
+    if(!draft?.state?.evals)return;
+    if(!confirm("Un brouillon local du "+new Date(draft.savedAt).toLocaleString("fr-FR")+" a été retrouvé sur cet appareil. Voulez-vous reprendre ce dossier ?"))return;
+    state=draft.state;ensureStateShape();render();
+  }catch(error){console.warn("Récupération du brouillon impossible",error)}
+}
+function saveLocal(){
+  const patientKey=(state.patient.name||"sans_nom").toLowerCase().replace(/\\W+/g,"_")+"_"+(state.patient.birth||"date");
+  const id="ptb_dossier_"+patientKey+"_"+Date.now();
+  try{
+    const saves=JSON.parse(localStorage.getItem("ptb_patient_files")||"[]");
+    saves.unshift({id,patientKey,savedAt:new Date().toISOString(),state:JSON.parse(JSON.stringify(state))});
+    localStorage.setItem("ptb_patient_files",JSON.stringify(saves.slice(0,100)));
+    ptbAutosaveDraft();
+    alert("Dossier sauvegardé sur cet appareil. Pour le conserver ailleurs, exportez également le document.");
+  }catch(error){
+    alert("ATTENTION : impossible d’enregistrer le dossier sur cet appareil (stockage indisponible ou saturé). Ne fermez pas cette page ; exportez votre document.");
+    console.error("Enregistrement du dossier impossible",error);
+  }
+}
 function loadSave(id){const saves=JSON.parse(localStorage.getItem("ptb_patient_files")||"[]"); const s=saves.find(x=>x.id===id); if(s){state=s.state;ensureStateShape();state.view="info";render()}}
 function newFromCurrent(){const next=state.evals.findIndex((e,i)=>i>0&&!e.date&&Object.keys(e.ratings).length===0); if(next<0)return alert("Les 6 évaluations sont déjà utilisées."); state.activeEval=next; state.evals[next]={date:new Date().toISOString().slice(0,10),ratings:{},helps:{},comments:{},sessionNote:"",domainNotes:{},manualGoals:{}}; state.view="eval"; render()}
 function toggleMobileMenu(){document.body.classList.toggle("mobile-menu-open")}
 function closeMobileMenu(){document.body.classList.remove("mobile-menu-open")}
 function nav(v){state.view=v;closeMobileMenu();render()} document.querySelectorAll(".navBtn").forEach(b=>b.onclick=()=>nav(b.dataset.view));
 document.addEventListener("keydown", e => { if(e.key === "Escape") closeMobileMenu(); });
+window.addEventListener("pagehide",ptbAutosaveDraft);
+window.addEventListener("DOMContentLoaded",()=>setTimeout(ptbRecoverLocalDraft,250));
 function headerActions(){return `<div class="actions noPrint"><button class="primary" onclick="saveLocal()">Enregistrer maintenant</button><button class="secondary" onclick="newFromCurrent()">Nouvelle évaluation vierge</button><button class="secondary" onclick="state.view='export'; render()">Préparer l’export</button></div>`}
 function evalTabs(){return `<div class="evalTabs noPrint">`+state.evals.map((e,i)=>`<div class="evalTab ${i===state.activeEval?'active':''}" onclick="state.activeEval=${i};lastSessionItem=null;render()"><b>Évaluation ${i+1}</b><input type="date" value="${e.date||""}" onclick="event.stopPropagation()" oninput="state.evals[${i}].date=this.value;render({preserveScroll:true})"><small>${i>0 && e.sessionsSincePrevious ? e.sessionsSincePrevious+" séance(s)" : e.date ? "Date modifiable" : "Non renseignée"}</small></div>`).join("")+`</div>`}
 function sessionsSincePreviousCard(){
@@ -3772,6 +3813,7 @@ function viewExport(){
  </div>`;
 }
 function render(options){
+  ptbScheduleDraftSave();
   ensureStateShape();
   const opts = options || {};
   document.body.classList.toggle("evalFastMode", state.view === "eval" && !!state.evalFastMode);
