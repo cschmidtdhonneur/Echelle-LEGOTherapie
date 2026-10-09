@@ -2515,7 +2515,7 @@ function ptbRecoverLocalDraft(){
   }catch(error){console.warn("Récupération du brouillon impossible",error)}
 }
 function saveLocal(){
-  const patientKey=(state.patient.name||"sans_nom").toLowerCase().replace(/\\W+/g,"_")+"_"+(state.patient.birth||"date");
+  const patientKey=(state.patient.name||"sans_nom").toLowerCase().replace(/\W+/g,"_")+"_"+(state.patient.birth||"date");
   const id="ptb_dossier_"+patientKey+"_"+Date.now();
   try{
     const saves=JSON.parse(localStorage.getItem("ptb_patient_files")||"[]");
@@ -5430,10 +5430,12 @@ function ptbPublicToast(message){
         try{
           const data = JSON.parse(e.target.result);
           if(!data.patient || !data.evals) throw new Error("Format invalide");
-          window.state = data;
+          state = data;
+          ensureStateShape();
           state.view = "info";
+          ptbAutosaveDraft();
           if(typeof render === "function") render();
-          alert("Dossier importé avec succès !");
+          alert("Dossier importé. Vérifiez les informations et téléchargez une copie de sécurité après vos modifications.");
         }catch(err){
           alert("Erreur lors de l'import : " + err.message);
         }
