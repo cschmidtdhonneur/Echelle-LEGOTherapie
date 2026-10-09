@@ -2069,6 +2069,7 @@ function ensureStateShape(){
     ratings:e?.ratings || {},
     helps:e?.helps || {},
     comments:e?.comments || {},
+    sessionNote:e?.sessionNote || "",
     manualGoals:e?.manualGoals || {},
     sessionsSincePrevious:e?.sessionsSincePrevious || ""
   }));
@@ -2361,6 +2362,9 @@ function setRating(d,c,v){
 }
 function setHelp(d,c,v){activeE().helps[key(d,c)]=v}
 function setComment(d,c,v){activeE().comments[key(d,c)]=v}
+function setSessionNote(v){activeE().sessionNote=v}
+function sessionNarrativeEditor(){return `<section class="card noPrint" aria-label="Compte rendu qualitatif de séance"><h3>Observations générales de la séance</h3><p style="color:#667085">Décrire librement le contexte, les interactions, les aides apportées, les difficultés et les ajustements. Les cotations restent facultatives.</p><textarea id="sessionNarrative" rows="5" style="width:100%;min-height:125px" placeholder="Contexte, comportements observés, coopération, communication, régulation, aides et pistes pour la prochaine séance…" oninput="setSessionNote(this.value)">${escHtml(activeE().sessionNote||"")}</textarea><small>Cette note est conservée dans le dossier lors de son enregistrement local.</small></section>`}
+
 function scrollNextSessionItem(d,c){
   const visible = evalVisibleItems(domains()[d]).filter(it=>!it.section);
   const idx = visible.findIndex(it => String(it.code) === String(c));
@@ -2562,7 +2566,7 @@ function goDomain(delta){
 function domainTabs(){return `<div class="domainNavRow noPrint"><button class="secondary" onclick="goDomain(-1)" ${state.activeDomain===0?"disabled":""}>← Domaine précédent</button><b>${state.activeDomain+1}/${domains().length} · ${domains()[state.activeDomain].name}</b><button class="secondary" onclick="goDomain(1)" ${state.activeDomain===domains().length-1?"disabled":""}>Domaine suivant →</button></div><div class="domainTabs noPrint">`+domains().map((d,i)=>`<button class="domainTab ${i===state.activeDomain?'active':''}" style="background:${d.color}" onclick="state.activeDomain=${i};render({preserveScroll:true})">${d.name}</button>`).join("")+`</div>`}
 function summaryTiles(){const sc=scoreEval(activeE()); return `<div class="summaryGrid">`+sc.domains.map(d=>`<div class="summaryTile">
       <div class="domainSoftIcon" style="background:${domainColor(d.name)}">${softIcon(domainIconName(d.name))}</div>
-      <span>${d.name}</span><b>${d.pct}%</b><small>${d.score}/${d.max||0} · ${d.rated||0} item${(d.rated||0)>1?"s":""} coté${(d.rated||0)>1?"s":""} · NC ${d.nc}</small>
+      <span>${d.name}</span><b>${d.rated?d.pct+"%":"—"}</b><small>${d.score}/${d.max||0} · ${d.rated||0} item${(d.rated||0)>1?"s":""} coté${(d.rated||0)>1?"s":""} · NC ${d.nc}</small>
     </div>`).join("")+`</div>`}
 function evalSessionRows(domain){
   const e = activeE();
@@ -3042,7 +3046,7 @@ function viewEval(){const e=activeE(),sc=scoreEval(e),d=domains()[state.activeDo
   <div class="quickAction" onclick="nav('summary')" style="cursor:pointer"><span class="quickIcon">↗</span><div>Évolution<br><small>Comparer les évaluations</small></div></div>
   <div class="quickAction" onclick="nav('export')" style="cursor:pointer"><span class="quickIcon">↓</span><div>Exporter PDF<br><small>Famille / Pro / Synthétique</small></div></div>
 </div>
-${domainTabs()}${evalCotationToolbar(ds,d)}<div class="card"><h3>${d.name}</h3><div class="scorebar"><span style="width:${ds.pct}%"></span></div><p><b>${ds.score}/${ds.max||0}</b> · ${ds.pct}% · ${level(ds.pct)} · ${ds.rated||0} item${(ds.rated||0)>1?"s":""} coté${(ds.rated||0)>1?"s":""} · NC : ${ds.nc}</p><p style="margin-top:6px;color:#667085">Le pourcentage est calculé uniquement sur les items cotés de 1 à 6. Les items NC ou non renseignés ne font pas baisser le score.</p></div>${warning}${rows}${headerActions()}`}
+${sessionNarrativeEditor()}${domainTabs()}${evalCotationToolbar(ds,d)}<div class="card"><h3>${d.name}</h3><div class="scorebar"><span style="width:${ds.pct}%"></span></div><p><b>${ds.score}/${ds.max||0}</b> · ${ds.rated?ds.pct+"% · "+level(ds.pct):"Données insuffisantes pour interprétation"} · ${ds.rated||0} item${(ds.rated||0)>1?"s":""} coté${(ds.rated||0)>1?"s":""} · NC : ${ds.nc}</p><p style="margin-top:6px;color:#667085">Le pourcentage est calculé uniquement sur les items cotés de 1 à 6. Les items NC ou non renseignés ne font pas baisser le score.</p></div>${warning}${rows}${headerActions()}`}
 function viewGoals(){
   const th=topAndLow(activeE()), sugg=suggestionsByDomain(activeE());
   const base = `<h2>Objectifs de séance – Évaluation ${state.activeEval+1}</h2>${pageVisualHero("goals")}${pageIntro("Aide à la priorisation", "L’outil propose une lecture clinique et des objectifs SMART à partir des domaines renseignés. L’évaluateur garde toujours la main sur le choix final des objectifs.", "◎")}${evalTabs()}`;
