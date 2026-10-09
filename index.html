@@ -2337,24 +2337,23 @@ function diagnosisChecklist(){
     `</div><div style="margin-top:12px"><label>Précision si “Autre”</label><input value="${state.patient.otherDiagnosis||""}" oninput="state.patient.otherDiagnosis=this.value" placeholder="Préciser si besoin"></div></div>`;
 }
 function getRating(d,c){return activeE().ratings[key(d,c)]}
-const sessionRatingHistory = [];
-function undoLastSessionRating(){
-  const last = sessionRatingHistory.pop();
-  if(!last) return;
-  if(last.previous === undefined) delete last.evaluation.ratings[last.itemKey];
-  else last.evaluation.ratings[last.itemKey] = last.previous;
-  state.activeDomain = last.domain;
-  render({preserveScroll:true});
-  setTimeout(()=>document.querySelector('[data-eval-item="'+last.domain+'::'+last.code+'"]')?.scrollIntoView({behavior:"smooth",block:"center"}),60);
+let lastSessionItem = null;
+function goAdjacentSessionItem(delta){
+  const domainIndex = state.activeDomain;
+  const items = cotableItems(domains()[domainIndex]);
+  const current = lastSessionItem && lastSessionItem.domain === domainIndex ? items.findIndex(it=>String(it.code)===String(lastSessionItem.code)) : -1;
+  const visible = [...document.querySelectorAll('[data-eval-item]')].filter(el=>el.getAttribute('data-eval-item').startsWith(domainIndex+'::'));
+  const focused = visible.find(el=>{const rect=el.getBoundingClientRect();return rect.top>=0&&rect.top<window.innerHeight*.55;});
+  const focusedCode = focused?.getAttribute('data-eval-item')?.split('::')[1];
+  const index = focusedCode !== undefined ? items.findIndex(it=>String(it.code)===focusedCode) : current;
+  const target = items[Math.max(0,Math.min(items.length-1,(index<0?(delta>0?-1:items.length):index)+delta))];
+  if(!target) return;
+  lastSessionItem={domain:domainIndex,code:target.code};
+  if(state.evalShowUnratedOnly && getRating(domainIndex,target.code)!==undefined){state.evalShowUnratedOnly=false;render({preserveScroll:true});}
+  setTimeout(()=>document.querySelector('[data-eval-item="'+domainIndex+'::'+target.code+'"]')?.scrollIntoView({behavior:"smooth",block:"center"}),50);
 }
 function setRating(d,c,v){
-  const evaluation = activeE();
-  const itemKey = key(d,c);
-  const previous = evaluation.ratings[itemKey];
-  if(previous !== v){
-    sessionRatingHistory.push({evaluation,itemKey,previous,domain:d,code:c});
-    if(sessionRatingHistory.length>30) sessionRatingHistory.shift();
-  }
+  lastSessionItem={domain:d,code:c};
   activeE().ratings[key(d,c)]=v;
   const shouldAdvance = state.evalFastMode;
   render({preserveScroll:true});
@@ -2526,7 +2525,8 @@ function evalCotationToolbar(ds, domain){
     <div style="margin:-4px 0 12px;color:#52645d;font-weight:800;font-size:13px">${scoreNote}. Les items NC ou non renseignés n’entrent pas dans le pourcentage.</div>
     <div class="exportTopActions" style="margin:0">
       <button class="${state.evalFastMode ? "primary" : "secondary"}" onclick="toggleFastRatingMode()">${state.evalFastMode ? "Quitter le mode séance" : "Mode séance"}</button>
-      <button class="secondary" onclick="undoLastSessionRating()" id="undoSessionRating" ${sessionRatingHistory.length?"":"disabled"}>← Annuler la dernière cotation</button>
+      <button class="secondary" onclick="goAdjacentSessionItem(-1)">← Item précédent</button>
+      <button class="secondary" onclick="goAdjacentSessionItem(1)">Item suivant →</button>
       <button class="secondary" onclick="goNextUnratedItem()">Prochain item non coté</button>
       <button class="${state.evalShowUnratedOnly ? "primary" : "secondary"}" onclick="toggleUnratedOnly()">${state.evalShowUnratedOnly ? "Afficher tous les items" : "Afficher seulement les non cotés"}</button>
     </div>
