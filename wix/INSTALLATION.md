@@ -13,7 +13,7 @@
 - Sur la page publiée, ouvrir un dossier fictif puis cliquer une seule fois sur « Enregistrer ».
 - Attendre « Enregistré sur cet appareil et sur votre espace membre ». Aucune confirmation ni activation séparée.
 - Modifier une note et cliquer sur « Enregistrer » : une nouvelle version doit être confirmée. Les sauvegardes automatiques restent locales.
-- Sur un autre navigateur connecté au même compte, ouvrir « Mes dossiers » puis « Retrouver mes dossiers sur mon espace membre », et « Récupérer une copie ». Vérifier la note et les cotations.
+- Sur un autre navigateur connecté au même compte, ouvrir « Mes dossiers » : la liste des dossiers du compte apparaît automatiquement. Cliquer sur « Ouvrir » et vérifier la note et les cotations. Les versions précédentes restent accessibles séparément.
 - Sur un second compte, vérifier que la liste est vide et qu'un dossier lié au premier compte ne peut pas être envoyé sur le second.
 - Tester un réseau coupé et une modification concurrente : message d'échec de la copie distante, saisie locale conservée.
 - Après rechargement, le bouton Enregistrer effectue de nouveau les deux sauvegardes, sans activation préalable.
@@ -27,3 +27,5 @@ L'accès serveur utilise exclusivement le membre authentifié et vérifie le com
 Le stockage reste sur la collection de test. La collecte des données de recherche est indépendante. Les quotas du site Wix s'appliquent : 4 000 éléments partagés avec le reste du site au moment du contrôle, une version consomme un élément. Aucun nettoyage automatique ni suppression distante n'est réalisé ; une suppression locale conserve les versions distantes. Prévoir la gestion de rétention avant une ouverture générale.
 
 Les tests automatisés utilisent des simulations Node des API Wix et de la messagerie. Ils ne remplacent pas le test sur Wix publié, la vérification des autorisations réelles de la collection ni la validation des conditions d'hébergement pour les données des bénéficiaires. Ne pas importer de dossiers réels durant cette recette.
+
+La liste du compte se charge automatiquement au démarrage et lors du retour dans la fenêtre après une minute. Toutes les pages de versions sont parcourues et seule la dernière révision de chaque dossier est affichée. Ouvrir un dossier déjà présent avec une révision identique privilégie sa copie locale pour préserver les notes non envoyées. Ouvrir une version distante plus récente crée une copie locale séparée. Le bouton Actualiser permet de réessayer après une déconnexion. Aucun fichier Velo ne change pour cet ajout.
