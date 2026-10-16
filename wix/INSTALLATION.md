@@ -10,14 +10,13 @@
 
 ## Test de réception, uniquement avec des données fictives
 
-- Sur la page publiée, ouvrir « Sauvegarde compte Wix » en bas à droite.
-- Ouvrir un dossier fictif, puis « Sauvegarder le dossier ouvert sur mon compte » et confirmer.
-- Attendre « Enregistré et relu sur votre compte ». Fermer le panneau.
-- Modifier une note et cliquer sur « Enregistrer » : pour ce dossier activé dans cette session, une nouvelle version doit être confirmée sur le compte. Les sauvegardes automatiques restent locales.
-- Sur un autre navigateur connecté au même compte, utiliser « Retrouver mes versions sauvegardées », puis « Récupérer une copie ». Vérifier la note et les cotations.
-- Sur un second compte, vérifier que la liste est vide. Une tentative de lecture d'un identifiant du premier compte doit échouer côté serveur.
-- Tester un réseau coupé et une modification concurrente depuis deux navigateurs : jamais de confirmation erronée, jamais de remplacement de la version existante.
-- Après fermeture/rechargement de l'application, réactiver explicitement le dossier avec le bouton du panneau. Rien n'est transféré au chargement.
+- Sur la page publiée, ouvrir un dossier fictif puis cliquer une seule fois sur « Enregistrer ».
+- Attendre « Enregistré sur cet appareil et sur votre espace membre ». Aucune confirmation ni activation séparée.
+- Modifier une note et cliquer sur « Enregistrer » : une nouvelle version doit être confirmée. Les sauvegardes automatiques restent locales.
+- Sur un autre navigateur connecté au même compte, ouvrir « Mes dossiers » puis « Retrouver mes dossiers sur mon espace membre », et « Récupérer une copie ». Vérifier la note et les cotations.
+- Sur un second compte, vérifier que la liste est vide et qu'un dossier lié au premier compte ne peut pas être envoyé sur le second.
+- Tester un réseau coupé et une modification concurrente : message d'échec de la copie distante, saisie locale conservée.
+- Après rechargement, le bouton Enregistrer effectue de nouveau les deux sauvegardes, sans activation préalable.
 
 ## Comportement et limites
 

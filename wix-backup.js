@@ -6,15 +6,10 @@
   let parentOrigin = '';
   try { const origin = new URL(document.referrer).origin; if (HOSTS.includes(origin)) parentOrigin = origin; } catch (_) {}
   const pending = new Map();
-  let memberId = '', enabled = new Set(), busy = false, next = null, queuedFile = '';
-  const button = document.createElement('button');
-  button.textContent = 'Sauvegarde compte Wix';
-  button.className = 'secondary noPrint';
-  button.style.cssText = 'position:fixed;bottom:18px;right:18px;z-index:9999;box-shadow:0 3px 18px #0003';
-  document.body.appendChild(button);
+  let memberId = '', busy = false, next = null, queuedFile = '';
   const panel = document.createElement('dialog');
   panel.style.cssText = 'max-width:680px;width:90%;max-height:85vh;overflow:auto;border:1px solid #b7d6cf;border-radius:20px;padding:24px;color:#074b55';
-  panel.innerHTML = '<h2>Sauvegarde sur mon compte Wix</h2><p>Les copies sur cet appareil et celles sur votre compte sont distinctes. Chaque enregistrement sur le compte conserve une nouvelle version.</p><p id="wixBackupStatus" role="status" aria-live="polite"></p><p><button type="button" data-op="save">Sauvegarder le dossier ouvert sur mon compte</button></p><p><button type="button" data-op="list">Retrouver mes versions sauvegardées</button></p><div id="wixBackupList"></div><p><button type="button" data-op="more" hidden>Voir les versions suivantes</button> <button type="button" data-op="close">Fermer</button></p>';
+  panel.innerHTML = '<h2>Mes dossiers sur mon espace membre</h2><p>Le bouton Enregistrer conserve votre dossier sur cet appareil et sur votre espace membre. Retrouvez ici vos versions enregistrées.</p><p id="wixBackupStatus" role="status" aria-live="polite"></p><p><button type="button" data-op="list">Retrouver mes versions sauvegardées</button></p><div id="wixBackupList"></div><p><button type="button" data-op="more" hidden>Voir les versions suivantes</button> <button type="button" data-op="close">Fermer</button></p>';
   document.body.appendChild(panel);
   const status = text => { panel.querySelector('#wixBackupStatus').textContent = text; };
   window.addEventListener('message', event => {
@@ -28,29 +23,30 @@
     if (!parentOrigin || window.parent === window) return Promise.reject(new Error('Ouvrez LBT Tracker depuis votre espace membre sur pose-ta-brique.fr.'));
     return new Promise((resolve, reject) => {
       const requestId = crypto.randomUUID();
-      const timer = setTimeout(() => { pending.delete(requestId); reject(new Error('Wix ne répond pas : sauvegarde sur le compte non confirmée. La copie locale reste disponible.')); }, 25000);
+      const timer = setTimeout(() => { pending.delete(requestId); reject(new Error('L’espace membre ne répond pas : sauvegarde sur le compte non confirmée. La copie locale reste disponible.')); }, 25000);
       pending.set(requestId, { resolve, reject, timer });
       window.parent.postMessage({ channel: CHANNEL, requestId, action, body }, parentOrigin);
     });
   }
   async function connect() {
     const result = await request('HELLO');
-    if (!result?.ok || result.protocol !== 1 || typeof result.memberId !== 'string') throw new Error('Le raccordement Wix doit être installé ou votre compte doit être connecté.');
+    if (!result?.ok || result.protocol !== 1 || typeof result.memberId !== 'string') throw new Error('Connexion à votre espace membre nécessaire. Si vous êtes déjà connecté, rechargez la page.');
     if (memberId && memberId !== result.memberId) {
-      enabled = new Set(); memberId = result.memberId;
+      memberId = result.memberId;
       panel.querySelector('#wixBackupList').replaceChildren(); next = null;
       panel.querySelector('[data-op="more"]').hidden = true;
-      throw new Error('Le compte a changé. Rouvrez la sauvegarde avant de continuer.');
+      throw new Error('Le compte a changé. Votre dossier reste sur cet appareil. Reconnectez-vous au compte utilisé pour ce dossier.');
     }
     memberId = result.memberId;
   }
   function localSave() {
     if (!upsertCurrentFile('manual')) throw new Error('Sauvegarde locale impossible. Téléchargez une copie JSON avant de continuer.');
   }
-  async function save(ask) {
-    await connect();
+  async function save() {
     const fileId = getCurrentFileId();
-    if (ask && !confirm('Envoyer le dossier actuellement ouvert sur votre compte Wix connecté ? Vérifiez que ce dossier appartient bien à ce compte. Les versions précédentes seront conservées.')) return;
+    await connect();
+    if (state.fileId !== fileId) throw new Error('Le dossier a changé pendant la connexion. Le précédent reste enregistré sur cet appareil ; rouvrez-le pour le sauvegarder sur votre espace membre.');
+    if (state.wixBackup && state.wixBackup.memberId !== memberId) throw new Error('Ce dossier est lié à un autre compte. Reconnectez-vous au bon compte ; la copie sur cet appareil est conservée.');
     localSave();
     const metadata = state.wixBackup;
     const same = metadata?.memberId === memberId;
@@ -60,10 +56,10 @@
     localSave();
     const copy = serializeCurrentState();
     delete copy.wixBackup;
-    status('Enregistrement sur le compte en cours…');
+    status('Enregistrement sur votre espace membre en cours…');
+    updateSaveStatus('Sur cet appareil : enregistré · Espace membre : en cours…');
     const result = await request('SAVE', { memberId, dossierId, revision, payload: { state: copy } });
     if (!result?.ok) {
-      enabled.delete(fileId);
       if (result?.code === 'CONFLICT') throw new Error('Une autre version existe déjà sur le compte. Votre saisie locale est conservée. Retrouvez les versions sauvegardées avant de poursuivre.');
       throw new Error('Sauvegarde sur le compte non confirmée.');
     }
@@ -71,10 +67,11 @@
     // Une navigation pendant la requête ne doit jamais modifier le nouveau dossier.
     if (state.fileId === fileId) {
       state.wixBackup = { memberId, dossierId, revision: result.revision };
-      localSave(); enabled.add(fileId);
+      localSave();
     }
     status('Enregistré et relu sur votre compte — version ' + result.revision + '.');
-    showSaveToast('Copie sur le compte Wix confirmée');
+    if (state.fileId === fileId) updateSaveStatus('Enregistré sur cet appareil et sur votre espace membre');
+    showSaveToast('Enregistré sur cet appareil et sur votre espace membre');
   }
   async function list(append) {
     await connect();
@@ -111,38 +108,35 @@
       ensureStateShape(); state.view = 'info';
       localSave(); render();
     } catch (error) { state = previous; throw error; }
-    status('Copie récupérée sur cet appareil. Utilisez le bouton ci-dessus pour activer sa sauvegarde sur le compte.');
+    status('Dossier récupéré sur cet appareil. Le bouton Enregistrer sauvegardera aussi sur votre espace membre.');
     showSaveToast('Dossier récupéré depuis votre compte Wix');
   }
   async function run(operation) {
     if (busy) return;
     busy = true;
-    try { await operation(); } catch (error) { status(error.message); showSaveToast(error.message); }
+    try { await operation(); } catch (error) { status(error.message); updateSaveStatus('Espace membre : non confirmé — ' + error.message); showSaveToast(error.message); }
     finally {
       busy = false;
       const queued = queuedFile; queuedFile = '';
-      if (queued && state.fileId === queued && enabled.has(queued)) run(() => save(false));
+      if (queued && state.fileId === queued) run(() => save());
       else if (queued) showSaveToast('Les dernières modifications restent sur cet appareil. Rouvrez le dossier pour les envoyer sur le compte.');
     }
   }
-  button.addEventListener('click', () => {
-    panel.showModal();
-    run(async () => { await connect(); status('Compte connecté. Aucune donnée n’est envoyée sans action de votre part.'); });
-  });
+  window.ptbOpenMemberFiles = function () { panel.showModal(); run(() => list(false)); };
+  if (typeof viewSaves === 'function') {
+    const previousViewSaves = viewSaves;
+    viewSaves = function () { return '<div class="exportTopActions noPrint"><button class="primary" onclick="ptbOpenMemberFiles()">Retrouver mes dossiers sur mon espace membre</button></div>' + previousViewSaves(); };
+  }
   panel.addEventListener('click', event => {
     const op = event.target.dataset.op;
     if (op === 'close') return panel.close();
-    if (op === 'save') run(() => save(true));
     if (op === 'list') run(() => list(false));
     if (op === 'more' && next !== null) run(() => list(true));
   });
-  const originalSave = saveLocal;
   saveLocal = function () {
-    originalSave();
-    if (enabled.has(state.fileId)) {
-      panel.showModal();
-      if (busy) { queuedFile = state.fileId; status('Dernières modifications enregistrées sur cet appareil ; envoi suivant en attente…'); return; }
-      run(() => save(false));
-    }
+    try { localSave(); } catch (error) { updateSaveStatus(error.message); showSaveToast(error.message); return; }
+    updateSaveStatus('Sur cet appareil : enregistré · Espace membre : en cours…');
+    if (busy) { queuedFile = state.fileId; return; }
+    run(() => save());
   };
 })();
