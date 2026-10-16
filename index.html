@@ -1957,7 +1957,7 @@ body{top:0!important}
 <div class="topActions noPrint">
   <div class="saveChip">
     <span class="chipIcon"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
-    <div><b id="saveStatusText">Sauvegarde locale active</b><small>Aujourd’hui</small></div>
+    <div><b id="saveStatusText">Stockage non vérifié</b><small>Aujourd’hui</small></div>
   </div>
   <button class="manualSaveBtn" onclick="saveLocal()">
     <span><svg viewBox="0 0 24 24"><path d="M5 4h12l2 2v14H5z"/><path d="M8 4v6h8V4"/><path d="M8 20v-6h8v6"/></svg></span> Enregistrer maintenant
@@ -1993,6 +1993,8 @@ L’outil permet de comparer jusqu’à 6 évaluations successives, d’identifi
 <button class="navBtn" data-view="eval"><span class="navIcon"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span> Évaluations</button>
 <button class="navBtn" data-view="goals"><span class="navIcon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg></span> Objectifs</button>
 <button class="navBtn" data-view="summary"><span class="navIcon"><svg viewBox="0 0 24 24"><path d="M4 17 9 12l4 4 7-9"/><path d="M15 7h5v5"/></svg></span> Évolution</button>
+<button class="navBtn" data-view="journal"><span class="navIcon">▤</span> Journal de séances</button>
+<button class="navBtn" data-view="group"><span class="navIcon">▦</span> Observation de groupe</button>
 <button class="navBtn" data-view="saves"><span class="navIcon"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span> Mes dossiers</button>
 <button class="navBtn" data-view="contributions"><span class="navIcon"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><rect x="7" y="11" width="3" height="5" rx="1"/><rect x="12" y="8" width="3" height="8" rx="1"/><rect x="17" y="6" width="3" height="10" rx="1"/></svg></span> Mes contributions</button>
 <button class="navBtn" data-view="project"><span class="navIcon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/><path d="M12 8v8"/></svg></span> Projet collaboratif</button>
@@ -3128,7 +3130,7 @@ function ptbSavedContributionFiles(){
   try{return JSON.parse(localStorage.getItem("ptb_patient_files")||"[]")}catch(e){return []}
 }
 function ptbSentContributionRecords(){
-  try{return JSON.parse(localStorage.getItem("ptb_contribution_transmissions")||"[]")}catch(e){return []}
+  try{return JSON.parse(localStorage.getItem("ptb_contribution_transmissions")||"[]").filter(x=>x.receipt_status==="confirmed")}catch(e){return []}
 }
 function ptbScoreSavedEval(savedState, evaluation){
   const current = state;
@@ -3840,7 +3842,7 @@ function render(options){
     );
   const shouldPreserveScroll = opts.preserveScroll || keepPositionForControl;
   document.querySelectorAll(".navBtn").forEach(b=>b.classList.toggle("active",b.dataset.view===state.view));
-  mainEl.innerHTML={home:viewHome,info:viewInfo,eval:viewEval,goals:viewGoals,summary:viewSummary,saves:viewSaves,contributions:viewContributions,project:viewCollaborativeProject,founder:viewFounder,export:viewExport}[state.view]();
+  mainEl.innerHTML={home:viewHome,info:viewInfo,eval:viewEval,goals:viewGoals,summary:viewSummary,saves:viewSaves,journal:viewSessionJournal,group:viewGroupObservation,contributions:viewContributions,project:viewCollaborativeProject,founder:viewFounder,export:viewExport}[state.view]();
   if(typeof updatePremiumIdentity==="function") updatePremiumIdentity();
   if(shouldPreserveScroll){
     try{mainEl.scrollTop=previousMainScroll;}catch(e){}
@@ -4027,7 +4029,7 @@ if(typeof loadSave === "function"){
   }
 }
 
-updateSaveStatus("Sauvegarde locale active");
+updateSaveStatus("En attente du premier enregistrement");
 
 render();
 </script>
@@ -4937,25 +4939,29 @@ window.ptbTransmitToGoogleSheet = function(){
   });
   btns.forEach(btn => { btn.disabled = true; btn.dataset.oldText = btn.textContent; btn.textContent = "Contribution en cours..."; });
 
-  const googleRequest = fetch(PTB_GOOGLE_SHEET_WEBHOOK_URL, {
-    method: "POST",
-    mode: "no-cors",
-    headers: {"Content-Type": "text/plain;charset=utf-8"},
-    body: JSON.stringify(payload)
-  });
-  const supabaseRequest = ptbSendToSupabase(payload, contributorProfile);
-
-  Promise.all([googleRequest, supabaseRequest]).then(() => {
-    ptbRecordContributionTransmission(payload);
-    ptbPublicToast("Merci pour votre contribution. Vous participez à la construction d’une base de données francophone sur la LEGO® Thérapie.");
-  }).catch(err => {
-    alert("Transmission impossible : " + err.message);
-  }).finally(() => {
-    btns.forEach(btn => { btn.disabled = false; btn.textContent = btn.dataset.oldText || "Contribuer au projet de recherche"; });
+  ptbRecordAttempt(payload,"sending");
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),20000);
+  return fetch(PTB_GOOGLE_SHEET_WEBHOOK_URL, {
+    method:"POST",mode:"cors",signal:controller.signal,
+    headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)
+  }).then(async response=>{
+    if(!response.ok || response.type==="opaque")throw new Error("Réponse serveur non vérifiable");
+    const receipt=await response.json();
+    if(receipt.ok!==true || receipt.transmission_id!==payload.transmission_id || typeof receipt.receipt_id!=="string" || !receipt.receipt_id)throw new Error("Accusé de réception absent ou incompatible");
+    ptbRecordAttempt(payload,"confirmed",receipt.receipt_id);
+    ptbRecordContributionTransmission(payload,receipt.receipt_id);
+    ptbPublicToast("Réception confirmée. Reçu : "+receipt.receipt_id);
+  }).catch(err=>{
+    ptbRecordAttempt(payload,"unconfirmed");
+    alert("Réception NON confirmée. Le serveur a peut-être reçu l’envoi, mais aucun reçu vérifiable n’a été obtenu. Ne renvoyez pas immédiatement les mêmes données. Référence : "+payload.transmission_id+". "+err.message);
+  }).finally(()=>{
+    clearTimeout(timeout);
+    btns.forEach(btn=>{btn.disabled=false;btn.textContent=btn.dataset.oldText||"Contribuer au projet de recherche"});
   });
 };
 
-function ptbRecordContributionTransmission(payload){
+function ptbRecordContributionTransmission(payload,receipt){
   try{
     const key = "ptb_contribution_transmissions";
     const records = JSON.parse(localStorage.getItem(key) || "[]");
@@ -4964,6 +4970,8 @@ function ptbRecordContributionTransmission(payload){
       .map(x=>x.trim())
       .filter(Boolean);
     records.unshift({
+      receipt_status:"confirmed",
+      receipt_id:receipt,
       transmission_id: payload.transmission_id || "ptb_" + Date.now(),
       date_transmission: payload.date_transmission || new Date().toISOString(),
       code_participant: payload.code_participant || "",
@@ -5630,6 +5638,8 @@ setInterval(ptbKillTranslateChrome, 900);
     }
   }
 
+  window.ptbMirrorDossier=mirrorSave;
+
   async function recoverBackupSaves(){
     try{
       const db = await openBackupDb();
@@ -5680,6 +5690,7 @@ setInterval(ptbKillTranslateChrome, 900);
   function currentHasContent(){
     const patient = state.patient || {};
     if(patient.name || patient.birth || patient.notes || patient.accompanimentReason) return true;
+    if(Array.isArray(state.sessionJournal) && state.sessionJournal.length)return true;
     return (state.evals || []).some(e => Object.keys(e.ratings || {}).length || Object.keys(e.comments || {}).length || e.sessionNote || Object.values(e.domainNotes||{}).some(Boolean) || Object.values(e.manualGoals||{}).some(Boolean));
   }
 
@@ -5813,5 +5824,96 @@ setInterval(ptbKillTranslateChrome, 900);
 })();
 </script>
 
+<style>.ptbGroupChoices{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;max-height:340px;overflow:auto;margin:12px 0}.ptbGroupChoices .checkline{font-size:13px;text-transform:none;letter-spacing:0}.ptbMatrix{overflow:auto;margin-bottom:20px}.ptbMatrix th,.ptbMatrix td{min-width:150px}.ptbMatrix select{min-height:48px}.ptbJournalPrint{break-inside:avoid}</style>
+<script id="ptb-sessions-groups-receipts">
+/* V51 — journal indépendant, observation de groupe et reçus de recherche */
+function ptbCheckTabletStorage(){
+  let available=false;
+  try{const k="ptb_storage_probe_"+Date.now();localStorage.setItem(k,"ok");available=localStorage.getItem(k)==="ok";localStorage.removeItem(k)}catch(e){}
+  let banner=document.getElementById("ptbStorageWarning");
+  if(available){if(banner)banner.remove();return true}
+  if(!banner){banner=document.createElement("section");banner.id="ptbStorageWarning";banner.className="notice noPrint";banner.setAttribute("role","alert");document.getElementById("main")?.before(banner)}
+  banner.innerHTML=`<b>Enregistrement local indisponible sur cet appareil.</b><p>La saisie peut rester visible sans être conservée. La sauvegarde liée au compte n’est pas encore activée. Gardez cette page ouverte et téléchargez votre dossier avant de quitter.</p><button class="primary" onclick="ptbExportJSON()">Télécharger le dossier maintenant</button>`;
+  updateSaveStatus("ÉCHEC : stockage local indisponible");return false;
+}
+setTimeout(ptbCheckTabletStorage,400);
+function ptbSessionId(){return window.crypto?.randomUUID ? crypto.randomUUID() : Date.now()+"_"+Math.random().toString(36).slice(2)}
+function ptbLocalDate(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function ptbJournal(){if(!Array.isArray(state.sessionJournal))state.sessionJournal=[];return state.sessionJournal}
+function ptbAddSession(){
+  ptbJournal().unshift({id:ptbSessionId(),date:ptbLocalDate(),context:state.mode==="groupe"?"Groupe":"Individuel",activity:"",goals:"",observations:"",helps:"",nextSteps:""});
+  if(!upsertCurrentFile("auto"))alert("Séance ajoutée en mémoire, mais non enregistrée. Téléchargez le dossier avant de fermer.");
+  render();
+}
+function ptbEditSession(id,field,value){
+  if(!["date","context","activity","goals","observations","helps","nextSteps"].includes(field))return;
+  const entry=ptbJournal().find(x=>x.id===id);if(!entry)return;entry[field]=value;ptbScheduleDraftSave();
+}
+function ptbDeleteSession(id){if(!confirm("Supprimer cette entrée du journal ?"))return;state.sessionJournal=ptbJournal().filter(x=>x.id!==id);upsertCurrentFile("auto");render()}
+function ptbJournalReport(s){
+  const journal=Array.isArray(s.sessionJournal)?s.sessionJournal:[];if(!journal.length)return "";
+  return `<section class="card"><h2>Journal de séances — ${escHtml(s.patient?.name||"Dossier sans nom")}</h2>${[...journal].sort((a,b)=>String(a.date).localeCompare(String(b.date))).map(e=>`<article class="ptbJournalPrint"><h3>${escHtml(e.date||"Sans date")} · ${escHtml(e.context||"")}</h3>${[["Activité",e.activity],["Objectifs travaillés",e.goals],["Observations",e.observations],["Aides et ajustements",e.helps],["Prochaine séance",e.nextSteps]].filter(x=>x[1]).map(([label,value])=>`<p><b>${label}</b><br><span style="white-space:pre-wrap">${escHtml(value)}</span></p>`).join("")}</article>`).join("")}</section>`;
+}
+function ptbPrintJournal(){
+  const win=window.open("","_blank");if(!win)return alert("Autorisez l’ouverture du document pour imprimer le journal.");
+  win.document.write(`<!doctype html><html lang="fr"><meta charset="utf-8"><title>Journal de séances LBT Tracker</title><style>body{font:14px Arial;line-height:1.5;padding:24px;color:#173425}article{break-inside:avoid;border-top:1px solid #ccc;padding:12px 0}h2{font-size:22px}@page{size:A4;margin:15mm}</style>${ptbJournalReport(state)}</html>`);win.document.close();setTimeout(()=>win.print(),300);
+}
+function viewSessionJournal(){
+  return `<h2>Journal de séances</h2><div class="notice">Une entrée par séance, sans créer une nouvelle évaluation. Les cotations et les scores restent indépendants de ce journal. Dossier : <b>${escHtml(state.patient.name||"Sans nom")}</b>.</div><div class="actions noPrint"><button class="primary" onclick="ptbAddSession()">+ Ajouter une séance</button><button class="secondary" onclick="ptbPrintJournal()">Imprimer / PDF du journal</button><button class="secondary" onclick="ptbExportJSON()">Télécharger le dossier complet</button></div>${ptbJournal().map(e=>`<section class="card"><div class="form"><div><label>Date</label><input type="date" value="${escHtml(e.date)}" oninput="ptbEditSession(${escHtml(JSON.stringify(e.id))},'date',this.value)"></div><div><label>Contexte</label><select onchange="ptbEditSession(${escHtml(JSON.stringify(e.id))},'context',this.value)">${["Individuel","Groupe"].map(x=>`<option ${e.context===x?'selected':''}>${x}</option>`).join("")}</select></div></div>${[["activity","Activité / construction"],["goals","Objectifs travaillés"],["observations","Observations de la séance"],["helps","Aides et ajustements"],["nextSteps","Pour la prochaine séance"]].map(([field,label])=>`<label>${label}<textarea rows="3" oninput="ptbEditSession(${escHtml(JSON.stringify(e.id))},'${field}',this.value)">${escHtml(e[field]||"")}</textarea></label>`).join("")}<button class="secondary noPrint" onclick="ptbDeleteSession(${escHtml(JSON.stringify(e.id))})">Supprimer cette séance</button></section>`).join("")||`<div class="card">Aucune séance consignée. Cliquez sur « Ajouter une séance ».</div>`}`;
+}
+let ptbGroup={participants:[],items:[],domain:0,date:ptbLocalDate(),activity:"",goals:"",contextMode:"groupe",sessionId:ptbSessionId()};
+function ptbGroupSaves(){
+  const raw=localStorage.getItem("ptb_patient_files");const saves=raw?JSON.parse(raw):[];
+  if(!Array.isArray(saves))throw Error("Liste des dossiers illisible");return saves;
+}
+function ptbGroupToggle(type,value,checked){
+  const list=ptbGroup[type];if(!Array.isArray(list))return;
+  ptbGroup[type]=checked?[...new Set([...list,value])]:list.filter(x=>x!==value);render({preserveScroll:true});
+}
+function ptbGroupDomain(value){ptbGroup.domain=Number(value);ptbGroup.items=[];render()}
+function ptbGroupMode(value){ptbGroup.contextMode=value;ptbGroup.participants=[];ptbGroup.items=[];ptbGroup.domain=0;render()}
+function ptbGroupUpdate(id,change){
+  if(!upsertCurrentFile("auto"))throw Error("Le dossier ouvert ne peut pas être enregistré");
+  const saves=ptbGroupSaves(),entry=saves.find(x=>x.id===id);
+  if(!entry)throw Error("Dossier introuvable");
+  change(entry.state);entry.savedAt=new Date().toISOString();entry.autoSavedAt=entry.savedAt;
+  const raw=JSON.stringify(saves);localStorage.setItem("ptb_patient_files",raw);
+  if(localStorage.getItem("ptb_patient_files")!==raw)throw Error("Écriture non confirmée");
+  if(state.fileId===id){state.evals=JSON.parse(JSON.stringify(entry.state.evals));state.sessionJournal=JSON.parse(JSON.stringify(entry.state.sessionJournal||[]))}
+  if(window.ptbMirrorDossier)window.ptbMirrorDossier(entry);
+  updateSaveStatus("Observation enregistrée sur cet appareil");
+}
+function ptbGroupRate(id,evalIndex,code,value){
+  try{
+    ptbGroupUpdate(id,s=>{if(s.mode!==ptbGroup.contextMode)throw Error("Grille incompatible");const e=s.evals[Number(evalIndex)];if(!e)throw Error("Évaluation introuvable");e.ratings=e.ratings||{};const k=s.mode+"::"+ptbGroup.domain+"::"+code;if(value==="")delete e.ratings[k];else e.ratings[k]=value==="NC"?"NC":Number(value)});
+    const label=document.getElementById('ptbGroupSaveNotice');if(label)label.textContent="Cotation enregistrée. Chaque score reste dans le dossier de son bénéficiaire.";
+  }catch(e){const label=document.getElementById('ptbGroupSaveNotice');if(label)label.textContent="ÉCHEC : cotation non enregistrée. "+e.message;alert("Cotation non enregistrée : "+e.message);render({preserveScroll:true})}
+}
+function ptbGroupEval(id,value){ptbGroup.evalIndexes=ptbGroup.evalIndexes||{};ptbGroup.evalIndexes[id]=Number(value);render({preserveScroll:true})}
+function ptbGroupRecordSession(){
+  if(!ptbGroup.participants.length)return alert("Sélectionnez au moins un bénéficiaire.");
+  let count=0;
+  try{
+    for(const id of ptbGroup.participants){ptbGroupUpdate(id,s=>{s.sessionJournal=Array.isArray(s.sessionJournal)?s.sessionJournal:[];const session={id:ptbGroup.sessionId,date:ptbGroup.date,context:"Groupe",activity:ptbGroup.activity,goals:ptbGroup.goals,observations:"",helps:"",nextSteps:""};const old=s.sessionJournal.find(x=>x.id===session.id);if(old)Object.assign(old,{date:session.date,activity:session.activity,goals:session.goals});else s.sessionJournal.unshift(session)});count++}
+    showSaveToast("Séance consignée dans "+count+" dossier(s)");
+  }catch(e){alert(count+" dossier(s) enregistré(s), puis arrêt : "+e.message)}
+}
+function ptbNewGroupSession(){ptbGroup.sessionId=ptbSessionId();ptbGroup.date=ptbLocalDate();ptbGroup.activity="";ptbGroup.goals="";render()}
+function viewGroupObservation(){
+  let saves;try{saves=ptbGroupSaves()}catch(e){return `<h2>Observation de groupe</h2><div class="notice">Dossiers indisponibles. Conservez vos copies de sécurité.</div>`}
+  const ds=DATA[ptbGroup.contextMode]||DATA.groupe,domain=ds[ptbGroup.domain]||ds[0];
+  const selected=saves.filter(x=>ptbGroup.participants.includes(x.id)&&x.state.mode===ptbGroup.contextMode);
+  const items=cotableItems(domain).filter(x=>ptbGroup.items.includes(String(x.code)));
+  return `<h2>Observation de groupe</h2><div class="notice">Choisissez les bénéficiaires, quelques items et l’évaluation à compléter pour chacun. Les cotations sont enregistrées séparément ; aucune moyenne de groupe n’est calculée.</div><section class="card noPrint"><label>Grille utilisée<select onchange="ptbGroupMode(this.value)"><option value="groupe" ${ptbGroup.contextMode==='groupe'?'selected':''}>Groupe</option><option value="individuel" ${ptbGroup.contextMode==='individuel'?'selected':''}>Individuel</option></select></label><h3>1. Bénéficiaires</h3><div class="ptbGroupChoices">${saves.filter(x=>x.state.mode===ptbGroup.contextMode).map(x=>`<label class="checkline"><input type="checkbox" ${ptbGroup.participants.includes(x.id)?'checked':''} onchange="ptbGroupToggle('participants',${escHtml(JSON.stringify(x.id))},this.checked)">${escHtml(x.state.patient?.name||"Sans nom")}</label>`).join("")||"Aucun dossier enregistré pour cette grille. Créez d’abord les dossiers des bénéficiaires."}</div><h3>2. Compétences à observer</h3><select onchange="ptbGroupDomain(this.value)">${ds.map((d,i)=>`<option value="${i}" ${i===ptbGroup.domain?'selected':''}>${escHtml(d.name)}</option>`).join("")}</select><div class="ptbGroupChoices">${cotableItems(domain).map(it=>`<label class="checkline"><input type="checkbox" ${ptbGroup.items.includes(String(it.code))?'checked':''} onchange="ptbGroupToggle('items','${it.code}',this.checked)">${escHtml(it.code)} · ${escHtml(it.text)}</label>`).join("")}</div></section><p id="ptbGroupSaveNotice" role="status" aria-live="polite">Les cases vides restent non cotées. Une saisie ne crée pas de nouvelle évaluation.</p>${selected.length&&items.length?`<div class="ptbMatrix"><table class="table"><thead><tr><th>Compétence</th>${selected.map(x=>`<th>${escHtml(x.state.patient?.name||"Sans nom")}<select aria-label="Évaluation de ${escHtml(x.state.patient?.name||'ce bénéficiaire')}" onchange="ptbGroupEval(${escHtml(JSON.stringify(x.id))},this.value)">${x.state.evals.map((e,i)=>`<option value="${i}" ${(ptbGroup.evalIndexes?.[x.id]??0)===i?'selected':''}>Éval. ${i+1} · ${escHtml(e.date||"Sans date")}</option>`).join("")}</select></th>`).join("")}</tr></thead><tbody>${items.map(it=>`<tr><th>${escHtml(it.text)}</th>${selected.map(x=>{const ei=ptbGroup.evalIndexes?.[x.id]??0,r=x.state.evals[ei].ratings?.[x.state.mode+"::"+ptbGroup.domain+"::"+it.code];return `<td><select aria-label="${escHtml(x.state.patient?.name)} : ${escHtml(it.text)}" onchange="ptbGroupRate(${escHtml(JSON.stringify(x.id))},${ei},'${it.code}',this.value)">${["",1,2,3,4,5,6,"NC"].map(n=>`<option value="${n}" ${String(r??'')===String(n)?'selected':''}>${n===""?'Non coté':n}</option>`).join("")}</select></td>`}).join("")}</tr>`).join("")}</tbody></table></div>`:`<div class="card">Sélectionnez au moins un bénéficiaire et un item pour ouvrir la grille de séance.</div>`}<section class="card noPrint"><h3>3. Consigner la séance dans les journaux</h3><label>Date<input type="date" value="${escHtml(ptbGroup.date)}" oninput="ptbGroup.date=this.value"></label><label>Activité<textarea oninput="ptbGroup.activity=this.value">${escHtml(ptbGroup.activity)}</textarea></label><label>Objectifs communs<textarea oninput="ptbGroup.goals=this.value">${escHtml(ptbGroup.goals)}</textarea></label><div class="actions"><button class="primary" onclick="ptbGroupRecordSession()">Consigner pour les bénéficiaires sélectionnés</button><button class="secondary" onclick="ptbNewGroupSession()">Commencer une autre séance</button></div><p>Un second clic met à jour la même séance. Complétez ensuite les observations individuelles dans le journal de chaque bénéficiaire.</p></section>`;
+}
+function ptbTransmissionHistory(){try{const r=JSON.parse(localStorage.getItem("ptb_transmission_attempts_v1")||"[]");return Array.isArray(r)?r:[]}catch(e){return []}}
+function ptbRecordAttempt(payload,status,receipt){
+  try{const records=ptbTransmissionHistory();const entry={transmission_id:payload.transmission_id,date:new Date().toISOString(),evaluations:String(payload.evaluations_selectionnees||""),status,receipt:receipt||""};const i=records.findIndex(x=>x.transmission_id===entry.transmission_id);if(i<0)records.unshift(entry);else records[i]=entry;localStorage.setItem("ptb_transmission_attempts_v1",JSON.stringify(records))}catch(e){console.warn("Historique non enregistré",e)}
+}
+function ptbReceiptPanel(){return `<section class="card"><h3>Accusés de réception de recherche</h3><p>Seul « Réception confirmée » prouve que le serveur a confirmé cet envoi. Les anciens envois sans reçu ne sont pas comptés comme confirmés.</p>${ptbTransmissionHistory().map(e=>`<p><b>${escHtml(e.date)}</b> · Évaluations ${escHtml(e.evaluations)}<br>${escHtml(e.status==='confirmed'?'Réception confirmée':e.status==='sending'?'Envoi commencé — réception non confirmée':'Réception non confirmée')}<br><small>Référence : ${escHtml(e.transmission_id)}${e.receipt?' · Reçu : '+escHtml(e.receipt):''}</small></p>`).join("")||"Aucun envoi suivi pour le moment."}</section>`}
+const ptbPreviousContributions=viewContributions;
+viewContributions=function(){return ptbReceiptPanel()+ptbPreviousContributions()};
+
+</script>
 </body></html>
 
