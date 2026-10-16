@@ -6,7 +6,7 @@
   let parentOrigin = '';
   try { const origin = new URL(document.referrer).origin; if (HOSTS.includes(origin)) parentOrigin = origin; } catch (_) {}
   const pending = new Map();
-  let memberId = '', enabled = new Set(), busy = false, next = null;
+  let memberId = '', enabled = new Set(), busy = false, next = null, queuedFile = '';
   const button = document.createElement('button');
   button.textContent = 'Sauvegarde compte Wix';
   button.className = 'secondary noPrint';
@@ -118,7 +118,12 @@
     if (busy) return;
     busy = true;
     try { await operation(); } catch (error) { status(error.message); showSaveToast(error.message); }
-    finally { busy = false; }
+    finally {
+      busy = false;
+      const queued = queuedFile; queuedFile = '';
+      if (queued && state.fileId === queued && enabled.has(queued)) run(() => save(false));
+      else if (queued) showSaveToast('Les dernières modifications restent sur cet appareil. Rouvrez le dossier pour les envoyer sur le compte.');
+    }
   }
   button.addEventListener('click', () => {
     panel.showModal();
@@ -136,6 +141,7 @@
     originalSave();
     if (enabled.has(state.fileId)) {
       panel.showModal();
+      if (busy) { queuedFile = state.fileId; status('Dernières modifications enregistrées sur cet appareil ; envoi suivant en attente…'); return; }
       run(() => save(false));
     }
   };
