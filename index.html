@@ -3842,7 +3842,7 @@ function render(options){
     );
   const shouldPreserveScroll = opts.preserveScroll || keepPositionForControl;
   document.querySelectorAll(".navBtn").forEach(b=>b.classList.toggle("active",b.dataset.view===state.view));
-  mainEl.innerHTML={home:viewHome,info:viewInfo,eval:viewEval,goals:viewGoals,summary:viewSummary,saves:viewSaves,journal:viewSessionJournal,group:viewGroupObservation,contributions:viewContributions,project:viewCollaborativeProject,founder:viewFounder,export:viewExport}[state.view]();
+  mainEl.innerHTML={home:viewHome,info:viewInfo,eval:viewEval,goals:viewGoals,summary:viewSummary,saves:viewSaves,journal:()=>viewSessionJournal(),group:()=>viewGroupObservation(),contributions:viewContributions,project:viewCollaborativeProject,founder:viewFounder,export:viewExport}[state.view]();
   if(typeof updatePremiumIdentity==="function") updatePremiumIdentity();
   if(shouldPreserveScroll){
     try{mainEl.scrollTop=previousMainScroll;}catch(e){}
@@ -5911,6 +5911,8 @@ function ptbRecordAttempt(payload,status,receipt){
   try{const records=ptbTransmissionHistory();const entry={transmission_id:payload.transmission_id,date:new Date().toISOString(),evaluations:String(payload.evaluations_selectionnees||""),status,receipt:receipt||""};const i=records.findIndex(x=>x.transmission_id===entry.transmission_id);if(i<0)records.unshift(entry);else records[i]=entry;localStorage.setItem("ptb_transmission_attempts_v1",JSON.stringify(records))}catch(e){console.warn("Historique non enregistré",e)}
 }
 function ptbReceiptPanel(){return `<section class="card"><h3>Accusés de réception de recherche</h3><p>Seul « Réception confirmée » prouve que le serveur a confirmé cet envoi. Les anciens envois sans reçu ne sont pas comptés comme confirmés.</p>${ptbTransmissionHistory().map(e=>`<p><b>${escHtml(e.date)}</b> · Évaluations ${escHtml(e.evaluations)}<br>${escHtml(e.status==='confirmed'?'Réception confirmée':e.status==='sending'?'Envoi commencé — réception non confirmée':'Réception non confirmée')}<br><small>Référence : ${escHtml(e.transmission_id)}${e.receipt?' · Reçu : '+escHtml(e.receipt):''}</small></p>`).join("")||"Aucun envoi suivi pour le moment."}</section>`}
+const ptbDesktopHome=viewHome;
+viewHome=function(){return `<div class="notice noPrint"><b>Utilisation sur ordinateur recommandée.</b> La conservation des données sur tablette est en cours de fiabilisation. Après une séance, conservez une copie du dossier avec le bouton Dossier.</div>`+ptbDesktopHome()};
 const ptbPreviousContributions=viewContributions;
 viewContributions=function(){return ptbReceiptPanel()+ptbPreviousContributions()};
 
