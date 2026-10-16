@@ -1,4 +1,4 @@
-/* Sauvegarde explicite par compte. Aucun transfert au démarrage. */
+/* Dossiers du compte affichés automatiquement ; sauvegarde unique appareil + compte. */
 (() => {
   'use strict';
   const CHANNEL = 'PTB_WIX_BACKUP_V1';
@@ -7,6 +7,7 @@
   try { const origin = new URL(document.referrer).origin; if (HOSTS.includes(origin)) parentOrigin = origin; } catch (_) {}
   const pending = new Map();
   let memberId = '', busy = false, next = null, queuedFile = '';
+  let memberFiles = new Map(), syncMessage = 'Chargement de vos dossiers…', lastSync = 0;
   const panel = document.createElement('dialog');
   panel.style.cssText = 'max-width:680px;width:90%;max-height:85vh;overflow:auto;border:1px solid #b7d6cf;border-radius:20px;padding:24px;color:#074b55';
   panel.innerHTML = '<h2>Mes dossiers sur mon espace membre</h2><p>Le bouton Enregistrer conserve votre dossier sur cet appareil et sur votre espace membre. Retrouvez ici vos versions enregistrées.</p><p id="wixBackupStatus" role="status" aria-live="polite"></p><p><button type="button" data-op="list">Retrouver mes versions sauvegardées</button></p><div id="wixBackupList"></div><p><button type="button" data-op="more" hidden>Voir les versions suivantes</button> <button type="button" data-op="close">Fermer</button></p>';
@@ -32,7 +33,7 @@
     const result = await request('HELLO');
     if (!result?.ok || result.protocol !== 1 || typeof result.memberId !== 'string') throw new Error('Connexion à votre espace membre nécessaire. Si vous êtes déjà connecté, rechargez la page.');
     if (memberId && memberId !== result.memberId) {
-      memberId = result.memberId;
+      memberId = result.memberId; memberFiles.clear(); syncMessage = 'Le compte a changé. Actualisez vos dossiers.'; refreshFilesView();
       panel.querySelector('#wixBackupList').replaceChildren(); next = null;
       panel.querySelector('[data-op="more"]').hidden = true;
       throw new Error('Le compte a changé. Votre dossier reste sur cet appareil. Reconnectez-vous au compte utilisé pour ce dossier.');
@@ -72,6 +73,8 @@
     status('Enregistré et relu sur votre compte — version ' + result.revision + '.');
     if (state.fileId === fileId) updateSaveStatus('Enregistré sur cet appareil et sur votre espace membre');
     showSaveToast('Enregistré sur cet appareil et sur votre espace membre');
+    memberFiles.set(dossierId, { recordId: '', dossierId, revision: result.revision, savedAt: result.savedAt, name: copy.patient?.name || 'Sans nom', localFileId: fileId });
+    refreshFilesView();
   }
   async function list(append) {
     await connect();
@@ -91,11 +94,11 @@
     panel.querySelector('[data-op="more"]').hidden = next === null;
     status(result.items.length ? 'Vos versions sont affichées ci-dessous. La suppression locale ne supprime pas ces copies sur le compte.' : 'Aucune version sur cette page.');
   }
-  async function restore(recordId) {
+  async function restore(recordId, ask = true) {
     await connect();
     const result = await request('LOAD', { memberId, recordId });
     if (!result?.ok || !result.payload?.state?.patient || !Array.isArray(result.payload.state.evals)) throw new Error('Dossier récupéré invalide.');
-    if (!confirm('Récupérer cette version dans un nouveau dossier local ? Votre dossier ouvert sera conservé.')) return;
+    if (ask && !confirm('Récupérer cette version dans un nouveau dossier local ? Votre dossier ouvert sera conservé.')) return;
     localSave();
     clearTimeout(autosaveTimer); clearTimeout(window.ptbDraftSaveTimer);
     const previous = state;
@@ -122,10 +125,58 @@
       else if (queued) showSaveToast('Les dernières modifications restent sur cet appareil. Rouvrez le dossier pour les envoyer sur le compte.');
     }
   }
+  function escapeText(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function refreshFilesView() { if (state.view === 'saves') render({preserveScroll:true}); }
+  async function syncFiles() {
+    try {
+      await connect();
+      const expected = memberId;
+      const files = new Map();
+      let skip = 0;
+      do {
+        const result = await request('LIST', { memberId: expected, skip });
+        if (!result?.ok || !Array.isArray(result.items) || memberId !== expected) throw new Error('Liste des dossiers non confirmée.');
+        for (const item of result.items) {
+          if (!/^[a-f0-9]{32}$/.test(item.recordId) || !/^[a-f0-9-]{36}$/i.test(item.dossierId) || !Number.isSafeInteger(item.revision)) continue;
+          const old = files.get(item.dossierId);
+          if (!old || item.revision > old.revision) files.set(item.dossierId, item);
+        }
+        if (result.next !== null && (!Number.isSafeInteger(result.next) || result.next <= skip)) throw new Error('Pagination des dossiers invalide.');
+        skip = result.next;
+      } while (skip !== null);
+      memberFiles = files; lastSync = Date.now();
+      syncMessage = files.size ? 'Vos dossiers sont disponibles. Cliquez sur Ouvrir pour continuer.' : 'Aucun dossier enregistré sur votre espace membre pour le moment.';
+      refreshFilesView();
+    } catch (error) {
+      memberFiles.clear(); syncMessage = error.message; refreshFilesView();
+      throw error;
+    }
+  }
   window.ptbOpenMemberFiles = function () { panel.showModal(); run(() => list(false)); };
+  window.ptbRefreshMemberFiles = function () { run(() => syncFiles()); };
+  window.ptbOpenMemberDossier = function (id) {
+    run(async () => {
+      await connect();
+      const file = memberFiles.get(id);
+      if (!file) throw new Error('Actualisez la liste des dossiers.');
+      // Ne jamais remplacer les notes locales non envoyées par une copie distante.
+      const raw = localStorage.getItem('ptb_patient_files');
+      const local = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(local)) throw new Error('Liste locale invalide ; téléchargez une copie de sécurité.');
+      const existing = local.find(x => x.state?.wixBackup?.memberId === memberId && x.state.wixBackup.dossierId === id && x.state.wixBackup.revision >= file.revision);
+      if (existing) { loadSave(existing.id); return; }
+      if (!file.recordId) throw new Error('Actualisez la liste des dossiers.');
+      await restore(file.recordId, false);
+    });
+  };
   if (typeof viewSaves === 'function') {
     const previousViewSaves = viewSaves;
-    viewSaves = function () { return '<div class="exportTopActions noPrint"><button class="primary" onclick="ptbOpenMemberFiles()">Retrouver mes dossiers sur mon espace membre</button></div>' + previousViewSaves(); };
+    viewSaves = function () {
+      const files = [...memberFiles.values()].sort((a,b) => String(a.name).localeCompare(String(b.name), 'fr'));
+      return '<section class="saveCard"><h2>Mes dossiers</h2><p role="status">' + escapeText(syncMessage) + '</p>' +
+        files.map(file => '<div class="exportTopActions" style="margin:12px 0"><strong>' + escapeText(file.name) + '</strong> <button class="primary" onclick="ptbOpenMemberDossier(\'' + file.dossierId + '\')">Ouvrir</button></div>').join('') +
+        '<div class="exportTopActions noPrint"><button class="secondary" onclick="ptbRefreshMemberFiles()">Actualiser</button><button class="secondary" onclick="ptbOpenMemberFiles()">Versions précédentes</button></div></section><h3>Dossiers conservés sur cet appareil</h3>' + previousViewSaves();
+    };
   }
   panel.addEventListener('click', event => {
     const op = event.target.dataset.op;
@@ -139,4 +190,9 @@
     if (busy) { queuedFile = state.fileId; return; }
     run(() => save());
   };
+  // Lecture seulement au démarrage : aucun envoi des anciens dossiers locaux.
+  if (parentOrigin && window.parent !== window) run(() => syncFiles());
+  window.addEventListener('focus', () => {
+    if (parentOrigin && !busy && Date.now() - lastSync > 60000) run(() => syncFiles());
+  });
 })();
