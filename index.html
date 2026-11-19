@@ -1423,6 +1423,8 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 
 @media print{
   @page{size:A4 portrait;margin:8mm}
+  @page ptbEvaluation{size:A4 landscape;margin:8mm}
+  body.ptb-report-printing{page:ptbEvaluation}
   body{background:#fff!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   body.ptb-report-printing,
   body.ptb-summary-printing,
@@ -1459,9 +1461,10 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
     color:#102033!important;
     font-family:Inter, Arial, sans-serif!important;
   }
+  body.ptb-report-printing #ptbPdfReport{position:static!important}
   .v47Page{page-break-after:auto;break-after:auto;margin-bottom:5mm}
   #ptbPdfReport .v47Page{
-    width:186mm!important;
+    width:100%!important;
     margin:0 auto 6mm!important;
     padding:3mm!important;
     box-sizing:border-box!important;
